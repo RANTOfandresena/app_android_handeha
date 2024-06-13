@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "508238790456",
+    "project_id": "applicationokok",
+    "storage_bucket": "applicationokok.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:508238790456:android:18628b9a6260f30d5a4bcd",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWTJttTZmv2wDpJidRl5-P0hnyUrAy72E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
