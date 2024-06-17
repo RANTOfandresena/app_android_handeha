@@ -90,7 +90,6 @@ public class CarteFragment extends Fragment {
                 1f,
                 mapView.getModel().frameBufferModel.getOverdrawFactor()
         );
-
         MapDataStore mapDataStore = new MapFile(
                 new File(getActivity().getExternalFilesDir(null),
                         "madagascar.map")

@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNavigationView=findViewById(R.id.bottomNavigationView);
-        fab=findViewById(R.id.fab);
         drawerLayout=findViewById(R.id.drawer_layout);
         NavigationView navigationView=findViewById(R.id.nav_view);
         Toolbar toolbar=findViewById(R.id.toolbar);
@@ -55,32 +54,24 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         if(savedInstanceState==null){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new HomeFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new TransportFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
         }
 
-        replaceFragment(new HomeFragment());
+        replaceFragment(carteFragment);
 
         bottomNavigationView.setBackground(null);
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            if(item.getItemId()==R.id.home) {
-                replaceFragment(new HomeFragment());
+            if(item.getItemId()==R.id.carte){
+                replaceFragment(carteFragment);
+            } else if(item.getItemId()==R.id.transport) {
+                replaceFragment(new TransportFragment());
             }else if (item.getItemId()==R.id.recherche) {
-                replaceFragment(new ShortsFragment());
+                replaceFragment(new RechercheFragment());
             } else if (item.getItemId()==R.id.reservation) {
-                replaceFragment(new ListesFragment());
-            } else if (item.getItemId()==R.id.historique) {
-                replaceFragment(new ListesFragment());
+                replaceFragment(new ReservationFragment());
             }
             return true;
-        });
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //showBottomDialog();
-                replaceFragment(carteFragment);
-            }
         });
 
     }

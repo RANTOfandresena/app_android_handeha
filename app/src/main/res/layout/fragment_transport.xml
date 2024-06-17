@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TransportFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/recherche_style"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center">
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_my_location_24"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+            <EditText
+                android:layout_width="0.7in"
+                android:layout_height="match_parent"
+                android:id="@+id/depart"
+                android:background="@drawable/cunstum_edittext"
+                android:hint="Depart"
+                android:textColor="@color/black"
+                android:textColorHighlight="@color/lavender"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_my_location_24"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+            <EditText
+                android:layout_width="0.7in"
+                android:layout_height="match_parent"
+                android:id="@+id/ariver"
+                android:background="@drawable/cunstum_edittext"
+                android:hint="ariver"
+                android:textColor="@color/black"
+                android:textColorHighlight="@color/lavender"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="voyageur(s):"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <ImageButton
+                        android:id="@+id/btnMoins"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="15dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/baseline_remove_circle_outline_24" />
+                    <TextView
+                        android:id="@+id/voyageur"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textSize="30sp" />
+                    <ImageButton
+                        android:id="@+id/btnPlus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/baseline_add_circle_outline_24"
+                        android:layout_marginLeft="15dp"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date du voyage:"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"/>
+                <EditText
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:ems="10"
+                    android:paddingLeft="0.1in"
+                    android:drawableLeft="@drawable/baseline_date_range_24"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:hint="Date"/>
+            </LinearLayout>
+
+            <ImageButton
+                android:layout_width="1in"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/baseline_search_24" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</FrameLayout>

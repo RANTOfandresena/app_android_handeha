@@ -3,28 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/home"
-        android:title="voiture"
-        android:icon="@drawable/baseline_airport_shuttle_24"/>
-
+        android:id="@+id/carte"
+        android:title="carte"
+        android:icon="@drawable/baseline_map_24" />
     <item
         android:id="@+id/recherche"
         android:title="recherche"
         android:icon="@drawable/baseline_search_24"
         />
-
     <item
-        android:title=""/>
-
-    <item
-        android:id="@+id/historique"
-        android:title="historique"
-        android:icon="@drawable/baseline_history_toggle_off_24" />
-
+        android:id="@+id/transport"
+        android:title="transport"
+        android:icon="@drawable/baseline_airport_shuttle_24"/>
     <item
         android:id="@+id/reservation"
-        android:title="reservation"
+        android:title="vos reservation"
         android:icon="@drawable/baseline_departure_board_24"/>
-
-
 </menu>
