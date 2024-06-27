@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="176dp"
+    android:layout_height="190dp"
     android:gravity="bottom"
     android:padding="16dp"
     android:background="@drawable/headerbkg"
@@ -12,20 +13,32 @@
         android:id="@+id/imageUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/aklogo"/>
+        android:src="@drawable/baseline_person_off_24"/>
     <TextView
         android:id="@+id/nomUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test Test"
+        android:text="aucun compte connecter"
         android:textColor="@color/white"
         android:textStyle="bold"/>
     <TextView
         android:id="@+id/numUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="03220202022"
+        android:text=""
         android:textColor="@color/white"
         android:textSize="14sp"
         android:layout_marginBottom="16dp"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:backgroundTint="#B3B9EF"
+        android:id="@+id/seconncter"
+        android:text="Se connecter"
+        android:textSize="12sp"
+        app:cornerRadius="10dp"
+        android:onClick="seConnecter"
+        app:strokeColor="@color/lavender"
+        app:strokeWidth="1dp"
+        android:elevation="10dp"/>
 </LinearLayout>

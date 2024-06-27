@@ -62,12 +62,12 @@ public class LoginActivity extends AppCompatActivity {
     public void validationUtilisateur(){
         String mdpStr=mdp.getText().toString().trim();
         String numStr=num.getText().toString().trim();
-
         DatabaseReference reference= FirebaseDatabase.getInstance().getReference("utilisateur");
         Query validationUtilisateurBdd=reference.orderByChild("numero").equalTo(numStr);
         validationUtilisateurBdd.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Toast.makeText(LoginActivity.this, "gg3", Toast.LENGTH_SHORT).show();
                 if(snapshot.exists()){
                     num.setError(null);
                     String mdpBdd=snapshot.child(numStr).child("mdp").getValue(String.class);
@@ -93,14 +93,14 @@ public class LoginActivity extends AppCompatActivity {
                         mdp.requestFocus();
                     }
                 }else{
-                    num.setError("ce numero n'est pas encore inscrit");
+                    num.setError("ce numero n'est pas encore inscrit ou n'est pas approuvé par l'administrateur");
                     num.requestFocus();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(LoginActivity.this, "erreur de connection", Toast.LENGTH_SHORT).show();
             }
         });
     }

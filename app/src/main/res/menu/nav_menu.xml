@@ -22,7 +22,7 @@
             android:icon="@drawable/baseline_info_24"
             android:title="à propos de l'application"/>
     </group>
-    <item
+    <!--item
         android:title="">
         <menu>
             <item
@@ -30,5 +30,5 @@
                 android:icon="@drawable/baseline_exit_to_app_24"
                 android:title="Se deconncter"/>
         </menu>
-    </item>
+    </item-->
 </menu>

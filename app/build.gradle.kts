@@ -79,4 +79,7 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
 
     //api("com.theartofdev.edmodo:android-image-cropper:2.7.0")
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    implementation("mysql:mysql-connector-java:5.1.49")
+
 }
