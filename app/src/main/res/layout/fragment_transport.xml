@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TransportFragment">
+    tools:context=".fragment.TransportFragment">
 
     <LinearLayout
+        android:id="@+id/barrecherche"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -121,15 +122,27 @@
             </LinearLayout>
 
             <ImageButton
+                android:id="@+id/go"
                 android:layout_width="1in"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/baseline_search_24" />
-
-
         </LinearLayout>
-
-
     </LinearLayout>
+    <TextView
+        android:id="@+id/json"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginTop="1.1in"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/resultat"
+        android:layout_width="fill_parent"
+        android:layout_height="435dp"
+        android:layout_below="@+id/barrecherche"
+        android:layout_marginTop="1in"
+        android:layout_marginBottom="10dp"
+        android:scrollbars="vertical" />
 
 </FrameLayout>

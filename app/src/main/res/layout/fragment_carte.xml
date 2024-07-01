@@ -4,16 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CarteFragment"
+    tools:context=".fragment.CarteFragment"
     android:id="@+id/carte">
 
-    <!-- TODO: Update blank fragment layout
+    <!-- TODO: Update blank fragment layout-->
     <org.mapsforge.map.android.view.MapView
-        android:id="@+id/carte"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constrainTop_toTopOf="parent"
-        app:layout_constrainBottom_toBottomOf="parent"
-        app:layout_constrainStart_toStartOf="parent"
-        app:layout_constrainEnd_toEndOf="parent"/>-->
+        android:id="@+id/cartee"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <ImageButton
+        android:id="@+id/position"
+        android:layout_width="80dp"
+        android:layout_height="79dp"
+        android:src="@drawable/baseline_my_location_24"
+        android:layout_marginTop="1in"/>
+
 </FrameLayout>
