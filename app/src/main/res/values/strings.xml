@@ -4,4 +4,11 @@
     <string name="clise_nav">fermer</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+        <string-array name="vehicle_array">
+            <item>Véhicule 1</item>
+            <item>Véhicule 2</item>
+            <item>Véhicule 3</item>
+            <!-- Ajoutez d'autres véhicules si nécessaire -->
+        </string-array>
 </resources>

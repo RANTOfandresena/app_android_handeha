@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,11 +16,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.myapplication.databinding.ActivityLoginBinding;
+import com.example.myapplication.model.UtilisateurModel;
+import com.google.gson.Gson;
 
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
     private EditText num, mdp;
+    SharedPreferences sharedPreferences;
+    Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,30 +38,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, InscriptionActivity.class));
         });
         binding.btn.setOnClickListener(view -> {
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-            //Location position = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0, (LocationListener) this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L,0, (LocationListener) this);
-            LocationListener locationListener=new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-                    Toast.makeText(LoginActivity.this, String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT).show();
-                }
-            };
-            /*if(validationMdp() && validationNum()){
-                validationUtilisateur();
-            }*/
+            validationUtilisateur();
         });
     }
 
@@ -81,8 +63,31 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void validationUtilisateur(){
-        String mdpStr=mdp.getText().toString().trim();
-        String numStr=num.getText().toString().trim();
+        if(validationNum() && validationMdp()){
+            String mdpStr=mdp.getText().toString().trim();
+            String numStr=num.getText().toString().trim();
+            if(authentification(mdpStr,numStr)){
+                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("isLoggedIn", true);
+                editor.apply();
+                startActivity(new Intent(LoginActivity.this, InscriptionActivity.class));
+            }
+        }
+    }
 
+    private boolean authentification(String mdpStr, String numStr) {
+        return false;
+    }
+    private void sauveAPIkey(String apiKey){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("apikey",apiKey);
+        editor.apply();
+    }
+    private void sauveUtilisateur(UtilisateurModel user) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String json = gson.toJson(user);
+        editor.putString("UtilisateurModel", json);
+        editor.apply();
     }
 }

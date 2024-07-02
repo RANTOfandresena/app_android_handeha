@@ -46,8 +46,8 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
     }
 
     public class TrajetViewHolder extends RecyclerView.ViewHolder{
-        TextView lieuDepart, lieuArrive, horaire, prix,placeLibre;
-        Button btn_reserver;
+        public TextView lieuDepart, lieuArrive, horaire, prix,placeLibre;
+        public Button btn_reserver;
         public TrajetViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             lieuDepart = itemView.findViewById(R.id.depart);
@@ -56,6 +56,7 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
             prix = itemView.findViewById(R.id.prix);
             placeLibre = itemView.findViewById(R.id.place_libre);
             btn_reserver=itemView.findViewById(R.id.reserver);
+
             btn_reserver.setOnClickListener(view->{
                 if (listener != null) {
                     int position = getAdapterPosition();

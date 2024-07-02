@@ -1,30 +1,35 @@
 package com.example.myapplication.model;
 
-public class UtilisateurModel {
-    private String nom,prenom,numero,cin,pseudo,mdp;
+import android.content.SharedPreferences;
 
-    public UtilisateurModel(String nom, String prenom, String numero, String cin, String pseudo, String mdp) {
-        this.nom = nom;
-        this.prenom = prenom;
+import com.google.gson.Gson;
+
+public class UtilisateurModel {
+    private String first_name,last_name,numero,cin,username,password;
+    public UtilisateurModel(String first_name, String last_name, String numero, String cin, String username, String password) {
+        this.first_name = first_name;
+        this.last_name = last_name;
         this.numero = numero;
         this.cin = cin;
-        this.pseudo = pseudo;
-        this.mdp = mdp;
-    }
-    public String getNom() {
-        return nom;
+        this.username = username;
+        this.password  = password ;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public String getPrenom() {
-        return prenom;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
     }
 
     public String getNumero() {
@@ -43,21 +48,19 @@ public class UtilisateurModel {
         this.cin = cin;
     }
 
-    public String getPseudo() {
-        return pseudo;
+    public String getUsername() {
+        return username;
     }
 
-    public void setPseudo(String pseudo) {
-        this.pseudo = pseudo;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getMdp() {
-        return mdp;
+    public String getPassword() {
+        return password;
     }
 
-    public void setMdp(String mdp) {
-        this.mdp = mdp;
+    public void setPassword(String password) {
+        this.password = password;
     }
-
-
 }

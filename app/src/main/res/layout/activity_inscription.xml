@@ -141,7 +141,7 @@
                     android:drawablePadding="10dp"
                     android:drawableTint="@color/lavender"
                     android:hint="mot de passe"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:maxLines="1"
                     android:textColor="@color/lavender" />
                 <EditText
@@ -154,7 +154,7 @@
                     android:drawablePadding="10dp"
                     android:drawableTint="@color/lavender"
                     android:hint="confirmation du mot de passe"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:maxLines="1"
                     android:textColor="@color/lavender" />
 

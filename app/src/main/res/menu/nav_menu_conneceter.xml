@@ -22,4 +22,13 @@
             android:icon="@drawable/baseline_info_24"
             android:title="à propos de l'application"/>
     </group>
+    <item
+        android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_sedeconnecter"
+                android:icon="@drawable/baseline_exit_to_app_24"
+                android:title="Se deconncter"/>
+        </menu>
+    </item>
 </menu>

@@ -1,5 +1,7 @@
 package com.example.myapplication.activity;
 
+import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,12 +9,19 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.databinding.ActivityInscriptionBinding;
 import com.example.myapplication.model.UtilisateurModel;
 import com.google.android.material.button.MaterialButton;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class InscriptionActivity extends AppCompatActivity {
     private ActivityInscriptionBinding binding;
+    ApiService apiService;
     private EditText nom,prenom,num,cin,pseudo,mdp1,mdp2;
     private MaterialButton btnInscrire;
     @Override
@@ -44,13 +53,26 @@ public class InscriptionActivity extends AppCompatActivity {
 
             UtilisateurModel utilisateurModel=new UtilisateurModel(nomStr,prenomStr,numStr,cinStr,pseudoStr,mdp1Str);
 
-
-            Toast.makeText(this, "Inscription avec succes", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(InscriptionActivity.this,LoginActivity.class));
-            finish();
+            Toast.makeText(this, utilisateurModel.getPassword(), Toast.LENGTH_SHORT).show();
+            envoyeInscrit(utilisateurModel);
         });
+    }
+    private void envoyeInscrit(UtilisateurModel utilisateurModel){
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Call<UtilisateurModel> postCall = apiService.setUtilisateur(utilisateurModel);
+        postCall.enqueue(new Callback<UtilisateurModel>() {
+            @Override
+            public void onResponse(Call<UtilisateurModel> call, Response<UtilisateurModel> response) {
+                Toast.makeText(InscriptionActivity.this, "Inscription fait avec success", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(InscriptionActivity.this,LoginActivity.class));
+                finish();
+            }
 
-
+            @Override
+            public void onFailure(Call<UtilisateurModel> call, Throwable t) {
+                Toast.makeText(InscriptionActivity.this, "Echec d'envoi ,verifier votre connection", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 }

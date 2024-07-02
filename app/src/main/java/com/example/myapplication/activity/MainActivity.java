@@ -10,13 +10,17 @@ import androidx.fragment.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -27,15 +31,23 @@ import com.example.myapplication.fragment.CarteFragment;
 import com.example.myapplication.R;
 import com.example.myapplication.fragment.RechercheFragment;
 import com.example.myapplication.fragment.ReservationFragment;
+import com.example.myapplication.fragment.TrajetAdminFragment;
 import com.example.myapplication.fragment.TransportFragment;
+import com.example.myapplication.model.UtilisateurModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity implements TransportFragment.ToolbarVisibilityListener {
     //private ActivityMainBinding binding;
     FloatingActionButton fab;
+    private Button seconnecter;
     private Toolbar toolbar;
+    private NavigationView navigationView;
+    SharedPreferences sharedPreferences;
+    Gson gson;
+
     DrawerLayout drawerLayout;
     BottomNavigationView bottomNavigationView;
 
@@ -47,9 +59,13 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         setContentView(R.layout.activity_main);
         bottomNavigationView=findViewById(R.id.bottomNavigationView);
         drawerLayout=findViewById(R.id.drawer_layout);
-        NavigationView navigationView=findViewById(R.id.nav_view);
         toolbar=findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        navigationView=findViewById(R.id.nav_view);
+        gson=new Gson();
+
+        sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        updateMenuItems();
         ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(
             this,
             drawerLayout,
@@ -70,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
             if(item.getItemId()==R.id.carte){
                 replaceFragment(carteFragment);
             } else if(item.getItemId()==R.id.transport) {
+                //replaceFragment(new TrajetAdminFragment());
                 replaceFragment(new TransportFragment());
             }else if (item.getItemId()==R.id.recherche) {
                 replaceFragment(new RechercheFragment());
@@ -155,4 +172,33 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
     public void afficherToolbar() {
         getSupportActionBar().show();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateMenuItems();
+    }
+
+    private void updateMenuItems() {
+        Menu menu = navigationView.getMenu();
+        menu.clear();
+
+        View headerView = navigationView.getHeaderView(0);
+        seconnecter = headerView.findViewById(R.id.seconncter);
+
+        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+        if (isLoggedIn) {
+            navigationView.inflateMenu(R.menu.nav_menu_conneceter);
+            seconnecter.setVisibility(View.GONE);
+        } else {
+            navigationView.inflateMenu(R.menu.nav_menu);
+            seconnecter.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private UtilisateurModel getUser() {
+        String json = sharedPreferences.getString("UtilisateurModel", null);
+        return gson.fromJson(json, UtilisateurModel.class);
+    }
+
 }
