@@ -1,13 +1,16 @@
 package com.example.myapplication.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -82,18 +86,32 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         replaceFragment(carteFragment);
 
         bottomNavigationView.setBackground(null);
+        //action Item dans le navigation
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if(item.getItemId()==R.id.carte){
                 replaceFragment(carteFragment);
             } else if(item.getItemId()==R.id.transport) {
-                //replaceFragment(new TrajetAdminFragment());
-                replaceFragment(new TransportFragment());
+                if(sharedPreferences.getBoolean("isLoggedIn", false)){
+                    replaceFragment(new TrajetAdminFragment());
+                }else{
+                    replaceFragment(new TransportFragment());
+                }
             }else if (item.getItemId()==R.id.recherche) {
                 replaceFragment(new RechercheFragment());
             } else if (item.getItemId()==R.id.reservation) {
                 replaceFragment(new ReservationFragment());
             }
             return true;
+        });
+        //
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(item.getItemId()==R.id.nav_sedeconnecter){
+                    afficherConfirmation();
+                }
+                return false;
+            }
         });
 
     }
@@ -159,9 +177,7 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         dialog.getWindow().setGravity(Gravity.BOTTOM);
 
     }
-    public void seConnecter(View v){
-        startActivity(new Intent(MainActivity.this,LoginActivity .class));
-    }
+
 
     @Override
     public void cacherToolbar() {
@@ -199,6 +215,44 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
     private UtilisateurModel getUser() {
         String json = sharedPreferences.getString("UtilisateurModel", null);
         return gson.fromJson(json, UtilisateurModel.class);
+    }
+    private void deConnecter(){
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isLoggedIn", false);
+        editor.apply();
+        startActivity(new Intent(MainActivity.this, MainActivity.class));
+        finish();
+    }
+    public void seConnecter(View v){
+        startActivity(new Intent(MainActivity.this,LoginActivity .class));
+    }
+    private void afficherConfirmation(){
+        ConstraintLayout trajet_dialog=findViewById(R.id.dialog_confirmation);
+        View view= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_confirmation,trajet_dialog);
+        Button okvalider=view.findViewById(R.id.confirmerBtn);
+        Button annulerbtn=view.findViewById(R.id.annulerBtn);
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+        builder.setView(view);
+        final AlertDialog alertDialog=builder.create();
+        okvalider.findViewById(R.id.confirmerBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deConnecter();
+                Toast.makeText(MainActivity.this, "Deconnexion", Toast.LENGTH_SHORT).show();
+            }
+        });
+        annulerbtn.findViewById(R.id.annulerBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        if(alertDialog.getWindow()!=null){
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+        alertDialog.show();
     }
 
 }

@@ -1,5 +1,7 @@
 package com.example.myapplication.fragment;
 
+import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
+
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,11 +17,18 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.activity.TrajetActivity;
 import com.example.myapplication.adapteur.TrajetAdapter;
+import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.databinding.FragmentTrajetAdminBinding;
 import com.example.myapplication.model.TrajetModel;
+import com.example.myapplication.model.UtilisateurModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +39,7 @@ public class TrajetAdminFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private FragmentTrajetAdminBinding binding;
+    private ApiService apiService;
     private RecyclerView recyclerView;
     private TrajetAdapter adapter;
     private List<TrajetModel> trajetList=new ArrayList<>();
@@ -57,7 +67,6 @@ public class TrajetAdminFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,21 +79,22 @@ public class TrajetAdminFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding=FragmentTrajetAdminBinding.inflate(inflater,container,false);
-        getData();
+        //getData();
+        getTrajetListApi();
         binding.ajoutTrajet.setOnClickListener(view->{
 
         });
         return binding.getRoot();
     }
-    public void getData(){
+    public void insertDataAdapter(){
         recyclerView=binding.resultat;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        trajetList.add(new TrajetModel(1, "Antananarivo", "Antsirabe", "2024-07-01T12:02:00Z", "1000.00", "10", 1, 1));
+        /*trajetList.add(new TrajetModel(1, "Antananarivo", "Antsirabe", "2024-07-01T12:02:00Z", "1000.00", "10", 1, 1));
         trajetList.add(new TrajetModel(2, "antanifotsy", "Antsirabe", "2024-08-01T12:02:00Z", "100.00", "17", 1, 1));
         trajetList.add(new TrajetModel(3, "Antanifotsy", "Antananarivo", "2024-07-03T11:01:00Z", "6000.00", "9", 1, 1));
         trajetList.add(new TrajetModel(4, "antanifotsy", "Antsirabe", "2024-08-01T12:02:00Z", "100.00", "17", 1, 1));
-        trajetList.add(new TrajetModel(5, "antanifotsy", "Antsirabe", "2024-08-01T12:02:00Z", "100.00", "17", 1, 1));
+        trajetList.add(new TrajetModel(5, "antanifotsy", "Antsirabe", "2024-08-01T12:02:00Z", "100.00", "17", 1, 1));*/
 
         adapter=new TrajetAdapter(trajetList);
         recyclerView.setAdapter(adapter);
@@ -92,6 +102,23 @@ public class TrajetAdminFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 Toast.makeText(getActivity(), "ok ok", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void getTrajetListApi(){
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Call<List<TrajetModel>> getCall = apiService.getTrajet();
+        getCall.enqueue(new Callback<List<TrajetModel>>() {
+            @Override
+            public void onResponse(Call<List<TrajetModel>> call, Response<List<TrajetModel>> response) {
+                trajetList.clear();
+                trajetList=response.body();
+                insertDataAdapter();
+            }
+
+            @Override
+            public void onFailure(Call<List<TrajetModel>> call, Throwable t) {
+                Toast.makeText(getActivity(), "echec de connexion", Toast.LENGTH_SHORT).show();
             }
         });
     }

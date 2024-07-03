@@ -71,13 +71,14 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("isLoggedIn", true);
                 editor.apply();
-                startActivity(new Intent(LoginActivity.this, InscriptionActivity.class));
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
             }
         }
     }
 
     private boolean authentification(String mdpStr, String numStr) {
-        return false;
+        return true;
     }
     private void sauveAPIkey(String apiKey){
         SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/trajet_dialog"
+    android:id="@+id/dialog_trajet"
     android:layout_width="wrap_content"
     android:padding="30dp"
     android:layout_margin="20dp"
@@ -54,7 +54,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/okok"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-    
+
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"

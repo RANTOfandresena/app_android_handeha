@@ -10,6 +10,7 @@
     <color name="lavender">#8692f7</color>
     <color name="colorAccentt">#F4F7F8</color>
     <color name="trasparent">#00F4F5F8</color>
+    <color name="warning">#E5374D</color>
 
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
