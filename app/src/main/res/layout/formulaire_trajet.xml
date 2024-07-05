@@ -4,6 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:id="@+id/formulaire_trajet"
+    android:background="@drawable/cunstum_bkg"
     android:padding="16dp">
 
     <com.google.android.material.textfield.TextInputEditText
@@ -26,8 +28,9 @@
         android:id="@+id/horaire"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="Horaire"
-        android:inputType="datetime"
+        android:focusable="false"
+        android:clickable="true"
+        android:hint="Date"
         android:layout_marginBottom="16dp"/>
 
     <com.google.android.material.textfield.TextInputEditText
@@ -38,20 +41,22 @@
         android:inputType="numberDecimal"
         android:layout_marginBottom="16dp"/>
 
-    <com.google.android.material.textfield.TextInputEditText
+    <!--com.google.android.material.textfield.TextInputEditText
         android:id="@+id/attribute"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Attribute"
         android:inputType="text"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"/-->
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/idVehicle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:entries="@array/vehicle_array"/>
+        android:entries="@array/vehicle_array"
+        />
     <Button
+        android:id="@+id/formulaire_trajet_valider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/lavender"

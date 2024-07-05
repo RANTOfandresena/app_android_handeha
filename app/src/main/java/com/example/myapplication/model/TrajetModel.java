@@ -1,5 +1,7 @@
 package com.example.myapplication.model;
 
+import com.example.myapplication.outile.DateChange;
+
 import java.io.Serializable;
 
 public class TrajetModel implements Serializable {
@@ -19,6 +21,15 @@ public class TrajetModel implements Serializable {
         this.horaire = horaire;
         this.prix = prix;
         this.attribute = attribute;
+        this.idVehicule = idVehicule;
+        this.idUser = idUser;
+    }
+    public TrajetModel(String lieuDepart, String lieuArrive, String horaire, String prix, int idVehicule, int idUser) {
+        this.lieuDepart = lieuDepart;
+        this.lieuArrive = lieuArrive;
+        this.horaire = horaire;
+        this.prix = prix;
+        this.attribute="";
         this.idVehicule = idVehicule;
         this.idUser = idUser;
     }

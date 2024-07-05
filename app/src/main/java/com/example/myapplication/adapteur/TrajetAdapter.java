@@ -1,5 +1,8 @@
 package com.example.myapplication.adapteur;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +16,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.TrajetModel;
+import com.example.myapplication.outile.DateChange;
 
 import java.util.List;
 
 public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetViewHolder> {
     private List<TrajetModel> trajetList;
     private OnItemClickListener listener;
-    public TrajetAdapter(List<TrajetModel> trajetList) {
+    private boolean isChauffer;
+    public TrajetAdapter(List<TrajetModel> trajetList,boolean isChauffer) {
         this.trajetList = trajetList;
+        this.isChauffer=isChauffer;
     }
 
     @NonNull
@@ -35,7 +41,7 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
         TrajetModel trajet=trajetList.get(position);
         holder.lieuDepart.setText(trajet.getLieuDepart());
         holder.lieuArrive.setText(trajet.getLieuArrive());
-        holder.horaire.setText("Depart : "+trajet.getHoraire());
+        holder.horaire.setText("Depart : "+ DateChange.changerLaDate(trajet.getHoraire()));
         holder.placeLibre.setText("Place libre :"+trajet.getAttribute());
         holder.prix.setText(trajet.getPrix()+"/personne");
     }
@@ -56,6 +62,9 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
             prix = itemView.findViewById(R.id.prix);
             placeLibre = itemView.findViewById(R.id.place_libre);
             btn_reserver=itemView.findViewById(R.id.reserver);
+            if(isChauffer){
+                btn_reserver.setText("Voir la list des passagers");
+            }
 
             btn_reserver.setOnClickListener(view->{
                 if (listener != null) {

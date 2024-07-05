@@ -30,16 +30,6 @@ public class ReservationFragment extends Fragment {
     public ReservationFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ReservationFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ReservationFragment newInstance(String param1, String param2) {
         ReservationFragment fragment = new ReservationFragment();
         Bundle args = new Bundle();
@@ -61,9 +51,6 @@ public class ReservationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_reservation, container, false);
-        //http://127.0.0.1:8000/api/trajet/
         binding=FragmentReservationBinding.inflate(inflater,container,false);
 
         return  binding.getRoot();

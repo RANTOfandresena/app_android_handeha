@@ -109,7 +109,7 @@
                     android:text="Date du voyage:"
                     android:textColor="@color/white"
                     android:textSize="20sp"/>
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

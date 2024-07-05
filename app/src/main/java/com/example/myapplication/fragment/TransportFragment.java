@@ -1,10 +1,12 @@
 package com.example.myapplication.fragment;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,18 +26,22 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.activity.TrajetActivity;
 import com.example.myapplication.adapteur.TrajetAdapter;
+import com.example.myapplication.allConstant.Calendrier;
+import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.model.TrajetModel;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,7 +57,7 @@ public class TransportFragment extends Fragment {
 
     private TextView voyageur,json;
     private View rootView;
-    private TextView daty;
+    private TextInputEditText daty;
     private Calendar calendrier;
     private RecyclerView recyclerView;
     private TrajetAdapter adapter;
@@ -60,6 +66,8 @@ public class TransportFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    SharedPreferences sharedPreferences;
+    private ApiService apiService;
 
     public TransportFragment() {
         // Required empty public constructor
@@ -99,6 +107,8 @@ public class TransportFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_transport, container, false);
+        sharedPreferences = getActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
         client=new OkHttpClient();
         daty=rootView.findViewById(R.id.date);
         calendrier = Calendar.getInstance();
@@ -114,12 +124,11 @@ public class TransportFragment extends Fragment {
         });
 
         daty.setOnClickListener(view->{
-            afficheCalendrier();
+            calendrier=Calendrier.afficheCalendrier(requireActivity(),daty,false);
         });
 
         rootView.findViewById(R.id.go).setOnClickListener(view->{
-            //getData();
-            getTrajet();
+            getTrajetApi();
         });
 
 
@@ -145,13 +154,7 @@ public class TransportFragment extends Fragment {
     }
 
     private void getTrajet() {
-        trajetList.clear();
-        trajetList.add(new TrajetModel(1, "Antananarivo", "Antsirabe", "2024-07-01T12:02:00Z", "1000.00", "10", 1, 1));
-        trajetList.add(new TrajetModel(1, "antanifotsy", "Antsirabe", "2024-08-01T12:02:00Z", "100.00", "17", 1, 1));
-        trajetList.add(new TrajetModel(2, "Antanifotsy", "Antananarivo", "2024-07-03T11:01:00Z", "6000.00", "9", 1, 1));
-        trajetList.add(new TrajetModel(1, "antanifotsy", "Antsirabe", "2024-08-01T12:02:00Z", "100.00", "17", 1, 1));
-        trajetList.add(new TrajetModel(1, "antanifotsy", "Antsirabe", "2024-08-01T12:02:00Z", "100.00", "17", 1, 1));
-        adapter=new TrajetAdapter(trajetList);
+        adapter=new TrajetAdapter(trajetList,sharedPreferences.getBoolean("isLoggedIn", false));
         adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -164,35 +167,22 @@ public class TransportFragment extends Fragment {
         });
         recyclerView.setAdapter(adapter);
     }
-
-    private void getData() {
-        String url=URL_SERVER+"/api/trajet/";
-        Request request=new Request.Builder().url(url).build();
-
-        client.newCall(request).enqueue(new Callback() {
+    private void getTrajetApi(){
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        retrofit2.Call<List<TrajetModel>> getCall = apiService.getTrajet("horaire");
+        getCall.enqueue(new Callback<List<TrajetModel>>() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
+            public void onResponse(retrofit2.Call<List<TrajetModel>> call, Response<List<TrajetModel>> response) {
+                trajetList=response.body();
+                getTrajet();
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getActivity(), "succes", Toast.LENGTH_SHORT).show();
-                        json=rootView.findViewById(R.id.json);
-                        try {
-                            json.setText(response.body().string());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
+            public void onFailure(Call<List<TrajetModel>> call, Throwable t) {
+                Toast.makeText(getActivity(), "echec de connexion", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
     public void decremente(int nombre ){
         voyageur=rootView.findViewById(R.id.voyageur);
         String nb=voyageur.getText().toString();
@@ -203,22 +193,6 @@ public class TransportFragment extends Fragment {
                 voyageur.setText(String.valueOf(resultat));
         }
     }
-    private void afficheCalendrier(){
-        final Calendar currentDate=Calendar.getInstance();
-        calendrier= Calendar.getInstance();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireActivity(),new DatePickerDialog.OnDateSetListener(){
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendrier.set(year,month,dayOfMonth);
-                daty.setText(android.text.format.DateFormat.format("yyyy-MM-dd",calendrier));
-            }
-        },currentDate.get(Calendar.YEAR),currentDate.get(Calendar.MONTH),currentDate.get(Calendar.DATE));
-
-        datePickerDialog.getDatePicker().setMinDate(currentDate.getTimeInMillis());
-        datePickerDialog.show();
-    }
-
-
     private void afficherPlace(int[][] places, GridLayout gridLayout) {
         /*int rowCount = places.length;
         int colCount = 0;
@@ -266,6 +240,4 @@ public class TransportFragment extends Fragment {
         void cacherToolbar();
         void afficherToolbar();
     }
-
-
 }

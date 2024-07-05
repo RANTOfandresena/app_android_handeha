@@ -12,10 +12,13 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @GET("api/trajet/")
-    Call<List<TrajetModel>> getTrajet();
+    Call<List<TrajetModel>> getTrajet(@Query("ordering") String ordering);
+    @POST("api/trajet/")
+    Call<TrajetModel> insertionTrajetApi(@Body TrajetModel trajetModel);
     @POST("api/user/")
     Call<UtilisateurModel> setUtilisateur(@Body UtilisateurModel utilisateurModel);
 

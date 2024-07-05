@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,11 +17,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.myapplication.adapteur.PositionLieuAdapter;
 import com.example.myapplication.apiService.NominatimApi;
 import com.example.myapplication.apiClass.NominatimResponse;
 import com.example.myapplication.R;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.databinding.FragmentRechercheBinding;
+import com.example.myapplication.model.PositionLieuModel;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +45,10 @@ import retrofit2.Response;
 public class RechercheFragment extends Fragment {
     private FragmentRechercheBinding binding;
 
+    private RecyclerView recyclerView;
+    private PositionLieuAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -43,6 +59,7 @@ public class RechercheFragment extends Fragment {
     private String mParam2;
 
     private View rootView;
+    ArrayList<PositionLieuModel> positionLieuList;
 
     public RechercheFragment() {
         // Required empty public constructor
@@ -72,7 +89,13 @@ public class RechercheFragment extends Fragment {
                              Bundle savedInstanceState) {
         //View view = inflater.inflate(R.layout.fragment_recherche, container, false);
         binding=FragmentRechercheBinding.inflate(inflater,container,false);
-        recherche("gg");
+        recyclerView=binding.listRecherche;
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        positionLieuList = new ArrayList<>();
+        adapter = new PositionLieuAdapter(positionLieuList);
+        lire_csv();
         return binding.getRoot();
     }
     @Override
@@ -85,41 +108,47 @@ public class RechercheFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                resultat(query);
+                recherche(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+
                 return false;
             }
         });
-
     }
     private void resultat(String a){
         Toast.makeText(requireContext(), a, Toast.LENGTH_SHORT).show();
     }
-    private void recherche(String text){
-        NominatimApi api = RetrofitClient.getClient("https://nominatim.openstreetmap.org/",null).create(NominatimApi.class);
-        double latitude = 48.8566;
-        double longitude = 2.3522;
-        Call<NominatimResponse> call = api.getLocationName("json", latitude, longitude, 18, 1);
-        call.enqueue(new Callback<NominatimResponse>() {
-            @Override
-            public void onResponse(Call<NominatimResponse> call, Response<NominatimResponse> response) {
-                if (response.isSuccessful()) {
-                    NominatimResponse nominatimResponse = response.body();
-                    if (nominatimResponse != null) {
-                        Log.d("MainActivity", "Lieu: " + nominatimResponse.getDisplayName());
-                        Toast.makeText(getContext(), nominatimResponse.getDisplayName() , Toast.LENGTH_SHORT).show();
-                    }
+    private void lire_csv(){
+        FileInputStream fis = null;
+        try {
+            fis = getActivity().openFileInput("madagascar.csv");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4) {
+                    positionLieuList.add(new PositionLieuModel(parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), parts[3]));
                 }
             }
-
-            @Override
-            public void onFailure(Call<NominatimResponse> call, Throwable t) {
-                Log.e("MainActivity", "Erreur: " + t.getMessage());
+            reader.close();
+            adapter.notifyDataSetChanged();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void recherche(String nomLieu){
+        List<PositionLieuModel> pos_list = new ArrayList<>();
+        for (PositionLieuModel item : positionLieuList) {
+            if (item.getName().toLowerCase().contains(nomLieu.toLowerCase())) {
+                pos_list.add(item);
             }
-        });
+        }
+        adapter.filterList(pos_list);
     }
 }

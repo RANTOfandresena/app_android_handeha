@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -12,10 +13,15 @@ import androidx.fragment.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -42,10 +48,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
+import android.Manifest;
 
-public class MainActivity extends AppCompatActivity implements TransportFragment.ToolbarVisibilityListener {
+public class MainActivity extends AppCompatActivity implements TransportFragment.ToolbarVisibilityListener, LocationListener {
     //private ActivityMainBinding binding;
     FloatingActionButton fab;
+    private LocationManager locationManager;
     private Button seconnecter;
     private Toolbar toolbar;
     private NavigationView navigationView;
@@ -113,6 +121,10 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
                 return false;
             }
         });
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        }
 
     }
 
@@ -124,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
     }
 
     private void showBottomDialog() {
-
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.bottomsheetlayout);
@@ -159,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
             public void onClick(View v) {
 
                 dialog.dismiss();
-                Toast.makeText(MainActivity.this,"Go live is Clicked",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"Passer en direct est cliqué",Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -255,4 +266,8 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         alertDialog.show();
     }
 
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        Toast.makeText(this, String.valueOf(location.getLatitude())+String.valueOf(location.getLatitude()) , Toast.LENGTH_SHORT).show();
+    }
 }
