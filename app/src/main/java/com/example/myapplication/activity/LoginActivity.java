@@ -1,5 +1,7 @@
 package com.example.myapplication.activity;
 
+import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -15,15 +17,29 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.databinding.ActivityLoginBinding;
+import com.example.myapplication.model.LoginRequest;
+import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.UtilisateurModel;
+import com.example.myapplication.outile.UserManage;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
+    ApiService apiService;
     private EditText num, mdp;
     SharedPreferences sharedPreferences;
+    private String authToken;
     Gson gson;
 
     @Override
@@ -31,7 +47,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        // Créez une instance de Retrofit sans token d'authentification pour la connexion
+        apiService = RetrofitClient.getClient(URL_SERVER, null).create(ApiService.class);
+        gson = new GsonBuilder().create();
         num = binding.num;
         mdp = binding.mdp;
         binding.inscrire.setOnClickListener(view -> {
@@ -66,30 +84,60 @@ public class LoginActivity extends AppCompatActivity {
         if(validationNum() && validationMdp()){
             String mdpStr=mdp.getText().toString().trim();
             String numStr=num.getText().toString().trim();
-            if(authentification(mdpStr,numStr)){
-                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("isLoggedIn", true);
-                editor.putInt("idUser", 1);
-                editor.apply();
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                finish();
-            }
+            apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+            Call<LoginResponse> postCall = apiService.login(new LoginRequest(numStr,mdpStr));
+            Toast.makeText(this, "valide", Toast.LENGTH_SHORT).show();
+            postCall.enqueue(new Callback<LoginResponse>() {
+                @Override
+                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                    Toast.makeText(LoginActivity.this, "ok ok", Toast.LENGTH_SHORT).show();
+                    if(response.isSuccessful()){
+                        LoginResponse loginResponse=response.body();
+                        sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("isLoggedIn", true);
+                        editor.apply();
+                        sauveAuthToken(loginResponse.getKey());
+                        sauveUtilisateur(numStr,loginResponse.getKey());
+                    }else
+                        Toast.makeText(LoginActivity.this, "numero ou mot de passe incorrect", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                    Toast.makeText(LoginActivity.this, "echec de connexion", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
         }
     }
-
-    private boolean authentification(String mdpStr, String numStr) {
-        return true;
-    }
-    private void sauveAPIkey(String apiKey){
+    private void sauveAuthToken(String apiKey){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("apikey",apiKey);
         editor.apply();
     }
-    private void sauveUtilisateur(UtilisateurModel user) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String json = gson.toJson(user);
-        editor.putString("UtilisateurModel", json);
-        editor.apply();
+    private void sauveUtilisateur(String numero,String key) {
+        apiService = RetrofitClient.getClient(URL_SERVER, key).create(ApiService.class);
+        Call<List<UtilisateurModel>> getCall = apiService.getUtilisateur(numero);
+        getCall.enqueue(new Callback<List<UtilisateurModel>>() {
+            @Override
+            public void onResponse(Call<List<UtilisateurModel>> call, Response<List<UtilisateurModel>> response) {
+                //SharedPreferences.Editor editor = sharedPreferences.edit();
+                UtilisateurModel user=response.body().get(0);
+                UserManage userManage=new UserManage(LoginActivity.this);
+                userManage.saveUser(user);
+                /*String json = gson.toJson(user);
+                editor.putString("UtilisateurModel", json);
+                editor.apply();*/
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
+            }
+            @Override
+            public void onFailure(Call<List<UtilisateurModel>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "echec de connexion", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 }

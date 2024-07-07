@@ -1,5 +1,7 @@
 package com.example.myapplication.activity;
 
+import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,22 +35,32 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.fragment.CarteFragment;
 import com.example.myapplication.R;
 import com.example.myapplication.fragment.RechercheFragment;
 import com.example.myapplication.fragment.ReservationFragment;
 import com.example.myapplication.fragment.TrajetAdminFragment;
 import com.example.myapplication.fragment.TransportFragment;
+import com.example.myapplication.model.LoginRequest;
+import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.UtilisateurModel;
+import com.example.myapplication.outile.UserManage;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import android.Manifest;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements TransportFragment.ToolbarVisibilityListener, LocationListener {
     //private ActivityMainBinding binding;
@@ -58,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
     private Toolbar toolbar;
     private NavigationView navigationView;
     SharedPreferences sharedPreferences;
+    private ApiService apiService;;
     Gson gson;
 
     DrawerLayout drawerLayout;
@@ -212,14 +225,26 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
 
         View headerView = navigationView.getHeaderView(0);
         seconnecter = headerView.findViewById(R.id.seconncter);
+        TextView numeroTextView=headerView.findViewById(R.id.numeroUser);
+        TextView pseudoTextView=headerView.findViewById(R.id.pseudoUser);
+        ImageView imageView =headerView.findViewById(R.id.imageUser);
 
         boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
         if (isLoggedIn) {
             navigationView.inflateMenu(R.menu.nav_menu_conneceter);
             seconnecter.setVisibility(View.GONE);
+            UserManage userManage=new UserManage(this);
+            if(userManage.getUser()!=null){
+                numeroTextView.setText(userManage.getUser().getNumero());
+                pseudoTextView.setText(userManage.getUser().getUsername());
+            }
+            imageView.setImageResource(R.drawable.baseline_person_24);
         } else {
             navigationView.inflateMenu(R.menu.nav_menu);
             seconnecter.setVisibility(View.VISIBLE);
+            numeroTextView.setText("Aucun compte connecter");
+            pseudoTextView.setText("");
+            imageView.setImageResource(R.drawable.baseline_person_off_24);
         }
     }
 
@@ -227,16 +252,39 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         String json = sharedPreferences.getString("UtilisateurModel", null);
         return gson.fromJson(json, UtilisateurModel.class);
     }
-    private void deConnecter(){
-        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("isLoggedIn", false);
-        editor.apply();
-        startActivity(new Intent(MainActivity.this, MainActivity.class));
-        finish();
+
+
+    private String getAuthToken() {
+        return sharedPreferences.getString("apikey", null);
     }
+
     public void seConnecter(View v){
         startActivity(new Intent(MainActivity.this,LoginActivity .class));
+    }
+    private void deConnecter(){
+        apiService= RetrofitClient.getClient(URL_SERVER,getAuthToken()).create(ApiService.class);
+        Call<Void> postCall = apiService.logout();
+        postCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("isLoggedIn", false);
+                    editor.putString("UtilisateurModel",null);
+                    editor.apply();
+                    startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    finish();
+                }else Toast.makeText(MainActivity.this, "echec de deconnexion", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Echec de deconnexion", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
     private void afficherConfirmation(){
         ConstraintLayout trajet_dialog=findViewById(R.id.dialog_confirmation);

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:id="@+id/imageview"
+        tools:srcCompat="@tools:sample/avatars"
+        android:layout_marginRight="10dp"
+        android:layout_centerVertical="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/numero_vehicule"
+        android:layout_toEndOf="@id/imageview"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        tools:text="num"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/email"
+        android:layout_toEndOf="@id/imageview"
+        android:layout_below="@id/numero_vehicule"
+        android:textColor="@color/black"
+        tools:text="emial@email.com"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/imageview"
+        android:layout_marginTop="10dp"
+        android:background="#DAD8D8"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_edit"
+            android:src="@drawable/baseline_edit_24"
+            android:background="@null"
+            android:layout_marginEnd="10dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_suppr"
+            android:src="@drawable/baseline_delete_24"
+            android:background="@null" />
+    </LinearLayout>
+
+</RelativeLayout>

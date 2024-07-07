@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 
 public class UtilisateurModel {
-    private String first_name,last_name,numero,cin,username,password;
+
+
+    private String id,first_name,last_name,numero,cin,username,password;
     public UtilisateurModel(String first_name, String last_name, String numero, String cin, String username, String password) {
         this.first_name = first_name;
         this.last_name = last_name;
@@ -14,8 +16,23 @@ public class UtilisateurModel {
         this.username = username;
         this.password  = password ;
     }
+    public UtilisateurModel(String id,String first_name, String last_name, String numero, String cin, String username, String password) {
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.numero = numero;
+        this.cin = cin;
+        this.username = username;
+        this.password  = password ;
+        this.id=id;
+    }
 
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
     public String getFirst_name() {
         return first_name;
     }

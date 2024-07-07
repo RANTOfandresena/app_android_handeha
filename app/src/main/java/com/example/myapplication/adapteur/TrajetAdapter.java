@@ -65,7 +65,6 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
             if(isChauffer){
                 btn_reserver.setText("Voir la list des passagers");
             }
-
             btn_reserver.setOnClickListener(view->{
                 if (listener != null) {
                     int position = getAdapterPosition();

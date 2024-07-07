@@ -8,13 +8,18 @@
     android:background="@drawable/cunstum_bkg"
     android:padding="16dp">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/lieuDepart"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:hint="Lieu de Départ"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="LieuDépart"
-        android:inputType="text"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/lieuDepart"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:layout_marginBottom="16dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/lieuArrive"

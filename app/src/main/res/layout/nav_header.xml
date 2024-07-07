@@ -11,18 +11,19 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
     <ImageView
         android:id="@+id/imageUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/baseline_person_off_24"/>
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/baseline_person_off_24"
+        android:tint="@color/white"/>
     <TextView
-        android:id="@+id/nomUser"
+        android:id="@+id/numeroUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="aucun compte connecter"
         android:textColor="@color/white"
         android:textStyle="bold"/>
     <TextView
-        android:id="@+id/numUser"
+        android:id="@+id/pseudoUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""

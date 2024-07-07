@@ -21,7 +21,11 @@ public interface ApiService {
     Call<TrajetModel> insertionTrajetApi(@Body TrajetModel trajetModel);
     @POST("api/user/")
     Call<UtilisateurModel> setUtilisateur(@Body UtilisateurModel utilisateurModel);
+    @GET("api/user/")
+    Call<List<UtilisateurModel>> getUtilisateur(@Query("numero") String numero);
 
-    @POST("dj-rest-auth/logout/")
+    @POST("dj-rest-auth/login/")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
+    @POST("dj-rest-auth/logout/")
+    Call<Void> logout();
 }
