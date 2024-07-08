@@ -123,7 +123,6 @@ public class LoginActivity extends AppCompatActivity {
         getCall.enqueue(new Callback<List<UtilisateurModel>>() {
             @Override
             public void onResponse(Call<List<UtilisateurModel>> call, Response<List<UtilisateurModel>> response) {
-                //SharedPreferences.Editor editor = sharedPreferences.edit();
                 UtilisateurModel user=response.body().get(0);
                 UserManage userManage=new UserManage(LoginActivity.this);
                 userManage.saveUser(user);

@@ -30,6 +30,8 @@ import com.example.myapplication.allConstant.Calendrier;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.model.TrajetModel;
+import com.example.myapplication.model.UtilisateurModel;
+import com.example.myapplication.outile.UserManage;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
@@ -62,6 +64,7 @@ public class TransportFragment extends Fragment {
     private RecyclerView recyclerView;
     private TrajetAdapter adapter;
     private List<TrajetModel> trajetList;
+    private UserManage userManage;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -115,6 +118,7 @@ public class TransportFragment extends Fragment {
         recyclerView=rootView.findViewById(R.id.resultat);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         trajetList=new ArrayList<>();
+        userManage=new UserManage(getContext());
 
         rootView.findViewById(R.id.btnMoins).setOnClickListener(view->{
             decremente(-1);
@@ -154,7 +158,9 @@ public class TransportFragment extends Fragment {
     }
 
     private void getTrajet() {
-        adapter=new TrajetAdapter(trajetList,sharedPreferences.getBoolean("isLoggedIn", false));
+        UtilisateurModel user=userManage.getUser();
+        boolean accessAdmin=user!=null && user.isEst_conducteur();
+        adapter=new TrajetAdapter(trajetList,accessAdmin);
         adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {

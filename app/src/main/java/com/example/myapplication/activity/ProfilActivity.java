@@ -49,8 +49,6 @@ public class ProfilActivity extends AppCompatActivity {
     private TextInputEditText place_large,place_long,num_voiture;
     private ImageButton edit_place;
     private GridLayout gridLayout;
-    private boolean isLoggedIn;
-    private SharedPreferences sharedPreferences;
     private ApiService apiService;
     private List<VehiculeModel> vehiculeList;
     private Button ajoutVoiture;
@@ -67,10 +65,7 @@ public class ProfilActivity extends AppCompatActivity {
             VehiculeModel vehiculeModel=new VehiculeModel("","4","6",userManage.getUser().getId());
             modifierVehicule(vehiculeModel,true,-1);
         });
-
-        sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
-        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
-        if(isLoggedIn){
+        if(userManage.getUser().isEst_conducteur()){
             getVoitureApi();
         }
     }
@@ -221,7 +216,7 @@ public class ProfilActivity extends AppCompatActivity {
     private void getVoitureApi(){
         String idUser=userManage.getUser().getId();
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
-        Call<List<VehiculeModel>> getCall = apiService.getVehicule(idUser);
+        Call<List<VehiculeModel>> getCall = apiService.getVehiculeParUser(idUser);
         getCall.enqueue(new Callback<List<VehiculeModel>>() {
             @Override
             public void onResponse(Call<List<VehiculeModel>> call, Response<List<VehiculeModel>> response) {

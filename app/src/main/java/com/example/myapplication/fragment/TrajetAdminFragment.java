@@ -73,7 +73,9 @@ public class TrajetAdminFragment extends Fragment {
     TextInputEditText textInputEditText_horaire;
     Calendar calendar;
     private TrajetModel trajetModel;
+    private UserManage userManage;
     SharedPreferences sharedPreferences;
+    private UtilisateurModel user;
 
     public static TrajetAdminFragment newInstance(String param1, String param2) {
         TrajetAdminFragment fragment = new TrajetAdminFragment();
@@ -95,8 +97,10 @@ public class TrajetAdminFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding=FragmentTrajetAdminBinding.inflate(inflater,container,false);
+
+        userManage=new UserManage(getContext());
+        user=userManage.getUser();
         getTrajetListApi();
-        sharedPreferences = getActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE);
         binding.ajoutTrajet.setOnClickListener(view->{
             insertionTrajetDialog();
         });
@@ -105,7 +109,8 @@ public class TrajetAdminFragment extends Fragment {
     public void insertDataAdapter(){
         recyclerView=binding.resultat;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter=new TrajetAdapter(trajetList,sharedPreferences.getBoolean("isLoggedIn", false));
+        boolean accessAdmin=user!=null && user.isEst_conducteur();
+        adapter=new TrajetAdapter(trajetList,accessAdmin);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
             @Override
@@ -116,7 +121,7 @@ public class TrajetAdminFragment extends Fragment {
     }
     public void getTrajetListApi(){
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
-        Call<List<TrajetModel>> getCall = apiService.getTrajet("horaire");
+        Call<List<TrajetModel>> getCall = apiService.getTrajetUser("horaire",Integer.parseInt(user.getId()));
         getCall.enqueue(new Callback<List<TrajetModel>>() {
             @Override
             public void onResponse(Call<List<TrajetModel>> call, Response<List<TrajetModel>> response) {
@@ -201,7 +206,7 @@ public class TrajetAdminFragment extends Fragment {
                 horaire,
                 prix,
                 selectionnerVehicule.getIdVehicule(),
-                sharedPreferences.getInt("idUser",0)
+                Integer.parseInt(userManage.getUser().getId())
         );
         return true;
     }
@@ -236,10 +241,8 @@ public class TrajetAdminFragment extends Fragment {
         });
     }
     private void listVoiture(){
-        UserManage userManage=new UserManage(getContext());
-        UtilisateurModel user=userManage.getUser();
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
-        Call<List<VehiculeModel>> getCall = apiService.getVehicule(user.getId());
+        Call<List<VehiculeModel>> getCall = apiService.getVehiculeParUser(user.getId());
         getCall.enqueue(new Callback<List<VehiculeModel>>() {
             @Override
             public void onResponse(Call<List<VehiculeModel>> call, Response<List<VehiculeModel>> response) {

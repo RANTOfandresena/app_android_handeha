@@ -2,6 +2,8 @@ package com.example.myapplication.model;
 
 import android.net.Uri;
 
+import androidx.room.Embedded;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.net.URI;
@@ -27,6 +29,11 @@ public class VehiculeModel {
 
     @SerializedName("idUser")
     private String idUser;
+
+
+
+    @Embedded
+    private UtilisateurModel user;
     
     public VehiculeModel(int id, String position, int capacite, String numeroVehicule, String photo, String nbColonne, String nbRangee,String idUser) {
         this.idVehicule = id;
@@ -110,6 +117,13 @@ public class VehiculeModel {
 
     public void setIdUser(String idUser) {
         this.idUser = idUser;
+    }
+    public UtilisateurModel getUser() {
+        return user;
+    }
+
+    public void setUser(UtilisateurModel user) {
+        this.user = user;
     }
 
 }

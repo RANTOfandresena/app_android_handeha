@@ -70,7 +70,9 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
     private Toolbar toolbar;
     private NavigationView navigationView;
     SharedPreferences sharedPreferences;
-    private ApiService apiService;;
+    private ApiService apiService;
+    private UtilisateurModel userLogin;
+    private UserManage userManage;
     Gson gson;
 
     DrawerLayout drawerLayout;
@@ -88,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         setSupportActionBar(toolbar);
         navigationView=findViewById(R.id.nav_view);
         gson=new Gson();
+        userManage=new UserManage(this);
+        userLogin=userManage.getUser();
 
         sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         updateMenuItems();
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
             if(item.getItemId()==R.id.carte){
                 replaceFragment(carteFragment);
             } else if(item.getItemId()==R.id.transport) {
-                if(sharedPreferences.getBoolean("isLoggedIn", false)){
+                if(userLogin!=null && userLogin.isEst_conducteur()){
                     replaceFragment(new TrajetAdminFragment());
                 }else{
                     replaceFragment(new TransportFragment());
@@ -232,8 +236,7 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         TextView pseudoTextView=headerView.findViewById(R.id.pseudoUser);
         ImageView imageView =headerView.findViewById(R.id.imageUser);
 
-        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
-        if (isLoggedIn) {
+        if (userLogin!=null) {
             navigationView.inflateMenu(R.menu.nav_menu_conneceter);
             seconnecter.setVisibility(View.GONE);
             UserManage userManage=new UserManage(this);
@@ -250,13 +253,6 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
             imageView.setImageResource(R.drawable.baseline_person_off_24);
         }
     }
-
-    private UtilisateurModel getUser() {
-        String json = sharedPreferences.getString("UtilisateurModel", null);
-        return gson.fromJson(json, UtilisateurModel.class);
-    }
-
-
     private String getAuthToken() {
         return sharedPreferences.getString("apikey", null);
     }
@@ -273,8 +269,7 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
                 if(response.isSuccessful()){
                     SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean("isLoggedIn", false);
-                    editor.putString("UtilisateurModel",null);
+                    userManage.deconnect();
                     editor.apply();
                     startActivity(new Intent(MainActivity.this, MainActivity.class));
                     finish();

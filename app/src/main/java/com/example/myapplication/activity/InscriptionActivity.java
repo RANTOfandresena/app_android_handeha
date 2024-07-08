@@ -15,6 +15,8 @@ import com.example.myapplication.databinding.ActivityInscriptionBinding;
 import com.example.myapplication.model.UtilisateurModel;
 import com.google.android.material.button.MaterialButton;
 
+import java.io.IOException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,10 +52,7 @@ public class InscriptionActivity extends AppCompatActivity {
             String pseudoStr=pseudo.getText().toString();
             String mdp1Str=mdp1.getText().toString();
             String mdp2Str=mdp2.getText().toString();
-
-            UtilisateurModel utilisateurModel=new UtilisateurModel(nomStr,prenomStr,numStr,cinStr,pseudoStr,mdp1Str);
-
-            Toast.makeText(this, utilisateurModel.getPassword(), Toast.LENGTH_SHORT).show();
+            UtilisateurModel utilisateurModel=new UtilisateurModel(nomStr,prenomStr,numStr,cinStr,pseudoStr,mdp1Str,false);
             envoyeInscrit(utilisateurModel);
         });
     }
@@ -63,9 +62,20 @@ public class InscriptionActivity extends AppCompatActivity {
         postCall.enqueue(new Callback<UtilisateurModel>() {
             @Override
             public void onResponse(Call<UtilisateurModel> call, Response<UtilisateurModel> response) {
-                Toast.makeText(InscriptionActivity.this, "Inscription fait avec success", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(InscriptionActivity.this,LoginActivity.class));
-                finish();
+                if(response.isSuccessful()){
+                    Toast.makeText(InscriptionActivity.this, "Inscription fait avec success", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(InscriptionActivity.this,LoginActivity.class));
+                    finish();
+                }else {
+                    String errorMessage = null;
+                    try {
+                        errorMessage = response.errorBody().string();
+                        Toast.makeText(InscriptionActivity.this, "Erreur: " + errorMessage, Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
             }
 
             @Override

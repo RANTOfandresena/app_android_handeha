@@ -1,18 +1,33 @@
 package com.example.myapplication.model;
 
+import androidx.room.Embedded;
+
 import com.example.myapplication.outile.DateChange;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 public class TrajetModel implements Serializable {
+    @SerializedName("idTrajet")
     private int idTrajet;
+    @SerializedName("lieuDepart")
     private String lieuDepart;
+    @SerializedName("lieuArrive")
     private String lieuArrive;
+    @SerializedName("horaire")
     private String horaire;
+    @SerializedName("prix")
     private String prix;
+    @SerializedName("attribute")
     private String attribute;
+    @SerializedName("idVehicule")
     private int idVehicule;
+    @Embedded
+    private VehiculeModel vehicule;
+    @SerializedName("idUser")
     private int idUser;
+    @Embedded
+    private UtilisateurModel user;
 
     public TrajetModel(int idTrajet, String lieuDepart, String lieuArrive, String horaire, String prix, String attribute, int idVehicule, int idUser) {
         this.idTrajet = idTrajet;
@@ -98,5 +113,20 @@ public class TrajetModel implements Serializable {
 
     public void setIdUser(int idUser) {
         this.idUser = idUser;
+    }
+    public VehiculeModel getVehicule() {
+        return vehicule;
+    }
+
+    public void setVehicule(VehiculeModel vehicule) {
+        this.vehicule = vehicule;
+    }
+
+    public UtilisateurModel getUser() {
+        return user;
+    }
+
+    public void setUser(UtilisateurModel utilisateurModel) {
+        this.user = utilisateurModel;
     }
 }

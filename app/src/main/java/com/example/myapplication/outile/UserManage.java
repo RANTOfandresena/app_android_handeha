@@ -33,4 +33,9 @@ public class UserManage {
             return null;
         }
     }
+    public void deconnect(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("utilisateur_data",null);
+        editor.apply();
+    }
 }

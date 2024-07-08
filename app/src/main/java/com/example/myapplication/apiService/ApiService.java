@@ -21,6 +21,8 @@ public interface ApiService {
     //trajet
     @GET("api/trajet/")
     Call<List<TrajetModel>> getTrajet(@Query("ordering") String ordering);
+    @GET("api/trajet/")
+    Call<List<TrajetModel>> getTrajetUser(@Query("ordering") String ordering, @Query("idUser") int idUser);
     @POST("api/trajet/")
     Call<TrajetModel> insertionTrajetApi(@Body TrajetModel trajetModel);
 
@@ -35,8 +37,10 @@ public interface ApiService {
     Call<Void> logout();
 
     //crud vehicule
+    @GET("api/vehicule/{idVehicule}")
+    Call<List<VehiculeModel>> getVehiculeId(@Query("idVehicule") String id);
     @GET("api/vehicule/")
-    Call<List<VehiculeModel>> getVehicule(@Query("idUser") String id);
+    Call<List<VehiculeModel>> getVehiculeParUser(@Query("idUser") String id);
     @POST("api/vehicule/")
     Call<VehiculeModel> postVehicule(@Body VehiculeModel vehiculeModel);
     @PUT("api/vehicule/{idVehicule}/")
