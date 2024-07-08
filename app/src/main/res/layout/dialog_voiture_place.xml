@@ -43,7 +43,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="nombre de place">
+                    android:hint="banquette">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/place_long"
@@ -65,7 +65,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0.8in"
                     android:layout_height="wrap_content"
-                    android:hint="nombre de place">
+                    android:hint="place">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/place_large"

@@ -1,11 +1,15 @@
 package com.example.myapplication.activity;
 
+import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,50 +17,77 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.adapteur.VehiculeAdapter;
-import com.example.myapplication.databinding.ActivityLoginBinding;
+import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.databinding.ActivityProfilBinding;
+import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.VehiculeModel;
 import com.example.myapplication.outile.PlaceVoiture;
+import com.example.myapplication.outile.UserManage;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ProfilActivity extends AppCompatActivity {
     private ActivityProfilBinding binding;
+    private VehiculeAdapter adapter;
     private View dialogView;
     private Button btn_enregistrer,btn_retour;
     private TextInputEditText place_large,place_long,num_voiture;
     private ImageButton edit_place;
     private GridLayout gridLayout;
+    private boolean isLoggedIn;
+    private SharedPreferences sharedPreferences;
+    private ApiService apiService;
+    private List<VehiculeModel> vehiculeList;
+    private Button ajoutVoiture;
+    private UserManage userManage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityProfilBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        List<VehiculeModel> vehiculeList = new ArrayList<>();
+
+        userManage=new UserManage(this);
+        binding.ajoutVoiture.setOnClickListener(v->{
+            VehiculeModel vehiculeModel=new VehiculeModel("","4","6",userManage.getUser().getId());
+            modifierVehicule(vehiculeModel,true,-1);
+        });
+
+        sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+        if(isLoggedIn){
+            getVoitureApi();
+        }
+    }
+    private void afficherVoiture() {
         RecyclerView recyclerView=binding.vehiculeliste;
-
-
-        vehiculeList.add(new VehiculeModel(1,10, "11", "65756757HJ",R.drawable.a3));
-        vehiculeList.add(new VehiculeModel(1,40, "11", "6575kjlk6757HJ",R.drawable.a3));
-        vehiculeList.add(new VehiculeModel(1,20, "11", "65756jhk757HJ",R.drawable.a3));
-
-        VehiculeAdapter adapter = new VehiculeAdapter( vehiculeList);
+        adapter = new VehiculeAdapter( vehiculeList);
         adapter.setOnItemClickListener(new VehiculeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                modifierVehicule(vehiculeList.get(position));
+                modifierVehicule(vehiculeList.get(position),false,position);
                 Toast.makeText(ProfilActivity.this, "Modifier", Toast.LENGTH_SHORT).show();
             }
         });
         adapter.setOnItemRetourClickListener(new VehiculeAdapter.OnItemRetourClickListener() {
             @Override
             public void onItemRetourClick(int position) {
+                confirmationSuppr(position);
                 Toast.makeText(ProfilActivity.this, "suppr", Toast.LENGTH_SHORT).show();
             }
         });
@@ -64,9 +95,8 @@ public class ProfilActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Toast.makeText(this, String.valueOf(vehiculeList.size()), Toast.LENGTH_SHORT).show();
     }
-    private void modifierVehicule(VehiculeModel vehiculeModel) {
-        int donneLarge=4;
-        int donneLong=7;
+
+    private void modifierVehicule(VehiculeModel vehiculeModel, boolean isajout,int position) {
         ConstraintLayout trajet_dialog=binding.getRoot().findViewById(R.id.dialog_voiture_place);
         dialogView= LayoutInflater.from(this).inflate(R.layout.dialog_voiture_place,trajet_dialog);
         btn_enregistrer=dialogView.findViewById(R.id.btn_enregistrer);
@@ -76,9 +106,12 @@ public class ProfilActivity extends AppCompatActivity {
         num_voiture=dialogView.findViewById(R.id.num_voiture);
         edit_place=dialogView.findViewById(R.id.edit_place);
         gridLayout=dialogView.findViewById(R.id.placee);
-        place_large.setText(String.valueOf(donneLarge));
-        place_long.setText(String.valueOf(donneLong));
-        int[][] place= PlaceVoiture.generatePlace(donneLarge,donneLong);
+        place_large.setText(vehiculeModel.getNb_colonne());
+        place_long.setText(vehiculeModel.getNb_rangee());
+        int[][] place= PlaceVoiture.generatePlace(
+                Integer.parseInt(vehiculeModel.getNb_colonne()),
+                Integer.parseInt(vehiculeModel.getNb_rangee())
+        );
         gridLayout.removeAllViews();
         afficherPlace(place,gridLayout);
         num_voiture.setText(vehiculeModel.getNumeroVehicule());
@@ -93,8 +126,17 @@ public class ProfilActivity extends AppCompatActivity {
             alertDialog.dismiss();
         });
         btn_enregistrer.findViewById(R.id.btn_enregistrer).setOnClickListener(view-> {
-            Toast.makeText(this, "enregistrer", Toast.LENGTH_SHORT).show();
-            alertDialog.dismiss();
+            vehiculeModel.setNumeroVehicule(num_voiture.getText().toString());
+            vehiculeModel.setNb_colonne(place_large.getText().toString());
+            vehiculeModel.setNb_rangee(place_long.getText().toString());
+            int capa=Integer.parseInt(place_large.getText().toString())*Integer.parseInt(place_long.getText().toString())-2;
+            vehiculeModel.setCapacite(capa);
+            if(isajout){
+                ajoutVoitureApi(vehiculeModel,alertDialog);
+            }else{
+                majVoitureApi(vehiculeModel,alertDialog,position);
+            }
+
         });
         if(alertDialog.getWindow()!=null){
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
@@ -176,4 +218,112 @@ public class ProfilActivity extends AppCompatActivity {
             }
         }
     }
+    private void getVoitureApi(){
+        String idUser=userManage.getUser().getId();
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Call<List<VehiculeModel>> getCall = apiService.getVehicule(idUser);
+        getCall.enqueue(new Callback<List<VehiculeModel>>() {
+            @Override
+            public void onResponse(Call<List<VehiculeModel>> call, Response<List<VehiculeModel>> response) {
+                vehiculeList=response.body();
+                afficherVoiture();
+            }
+            @Override
+            public void onFailure(Call<List<VehiculeModel>> call, Throwable t) {
+                Toast.makeText(ProfilActivity.this, "echec de connexion", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void ajoutVoitureApi(VehiculeModel vehicule,AlertDialog alertDialog){
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Call<VehiculeModel> postCall = apiService.postVehicule(vehicule);
+        postCall.enqueue(new Callback<VehiculeModel>() {
+            @Override
+            public void onResponse(Call<VehiculeModel> call, Response<VehiculeModel> response) {
+                if(response.isSuccessful()){
+                    //vehiculeList.add(response.body());
+                    adapter.ajoutVehiculeAdapter(response.body());
+                    Toast.makeText(ProfilActivity.this, "Voiture ajouter", Toast.LENGTH_SHORT).show();
+                    alertDialog.dismiss();
+                } else {
+                    // Afficher l'erreur dans un Toast
+                    try {
+                        String errorMessage = response.errorBody().string();
+                        Toast.makeText(ProfilActivity.this, "Erreur: " + errorMessage, Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(ProfilActivity.this, "Erreur inconnue", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<VehiculeModel> call, Throwable t) {
+                Toast.makeText(ProfilActivity.this, "echec de cpnnexion", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void majVoitureApi(VehiculeModel vehicule,AlertDialog alertDialog,int position){
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Call<VehiculeModel> postCall = apiService.majVehicule(vehicule.getIdVehicule(), vehicule);
+        postCall.enqueue(new Callback<VehiculeModel>() {
+            @Override
+            public void onResponse(Call<VehiculeModel> call, Response<VehiculeModel> response) {
+                // Mettre à jour la liste des véhicules dans l'Adapter
+                vehiculeList.set(position, response.body()); // positionToUpdate est l'indice du véhicule modifié
+                adapter.notifyDataSetChanged();
+                Toast.makeText(ProfilActivity.this, "Modification enregistrer", Toast.LENGTH_SHORT).show();
+                alertDialog.dismiss();
+            }
+            @Override
+            public void onFailure(Call<VehiculeModel> call, Throwable t) {
+
+            }
+        });
+
+    }
+    private void confirmationSuppr(int position){
+        ConstraintLayout trajet_dialog=findViewById(R.id.dialog_confirmation);
+        View view= LayoutInflater.from(ProfilActivity.this).inflate(R.layout.dialog_confirmation,trajet_dialog);
+        TextView textMsg=view.findViewById(R.id.date);
+        textMsg.setText("Voulez-vous vraiment supprimer cette voiture ?");
+        Button okvalider=view.findViewById(R.id.confirmerBtn);
+        okvalider.setText("supprimer");
+        Button annulerbtn=view.findViewById(R.id.annulerBtn);
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(ProfilActivity.this);
+        builder.setView(view);
+        final AlertDialog alertDialog=builder.create();
+        okvalider.findViewById(R.id.confirmerBtn).setOnClickListener(v-> {
+            suppreVoitureApi(alertDialog,position);
+        });
+        annulerbtn.findViewById(R.id.annulerBtn).setOnClickListener(v-> {
+            alertDialog.dismiss();
+        });
+        if(alertDialog.getWindow()!=null){
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+        alertDialog.show();
+    }
+
+    private void suppreVoitureApi(AlertDialog alertDialog,int position) {
+        VehiculeModel vehiculeModel=vehiculeList.get(position);
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Call<Void> supprCall = apiService.suppreVehicule(vehiculeModel.getIdVehicule());
+        supprCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                //vehiculeList.remove(position);
+                adapter.removeItem(position);
+                Toast.makeText(ProfilActivity.this, "Voiture supprimer", Toast.LENGTH_SHORT).show();
+                alertDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ProfilActivity.this, "echec de connexion", Toast.LENGTH_SHORT).show();
+                alertDialog.dismiss();
+            }
+        });
+    }
+
 }

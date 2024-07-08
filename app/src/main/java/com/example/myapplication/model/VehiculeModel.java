@@ -1,33 +1,62 @@
 package com.example.myapplication.model;
 
+import android.net.Uri;
+
+import com.google.gson.annotations.SerializedName;
+
+import java.net.URI;
+
 public class VehiculeModel {
-    private int id,capacite,image;
 
-    private String numeroVehicule,position;
+    @SerializedName("idVehicule")
+    private int idVehicule;
+    @SerializedName("capacite")
+    private int capacite;
+    @SerializedName("photo")
+    private String photo;
 
+    @SerializedName("numeroVechicule")
+    private String numeroVehicule;
+    @SerializedName("positionActuelle")
+    private String position;
+    @SerializedName("nb_colonne")
+    private String nb_colonne;//nombre de place
+    @SerializedName("nb_rangee")
+    private String nb_rangee;//banquette
+//
 
-    public VehiculeModel(int id, int capacite, String position, String numeroVehicule, int image) {
-        this.id = id;
+    @SerializedName("idUser")
+    private String idUser;
+    
+    public VehiculeModel(int id, String position, int capacite, String numeroVehicule, String photo, String nbColonne, String nbRangee,String idUser) {
+        this.idVehicule = id;
         this.capacite = capacite;
         this.position = position;
         this.numeroVehicule = numeroVehicule;
-        this.image=image;
+        this.photo= photo;
+        this.nb_colonne = nbColonne;
+        this.nb_rangee = nbRangee;
+        this.idUser=idUser;
+    }
+    public VehiculeModel(String numeroVehicule,String nbColonne, String nbRangee,String idUser ) {
+        this.numeroVehicule = numeroVehicule;
+        this.nb_colonne = nbColonne;
+        this.nb_rangee = nbRangee;
+        this.idUser=idUser;
+    }
+    @Override
+    public String toString() {
+        return "voiture numero :"+ numeroVehicule + "\nnombre de place " + capacite;
     }
 
-    public int getImage() {
-        return image;
+    public String getPhoto() {
+        return photo;
     }
 
-    public void setImage(int image) {
-        this.image = image;
-    }
-    public int getId() {
-        return id;
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public int getCapacite() {
         return capacite;
@@ -52,4 +81,35 @@ public class VehiculeModel {
     public void setPosition(String position) {
         this.position = position;
     }
+    public String getNb_colonne() {
+        return nb_colonne;
+    }
+
+    public void setNb_colonne(String nb_colonne) {
+        this.nb_colonne = nb_colonne;
+    }
+
+    public String getNb_rangee() {
+        return nb_rangee;
+    }
+
+    public void setNb_rangee(String nb_rangee) {
+        this.nb_rangee = nb_rangee;
+    }
+
+    public int getIdVehicule() {
+        return idVehicule;
+    }
+
+    public void setIdVehicule(int idVehicule) {
+        this.idVehicule = idVehicule;
+    }
+    public String getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(String idUser) {
+        this.idUser = idUser;
+    }
+
 }

@@ -127,9 +127,6 @@ public class LoginActivity extends AppCompatActivity {
                 UtilisateurModel user=response.body().get(0);
                 UserManage userManage=new UserManage(LoginActivity.this);
                 userManage.saveUser(user);
-                /*String json = gson.toJson(user);
-                editor.putString("UtilisateurModel", json);
-                editor.apply();*/
                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 finish();
             }

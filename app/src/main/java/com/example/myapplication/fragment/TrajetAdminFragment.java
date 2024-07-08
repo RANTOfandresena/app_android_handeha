@@ -20,6 +20,9 @@ import androidx.viewbinding.ViewBinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -29,14 +32,18 @@ import com.example.myapplication.R;
 import com.example.myapplication.activity.MainActivity;
 import com.example.myapplication.activity.TrajetActivity;
 import com.example.myapplication.adapteur.TrajetAdapter;
+import com.example.myapplication.adapteur.VoiturePetitListAdapter;
 import com.example.myapplication.allConstant.Calendrier;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.databinding.FragmentTrajetAdminBinding;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
+import com.example.myapplication.model.VehiculeModel;
+import com.example.myapplication.outile.UserManage;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -59,8 +66,10 @@ public class TrajetAdminFragment extends Fragment {
     private RecyclerView recyclerView;
     private TrajetAdapter adapter;
     private List<TrajetModel> trajetList=new ArrayList<>();
+    private VehiculeModel selectionnerVehicule;
     private String mParam1;
     private String mParam2;
+    private AutoCompleteTextView autoCompleteTextView;
     TextInputEditText textInputEditText_horaire;
     Calendar calendar;
     private TrajetModel trajetModel;
@@ -128,8 +137,10 @@ public class TrajetAdminFragment extends Fragment {
         Button okvalider=dialogView.findViewById(R.id.formulaire_trajet_valider);
         AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
         builder.setView(dialogView);
+        autoCompleteTextView=dialogView.findViewById(R.id.idVehicle);
         final AlertDialog alertDialog=builder.create();
         textInputEditText_horaire = dialogView.findViewById(R.id.horaire);
+        listVoiture();
         textInputEditText_horaire.setOnClickListener(view->{
             calendar=Calendrier.afficheCalendrier(requireActivity(),textInputEditText_horaire,true);
         });
@@ -139,7 +150,6 @@ public class TrajetAdminFragment extends Fragment {
                 if(validationFormAjoutTrajet()){
                     insertionTrajetApi(alertDialog);
                     //Toast.makeText(getActivity(), "Trajet cree avec succes", Toast.LENGTH_LONG).show();
-
                 }
             }
         });
@@ -165,9 +175,6 @@ public class TrajetAdminFragment extends Fragment {
 
         TextInputEditText textInputEditText_prix = dialogView.findViewById(R.id.prix);
         String prix= textInputEditText_prix.getText().toString();
-
-        AppCompatSpinner appCompatSpinner_idvoiture = dialogView.findViewById(R.id.idVehicle);
-        String selectedVehicle = (String) appCompatSpinner_idvoiture.getSelectedItem();
         if (lieuDepart.isEmpty()){
             textInputEditText_lieuDepart.setError("ce ci ne doit pas etre vide");
             return false;
@@ -183,20 +190,17 @@ public class TrajetAdminFragment extends Fragment {
             textInputEditText_horaire.setError(null);
             textInputEditText_prix.setError("ce ci ne doit pas etre vide");
             return false;
-        } else if (appCompatSpinner_idvoiture.getSelectedItemPosition() == 0) {
-            //textInputEditText_attribute.setError(null);
-            TextView errorText = (TextView)appCompatSpinner_idvoiture.getSelectedView();
-            errorText.setError("");
-            errorText.setTextColor(Color.RED);//just to highlight that this is an error
-            errorText.setText("ce ci ne doit pas etre vide");
+        } else if (selectionnerVehicule==null) {
+            autoCompleteTextView.setError("choisir une voiture");
             return false;
         }
+        autoCompleteTextView.setError(null);
         trajetModel=new TrajetModel(
                 lieuDepart,
                 lieuArrive,
                 horaire,
                 prix,
-                1,
+                selectionnerVehicule.getIdVehicule(),
                 sharedPreferences.getInt("idUser",0)
         );
         return true;
@@ -207,9 +211,20 @@ public class TrajetAdminFragment extends Fragment {
         postCall.enqueue(new Callback<TrajetModel>() {
             @Override
             public void onResponse(Call<TrajetModel> call, Response<TrajetModel> response) {
-                trajetList.add(response.body());
-                Toast.makeText(getActivity(), "Trajet cree avec succes", Toast.LENGTH_LONG).show();
-                alertDialog.dismiss();
+                if(response.isSuccessful()){
+                    trajetList.add(response.body());
+                    Toast.makeText(getActivity(), "Trajet cree avec succes", Toast.LENGTH_LONG).show();
+                    alertDialog.dismiss();
+                }else {
+                    String errorMessage = null;
+                    try {
+                        errorMessage = response.errorBody().string();
+                        Toast.makeText(getContext(), "Erreur: " + errorMessage, Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
             }
 
             @Override
@@ -219,5 +234,35 @@ public class TrajetAdminFragment extends Fragment {
 
             }
         });
+    }
+    private void listVoiture(){
+        UserManage userManage=new UserManage(getContext());
+        UtilisateurModel user=userManage.getUser();
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Call<List<VehiculeModel>> getCall = apiService.getVehicule(user.getId());
+        getCall.enqueue(new Callback<List<VehiculeModel>>() {
+            @Override
+            public void onResponse(Call<List<VehiculeModel>> call, Response<List<VehiculeModel>> response) {
+                VoiturePetitListAdapter adapterType=new VoiturePetitListAdapter(getContext(),response.body());
+                autoCompleteTextView=dialogView.findViewById(R.id.idVehicle);
+                autoCompleteTextView.setAdapter(adapterType);
+                autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        selectionnerVehicule = (VehiculeModel) parent.getItemAtPosition(position);
+
+                        // Afficher l'ID du véhicule dans un Toast
+                        Toast.makeText(getActivity(), "ID du véhicule: " + selectionnerVehicule.getIdVehicule(), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            }
+            @Override
+            public void onFailure(Call<List<VehiculeModel>> call, Throwable t) {
+                Toast.makeText(getActivity(), "echec de connexion", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 }
