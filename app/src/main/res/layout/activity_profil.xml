@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.ProfilActivity"
     android:background="#ececec">
-    <!--ScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -22,41 +21,45 @@
                 <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
+                    android:layout_height="100dp"
                     android:scaleType="fitXY"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/profil_background" />
+
                 <ImageView
-                    android:id="@+id/imageProfil"
+                    android:id="@+id/imageView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/imageView"
                     app:layout_constraintTop_toBottomOf="@+id/imageView"
-                    app:srcCompat="@drawable/aklogo" /-->
+                    app:srcCompat="@drawable/aklogo" />
 
-                <!--TextView
-                    android:id="@+id/pseudoid"
+                <TextView
+                    android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="pseudo"
+                    android:text="Lion Fischer"
                     android:layout_marginTop="16dp"
                     android:textSize="25sp"
                     android:textStyle="bold"
-                    tools:ignore="MissingConstraints" />
+
+                    app:layout_constraintEnd_toEndOf="@+id/imageView2"
+                    app:layout_constraintStart_toStartOf="@+id/imageView2"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
                 <TextView
-                    android:id="@+id/numeroid"
+                    android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0341020210"
+                    android:text="lionfischer@gmail.com"
                     android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="@+id/pseudoid"
-                    app:layout_constraintStart_toStartOf="@+id/pseudoid"
-                    app:layout_constraintTop_toBottomOf="@+id/pseudoid" />
+                    app:layout_constraintEnd_toEndOf="@+id/textView"
+                    app:layout_constraintStart_toStartOf="@+id/textView"
+                    app:layout_constraintTop_toBottomOf="@+id/textView" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -65,7 +68,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/numeroid">
+                    app:layout_constraintTop_toBottomOf="@+id/textView2">
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/button"
@@ -79,37 +82,34 @@
                         android:drawableStart="@drawable/baseline_settings_24"
                         android:drawablePadding="20dp"
                         android:paddingStart="20dp"
-                        android:text="Modifier vos profil"
+                        android:text="Modifier votre profil"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         style="@android:style/Widget.Button"
                         android:textAlignment="viewStart" />
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/button2"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="32dp"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        style="@android:style/Widget.Button"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/btn_background_1"
-                        android:drawableStart="@drawable/baseline_settings_24"
-                        android:drawablePadding="20dp"
-                        android:paddingStart="20dp"
-                        android:text="Vos voiture"
-                        android:textAlignment="viewStart" />
-
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Vos voiture"
+                            android:background="@drawable/btn_background_1"
+                            android:textSize="20sp"
+                            android:padding="20dp"
+                            android:layout_marginBottom="-15dp"
+                            android:textStyle="bold"
+                            android:drawableStart="@drawable/baseline_airport_shuttle_24"
+                            />
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/vehiculeliste"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/btn_background_1" />
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
-    </ScrollView-->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/vehiculeliste"
-        android:layout_width="match_parent"
-        android:background="@color/lavender"
-        android:layout_height="match_parent"/>
-
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

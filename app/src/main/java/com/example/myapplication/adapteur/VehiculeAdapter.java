@@ -1,13 +1,11 @@
 package com.example.myapplication.adapteur;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,10 +18,10 @@ import java.util.List;
 
 public class VehiculeAdapter extends RecyclerView.Adapter<VehiculeAdapter.VehiculeViewHolder> {
     private List<VehiculeModel> mList;
-    private Context mContext;
+    private OnItemClickListener listener;
+    OnItemRetourClickListener listenerRetour;
 
-    public VehiculeAdapter(Context context, List<VehiculeModel> list) {
-        this.mContext = context;
+    public VehiculeAdapter(List<VehiculeModel> list) {
         this.mList = list;
     }
 
@@ -31,11 +29,11 @@ public class VehiculeAdapter extends RecyclerView.Adapter<VehiculeAdapter.Vehicu
     @Override
     public VehiculeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_vehicule, parent, false);
-        return new VehiculeViewHolder(view);
+        return new VehiculeViewHolder(view,listener,listenerRetour);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VehiculeAdapter.VehiculeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull VehiculeAdapter.VehiculeViewHolder holder,int position) {
         VehiculeModel item = mList.get(position);
         try {
             holder.imageView.setImageResource(item.getImage());
@@ -43,23 +41,23 @@ public class VehiculeAdapter extends RecyclerView.Adapter<VehiculeAdapter.Vehicu
         holder.numeroVehiculeTextView.setText(item.getNumeroVehicule());
         holder.capaciteTextView.setText(String.valueOf(item.getCapacite()));
 
-        holder.editButton.setOnClickListener(new View.OnClickListener() {
+        /*holder.editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Code to handle edit button click
-                Toast.makeText(mContext, "Edit button clicked", Toast.LENGTH_SHORT).show();
+                int currentPosition = holder.getAdapterPosition();
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    modifierVehicule(currentPosition);
+                    Toast.makeText(mContext, "modifier", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Code to handle delete button click
-                Toast.makeText(mContext, "Delete button clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "supprimer", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
-
     @Override
     public int getItemCount() {
         return mList.size();
@@ -72,13 +70,41 @@ public class VehiculeAdapter extends RecyclerView.Adapter<VehiculeAdapter.Vehicu
         public ImageButton editButton;
         public ImageButton deleteButton;
 
-        public VehiculeViewHolder(View itemView) {
+        public VehiculeViewHolder(View itemView,final OnItemClickListener listener,final OnItemRetourClickListener listenerRetour) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageview);
             numeroVehiculeTextView = itemView.findViewById(R.id.numero_vehicule);
             capaciteTextView = itemView.findViewById(R.id.email);
             editButton = itemView.findViewById(R.id.btn_edit);
             deleteButton = itemView.findViewById(R.id.btn_suppr);
+            editButton.setOnClickListener(v->{
+                if(listener!=null){
+                    int position = getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION){
+                        listener.onItemClick(position);
+                    }
+                }
+            });
+            deleteButton.setOnClickListener(v->{
+                if(listenerRetour!=null){
+                    int position = getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION){
+                        listenerRetour.onItemRetourClick(position);
+                    }
+                }
+            });
         }
+    }
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+    public interface OnItemRetourClickListener {
+        void onItemRetourClick(int position);
+    }
+    public void setOnItemRetourClickListener(OnItemRetourClickListener listenerRetour) {
+        this.listenerRetour = listenerRetour;
     }
 }

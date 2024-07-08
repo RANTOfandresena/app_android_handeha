@@ -128,8 +128,11 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId()==R.id.nav_sedeconnecter){
+                int idItem=item.getItemId();
+                if(idItem==R.id.nav_sedeconnecter){
                     afficherConfirmation();
+                }else if(idItem==R.id.nav_home){
+                    startActivity(new Intent(MainActivity.this, ProfilActivity.class));
                 }
                 return false;
             }
@@ -295,18 +298,12 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
         builder.setView(view);
         final AlertDialog alertDialog=builder.create();
-        okvalider.findViewById(R.id.confirmerBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        okvalider.findViewById(R.id.confirmerBtn).setOnClickListener(v-> {
                 deConnecter();
                 Toast.makeText(MainActivity.this, "Deconnexion", Toast.LENGTH_SHORT).show();
-            }
         });
-        annulerbtn.findViewById(R.id.annulerBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        annulerbtn.findViewById(R.id.annulerBtn).setOnClickListener(v-> {
                 alertDialog.dismiss();
-            }
         });
         if(alertDialog.getWindow()!=null){
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
