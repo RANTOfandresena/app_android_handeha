@@ -1,182 +1,241 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.TrajetActivity">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:id="@+id/info"
-        android:layout_margin="10dp"
-        android:background="@drawable/background_item"
-         android:layout_height="100dp">
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Départ : 6:00 matin"
-            android:textSize="14sp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:textStyle="bold"
-            android:textColor="@color/lavender" />
-
-        <!-- Departure Location Subtitle -->
-        <TextView
-            android:id="@+id/depart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Antsirabe"
-            android:textSize="14sp"
-            android:layout_below="@id/date"
-            android:layout_toStartOf="@id/arrow"
-            android:layout_toLeftOf="@id/arrow"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="15dp"/>
-
-        <!-- Arrow -->
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="0.5in"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_flech"
-            android:layout_below="@id/date"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"/>
-        <TextView
-            android:id="@+id/arrive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Antananarivo"
-            android:textSize="14sp"
-            android:layout_below="@id/date"
-            android:layout_toEndOf="@id/arrow"
-            android:layout_toRightOf="@id/arrow"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="15dp" />
-
-        <!-- Price -->
-        <TextView
-            android:id="@+id/prix"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ar 20,000"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:paddingBottom="10dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:textColor="@color/lavender" />
-
-        <!-- Available Seats -->
-        <TextView
-            android:id="@+id/place_libre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Places libres : 16"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:paddingBottom="10dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:textColor="@color/lavender" />
-    </RelativeLayout>
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/nbreservation"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_gravity="center"
-        app:layout_constraintTop_toBottomOf="@+id/info"
-        app:layout_constraintBottom_toTopOf="@+id/placee"
-        android:background="@drawable/background_item">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="voyageur(s):"
-            android:textColor="@color/lavender"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            />
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/info"
+            android:layout_margin="10dp"
+            android:background="@drawable/background_item"
+            android:layout_height="100dp">
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Départ : 6:00 matin"
+                android:textSize="14sp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:textStyle="bold"
+                android:textColor="@color/lavender" />
+
+            <!-- Departure Location Subtitle -->
+            <TextView
+                android:id="@+id/depart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Antsirabe"
+                android:textSize="14sp"
+                android:layout_below="@id/date"
+                android:layout_toStartOf="@id/arrow"
+                android:layout_toLeftOf="@id/arrow"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginTop="15dp"/>
+
+            <!-- Arrow -->
+            <ImageView
+                android:id="@+id/arrow"
+                android:layout_width="0.5in"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_flech"
+                android:layout_below="@id/date"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"/>
+            <TextView
+                android:id="@+id/arrive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Antananarivo"
+                android:textSize="14sp"
+                android:layout_below="@id/date"
+                android:layout_toEndOf="@id/arrow"
+                android:layout_toRightOf="@id/arrow"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginTop="15dp" />
+
+
+            <TextView
+                android:id="@+id/prix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ar 20,000"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:paddingBottom="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/lavender" />
+
+            <!-- Available Seats -->
+            <TextView
+                android:id="@+id/place_libre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Places libres : 16"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:paddingBottom="10dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="@color/lavender" />
+        </RelativeLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:id="@+id/nbreservation"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_gravity="center"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp">
-
-            <ImageButton
-                android:id="@+id/btnMoins"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginRight="15dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/baseline_remove_circle_outline_24" />
+            android:paddingRight="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/info"
+            app:layout_constraintBottom_toTopOf="@+id/placee"
+            android:background="@drawable/background_item">
             <TextView
-                android:id="@+id/voyageur"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="1"
-                android:textSize="30sp" />
-            <ImageButton
-                android:id="@+id/btnPlus"
+                android:text="nombre voyageur(s):"
+                android:textColor="@color/lavender"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                />
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/baseline_add_circle_outline_24"
-                android:layout_marginLeft="15dp"
-                android:background="?attr/selectableItemBackgroundBorderless" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+                <!--ImageButton
+                    android:id="@+id/btnMoins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="15dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/baseline_remove_circle_outline_24" /-->
+                <TextView
+                    android:id="@+id/voyageur"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textSize="30sp" />
+                <!--ImageButton
+                    android:id="@+id/btnPlus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/baseline_add_circle_outline_24"
+                    android:layout_marginLeft="15dp"
+                    android:background="?attr/selectableItemBackgroundBorderless" /-->
+            </LinearLayout>
+
         </LinearLayout>
+
+
+        <GridLayout
+            android:id="@+id/placee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:alignmentMode="alignBounds"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/totalprix"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nbreservation" />
+        <LinearLayout
+            android:id="@+id/infoo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="40dp"
+            app:layout_constraintBottom_toTopOf="@+id/totalprix"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/placee">
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@color/lavender"
+                android:layout_marginLeft="4dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="vos place"
+                android:textSize="14sp" />
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/btn_place"
+                android:layout_marginLeft="4dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:text="place libre"
+                android:textSize="14sp" />
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@color/purple_500"
+                android:layout_marginLeft="4dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:text="place non disponible"
+                android:textSize="14sp" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/totalprix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Montont Total : 0ar"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:textColor="@color/lavender"
+            app:layout_constraintBottom_toTopOf="@+id/placee"
+            app:layout_constraintTop_toBottomOf="@+id/valider"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/valider"
+            android:text="valider la reservation"
+            android:textSize="14sp"
+            app:cornerRadius="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:backgroundTint="@color/green"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/totalprix"/>
+
     </LinearLayout>
 
-    <GridLayout
-        android:id="@+id/placee"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:alignmentMode="alignBounds"
-        app:layout_constraintBottom_toTopOf="@+id/totalprix"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nbreservation" />
-    <TextView
-        android:id="@+id/totalprix"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Montont Total : 1000ar"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:textColor="@color/lavender"
-        app:layout_constraintBottom_toTopOf="@+id/placee"
-        app:layout_constraintTop_toBottomOf="@+id/valider"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/valider"
-        android:text="valider la reservation"
-        android:textSize="14sp"
-        app:cornerRadius="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:backgroundTint="@color/green"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/totalprix"/>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

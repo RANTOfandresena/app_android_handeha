@@ -37,7 +37,7 @@ public interface ApiService {
     Call<Void> logout();
 
     //crud vehicule
-    @GET("api/vehicule/{idVehicule}")
+    @GET("api/vehicule/")
     Call<List<VehiculeModel>> getVehiculeId(@Query("idVehicule") String id);
     @GET("api/vehicule/")
     Call<List<VehiculeModel>> getVehiculeParUser(@Query("idUser") String id);

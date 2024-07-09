@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.activity.LoginActivity;
 import com.example.myapplication.activity.TrajetActivity;
 import com.example.myapplication.adapteur.TrajetAdapter;
 import com.example.myapplication.allConstant.Calendrier;
@@ -164,11 +165,18 @@ public class TransportFragment extends Fragment {
         adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Intent intent=new Intent(getContext(), TrajetActivity.class);
-                intent.putExtra("data",trajetList.get(position));
-                voyageur=rootView.findViewById(R.id.voyageur);
-                intent.putExtra("nbplace",voyageur.getText().toString());
-                startActivity(intent);
+                if(user!=null){
+                    Intent intent=new Intent(getContext(), TrajetActivity.class);
+                    intent.putExtra("data",trajetList.get(position));
+                    voyageur=rootView.findViewById(R.id.voyageur);
+                    intent.putExtra("nbplace",voyageur.getText().toString());
+                    startActivity(intent);
+                }else{
+                    Intent intent=new Intent(getContext(), LoginActivity.class);
+                    startActivity(intent);
+                    getActivity().finish();
+                }
+
             }
         });
         recyclerView.setAdapter(adapter);
