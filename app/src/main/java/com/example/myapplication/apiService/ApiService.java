@@ -2,6 +2,7 @@ package com.example.myapplication.apiService;
 
 import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.LoginResponse;
+import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.model.VehiculeModel;
@@ -31,6 +32,8 @@ public interface ApiService {
     Call<UtilisateurModel> setUtilisateur(@Body UtilisateurModel utilisateurModel);
     @GET("api/user/")
     Call<List<UtilisateurModel>> getUtilisateur(@Query("numero") String numero);
+    @GET("api/user/")
+    Call<List<UtilisateurModel>> getUtilisateurId(@Query("idUser") int id);
     @POST("dj-rest-auth/login/")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
     @POST("dj-rest-auth/logout/")
@@ -47,4 +50,6 @@ public interface ApiService {
     Call<VehiculeModel> majVehicule(@Path("idVehicule") int vehiculeId, @Body VehiculeModel vehiculeModel);
     @DELETE("api/vehicule/{idVehicule}/")
     Call<Void> suppreVehicule(@Path("idVehicule") int vehiculeId);
+    @POST("api/reservation/")
+    Call<ReservationModel> postReservation(@Body ReservationModel reservationModel);
 }

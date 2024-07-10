@@ -22,7 +22,9 @@ import com.example.myapplication.R;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.databinding.ActivityTrajetBinding;
+import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
+import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.model.VehiculeModel;
 import com.example.myapplication.outile.PlaceVoiture;
 import com.example.myapplication.outile.UserManage;
@@ -42,10 +44,13 @@ public class TrajetActivity extends AppCompatActivity {
     private ApiService apiService;
     private List<Button> bouttonplace;
     private List<Integer> placeReserver;
+    private UtilisateurModel chauffeur;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding=ActivityTrajetBinding.inflate(getLayoutInflater());
+        apiService = RetrofitClient.getClient(URL_SERVER, null).create(ApiService.class);
+
         userManage=new UserManage(this);
         bouttonplace=new ArrayList<>();
         placeReserver=new ArrayList<>();
@@ -58,20 +63,24 @@ public class TrajetActivity extends AppCompatActivity {
         Intent intent=getIntent();
         if(intent!=null){
             trajetModel =(TrajetModel) intent.getSerializableExtra("data");
-            if(trajetModel!=null){
+            chauffeur=(UtilisateurModel) intent.getSerializableExtra("chaufeurModel");
+            if(trajetModel!=null && chauffeur!=null){
                 binding.depart.setText(trajetModel.getLieuDepart());
                 binding.arrive.setText(trajetModel.getLieuArrive());
                 binding.date.setText("Depart : "+trajetModel.getHoraire());
                 binding.prix.setText("Prix : "+trajetModel.getPrix());
                 getVoiture(trajetModel.getIdVehicule());
             }else {
+                Toast.makeText(this, "trajetModel: "+trajetModel+" chauffeur"+chauffeur, Toast.LENGTH_SHORT).show();
                 finish();
             }
         }else{
             finish();
+            Toast.makeText(this, "intent null", Toast.LENGTH_SHORT).show();
         }
         binding.valider.setOnClickListener(view->{
-            afficherReservationPlace();
+            //afficherReservationPlace();
+            postApireservation();
         });
         setContentView(binding.getRoot());
     }
@@ -199,5 +208,21 @@ public class TrajetActivity extends AppCompatActivity {
                 binding.totalprix.setText("Montont Total : "+placeReserver.size()*Integer.parseInt(strprix)+"ar");
             });
         }
+    }
+    private void postApireservation(){
+        int idutilisateur=Integer.parseInt(userManage.getUser().getId());
+        ReservationModel reservationModel=new ReservationModel(idutilisateur,trajetModel.getIdTrajet(),placeReserver);
+        Call<ReservationModel> postCall = apiService.postReservation(reservationModel);
+        postCall.enqueue(new Callback<ReservationModel>() {
+            @Override
+            public void onResponse(Call<ReservationModel> call, Response<ReservationModel> response) {
+                afficherReservationPlace();
+            }
+
+            @Override
+            public void onFailure(Call<ReservationModel> call, Throwable t) {
+
+            }
+        });
     }
 }

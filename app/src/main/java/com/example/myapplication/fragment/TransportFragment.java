@@ -36,6 +36,7 @@ import com.example.myapplication.outile.UserManage;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -166,11 +167,24 @@ public class TransportFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 if(user!=null){
-                    Intent intent=new Intent(getContext(), TrajetActivity.class);
-                    intent.putExtra("data",trajetList.get(position));
-                    voyageur=rootView.findViewById(R.id.voyageur);
-                    intent.putExtra("nbplace",voyageur.getText().toString());
-                    startActivity(intent);
+                    retrofit2.Call<List<UtilisateurModel>> getCall = apiService.getUtilisateurId(trajetList.get(position).getIdUser());
+                    getCall.enqueue(new Callback<List<UtilisateurModel>>() {
+                        @Override
+                        public void onResponse(Call<List<UtilisateurModel>> call, Response<List<UtilisateurModel>> response) {
+                            UtilisateurModel chauffeur=response.body().get(0);
+                            Intent intent=new Intent(getActivity(), TrajetActivity.class);
+                            intent.putExtra("chaufeurModel",chauffeur);
+                            intent.putExtra("data",trajetList.get(position));
+                            //voyageur=rootView.findViewById(R.id.voyageur);
+                            //intent.putExtra("nbplace",voyageur.getText().toString());
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<UtilisateurModel>> call, Throwable t) {
+                            Toast.makeText(getContext(), "echec de connexion", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }else{
                     Intent intent=new Intent(getContext(), LoginActivity.class);
                     startActivity(intent);

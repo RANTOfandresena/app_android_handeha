@@ -1,10 +1,16 @@
 package com.example.myapplication.model;
 
 import android.content.SharedPreferences;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-public class UtilisateurModel {
+import java.io.Serializable;
+
+public class UtilisateurModel implements Serializable {
 
 
     private String id;
@@ -35,6 +41,17 @@ public class UtilisateurModel {
         this.password  = mdp1 ;
         this.id=id;
         this.est_conducteur=est_conducteur;
+    }
+
+    protected UtilisateurModel(Parcel in) {
+        id = in.readString();
+        first_name = in.readString();
+        last_name = in.readString();
+        numero = in.readString();
+        cin = in.readString();
+        username = in.readString();
+        password = in.readString();
+        est_conducteur = in.readByte() != 0;
     }
 
     public String getId() {
