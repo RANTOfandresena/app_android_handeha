@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.activity.ListPassagerActivity;
 import com.example.myapplication.activity.MainActivity;
 import com.example.myapplication.activity.TrajetActivity;
 import com.example.myapplication.adapteur.TrajetAdapter;
@@ -115,7 +116,9 @@ public class TrajetAdminFragment extends Fragment {
         adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Toast.makeText(getActivity(), "ok ok", Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(getActivity(), ListPassagerActivity.class);
+                intent.putExtra("idTrajet",trajetList.get(position).getIdTrajet());
+                startActivity(intent);
             }
         });
     }

@@ -26,7 +26,7 @@ public class TrajetModel implements Serializable {
     private VehiculeModel vehicule;
     @SerializedName("idUser")
     private int idUser;
-    @Embedded
+    @SerializedName("chauffeur")
     private UtilisateurModel user;
 
     public TrajetModel(int idTrajet, String lieuDepart, String lieuArrive, String horaire, String prix, String attribute, int idVehicule, int idUser) {

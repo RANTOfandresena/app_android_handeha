@@ -9,12 +9,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.helper.widget.Layer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.outile.DateChange;
 
@@ -22,13 +24,17 @@ import java.util.List;
 
 public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetViewHolder> {
     private List<TrajetModel> trajetList;
+    private List<ReservationModel> reservationList;
     private OnItemClickListener listener;
     private boolean isChauffer;
     public TrajetAdapter(List<TrajetModel> trajetList,boolean isChauffer) {
         this.trajetList = trajetList;
         this.isChauffer=isChauffer;
     }
-
+    public TrajetAdapter( boolean isChauffer,List<ReservationModel> reservationList) {
+        this.reservationList = reservationList;
+        this.isChauffer = isChauffer;
+    }
     @NonNull
     @Override
     public TrajetAdapter.TrajetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -38,17 +44,37 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
 
     @Override
     public void onBindViewHolder(@NonNull TrajetAdapter.TrajetViewHolder holder, int position) {
-        TrajetModel trajet=trajetList.get(position);
-        holder.lieuDepart.setText(trajet.getLieuDepart());
-        holder.lieuArrive.setText(trajet.getLieuArrive());
-        holder.horaire.setText("Depart : "+ DateChange.changerLaDate(trajet.getHoraire()));
-        holder.placeLibre.setText("Place libre :"+trajet.getAttribute());
-        holder.prix.setText(trajet.getPrix()+"/personne");
+        if(trajetList!=null){
+            TrajetModel trajet=trajetList.get(position);
+            holder.lieuDepart.setText(trajet.getLieuDepart());
+            holder.lieuArrive.setText(trajet.getLieuArrive());
+            holder.horaire.setText("Depart : "+ DateChange.changerLaDate(trajet.getHoraire()));
+            holder.placeLibre.setText("Place libre :"+trajet.getAttribute());
+            holder.prix.setText(trajet.getPrix()+"/personne");
+        }else if(reservationList!=null){
+            ReservationModel reservation = reservationList.get(position);
+            holder.lieuDepart.setText(reservation.getTrajet().getLieuDepart());
+            holder.lieuArrive.setText(reservation.getTrajet().getLieuArrive());
+            holder.horaire.setText("Depart : " + DateChange.changerLaDate(reservation.getTrajet().getHoraire()));
+            holder.placeLibre.setText("nombre de place reserver :" + String.valueOf(reservation.getSiegeNumero().size()));
+            String strprix=reservation.getTrajet().getPrix();
+            strprix = strprix.replace(".00", "");
+            int montant=Integer.parseInt(strprix)*reservation.getSiegeNumero().size();
+            holder.prix.setText("prix:"+String.valueOf(montant)+"ar");
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return trajetList.size();
+        if(trajetList!=null){
+            return trajetList.size();
+        }else if(reservationList!=null){
+            return reservationList.size();
+        }else {
+            return 0;
+        }
+
     }
 
     public class TrajetViewHolder extends RecyclerView.ViewHolder{
@@ -64,6 +90,8 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
             btn_reserver=itemView.findViewById(R.id.reserver);
             if(isChauffer){
                 btn_reserver.setText("Voir la list des passagers");
+            }else if(trajetList==null){
+                btn_reserver.setText("Voir le detail du reservation");
             }
             btn_reserver.setOnClickListener(view->{
                 if (listener != null) {

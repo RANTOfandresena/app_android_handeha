@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.ReservationFragment">
-
     <TextView
+        android:id="@+id/aucun_reservation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -14,4 +14,26 @@
         android:textColor="@android:color/darker_gray"
         android:textStyle="bold"
         android:textSize="20sp" />
+    <Button
+        android:id="@+id/seConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Se connecter"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/lavender"
+        android:padding="20dp"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="HardcodedText">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/resultat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="0.1in"
+            android:layout_marginBottom="10dp"
+            android:scrollbars="vertical"
+            tools:ignore="MissingConstraints" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </FrameLayout>

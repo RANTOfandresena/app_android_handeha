@@ -50,6 +50,14 @@ public interface ApiService {
     Call<VehiculeModel> majVehicule(@Path("idVehicule") int vehiculeId, @Body VehiculeModel vehiculeModel);
     @DELETE("api/vehicule/{idVehicule}/")
     Call<Void> suppreVehicule(@Path("idVehicule") int vehiculeId);
+
+    //reservation
+    @GET("api/reservation/")
+    Call<List<ReservationModel>> getReservation(@Query("idUser") String idUser);
+    @GET("api/reservation/")
+    Call<List<ReservationModel>> getReservationidTrajet(@Query("idTrajet") String idTrajet);
     @POST("api/reservation/")
     Call<ReservationModel> postReservation(@Body ReservationModel reservationModel);
+
+
 }
