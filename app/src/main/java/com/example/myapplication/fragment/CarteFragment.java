@@ -1,5 +1,6 @@
 package com.example.myapplication.fragment;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,12 +12,15 @@ import android.widget.ImageButton;
 
 import com.example.myapplication.R;
 
+import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
+import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
@@ -36,6 +40,8 @@ public class CarteFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private MapView mapView;
     private TileCache tileCache;
+    private LayerManager layerManager;
+    private Marker marker;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -107,7 +113,7 @@ public class CarteFragment extends Fragment {
 
         mapView.setCenter(new LatLong(-18.766947,48.869107));
         mapView.setZoomLevel((byte) 9);
-
+        parametreArgument();
         return rootView;
     }
     @Override
@@ -127,43 +133,47 @@ public class CarteFragment extends Fragment {
         //AndroidGraphicFactory.clearResourceFileCache();
         super.onDestroy();
     }
+    public void parametreArgument(){
+        if(getArguments() != null){
+            double latitude = getArguments().getDouble("lat");
+            double longitude = getArguments().getDouble("lon");
+
+            // Mettre à jour la carte avec la position de la ville sélectionnée
+            LatLong cityPosition = new LatLong(latitude, longitude);
+            mapView.setCenter(cityPosition);
+            mapView.setZoomLevel((byte) 15); // Ajuster le niveau de zoom si nécessaire
+
+            // Ajouter un marqueur pour la ville
+            Marker marker = createMarker(cityPosition);
+            mapView.getLayerManager().getLayers().add(marker);
+        }
+    }
+    private Marker createMarker(LatLong position) {
+        // Créer et configurer le marqueur ici
+        Drawable drawable = getResources().getDrawable(R.drawable.baseline_add_location_24);
+        Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
+        bitmap.scaleTo(50, 50); // Adapter la taille de l'icône si nécessaire
+
+        Marker marker = new Marker(position, bitmap, 0, 0);
+        return marker;
+    }
+    public void updateMapLocation(double latitude, double longitude) {
+        LatLong point = new LatLong(latitude, longitude);
+        layerManager = mapView.getLayerManager();
+        if (marker != null) {
+            layerManager.getLayers().remove(marker);
+        }
+        ajoutMarker(point);
+        mapView.setCenter(point);
+    }
+    public void ajoutMarker(LatLong point) {
+        if (layerManager != null) {
+            Drawable drawable = getResources().getDrawable(R.drawable.baseline_add_location_24);
+            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
+            Marker marker = new Marker(point, bitmap, 0, -bitmap.getHeight() / 2);
+            layerManager.getLayers().add(marker);
+        } else {
+            throw new IllegalStateException("LayerManager n'est pas initialisé.");
+        }
+    }
 }
-/*class ExternalRenderTheme implements XmlRenderTheme{
-    private final InputStream inputStream;
-
-    ExternalRenderTheme(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
-    @Override
-    public XmlRenderThemeMenuCallback getMenuCallback() {
-        return null;
-    }
-
-    @Override
-    public String getRelativePathPrefix() {
-        return "";
-    }
-
-    @Override
-    public InputStream getRenderThemeAsStream() throws IOException {
-        return inputStream;
-    }
-
-    @Override
-    public XmlThemeResourceProvider getResourceProvider() {
-        return null;
-    }
-
-    @Override
-    public void setMenuCallback(XmlRenderThemeMenuCallback menuCallback) {
-
-    }
-
-    @Override
-    public void setResourceProvider(XmlThemeResourceProvider resourceProvider) {
-
-    }
-}
-
- */

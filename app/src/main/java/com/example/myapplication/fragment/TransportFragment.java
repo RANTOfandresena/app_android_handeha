@@ -103,8 +103,6 @@ public class TransportFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
     }
 
     @Override
@@ -144,19 +142,22 @@ public class TransportFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if(context instanceof ToolbarVisibilityListener){
-            toolbarVisibilityListener= (ToolbarVisibilityListener) context;
-            toolbarVisibilityListener.cacherToolbar();
+        /*if(context instanceof ToolbarVisibilityListener){
+            //toolbarVisibilityListener= (ToolbarVisibilityListener) context;
+            //toolbarVisibilityListener.cacherToolbar();
+
+            //toolbarVisibilityListener.afficherToolbar();
+            //toolbarVisibilityListener=null;
         }else {
             throw new RuntimeException(context.toString()+"must implement ToolbarVisibilityListener");
-        }
+        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        toolbarVisibilityListener.afficherToolbar();
-        toolbarVisibilityListener=null;
+        //toolbarVisibilityListener.afficherToolbar();
+        //toolbarVisibilityListener=null;
     }
 
     private void getTrajet() {

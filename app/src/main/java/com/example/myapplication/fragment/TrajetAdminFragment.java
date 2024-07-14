@@ -117,27 +117,31 @@ public class TrajetAdminFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 Intent intent=new Intent(getActivity(), ListPassagerActivity.class);
-                intent.putExtra("idTrajet",trajetList.get(position).getIdTrajet());
+                intent.putExtra("idTrajet",String.valueOf(trajetList.get(position).getIdTrajet()));
                 startActivity(intent);
             }
         });
     }
     public void getTrajetListApi(){
-        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
-        Call<List<TrajetModel>> getCall = apiService.getTrajetUser("horaire",Integer.parseInt(user.getId()));
-        getCall.enqueue(new Callback<List<TrajetModel>>() {
-            @Override
-            public void onResponse(Call<List<TrajetModel>> call, Response<List<TrajetModel>> response) {
-                trajetList.clear();
-                trajetList=response.body();
-                insertDataAdapter();
-            }
+        UtilisateurModel userr= new UserManage(getContext()).getUser();
+        if(userr!=null && user.isEst_conducteur()){
+            apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+            Call<List<TrajetModel>> getCall = apiService.getTrajetUser("horaire",Integer.parseInt(user.getId()));
+            getCall.enqueue(new Callback<List<TrajetModel>>() {
+                @Override
+                public void onResponse(Call<List<TrajetModel>> call, Response<List<TrajetModel>> response) {
+                    trajetList.clear();
+                    trajetList=response.body();
+                    insertDataAdapter();
+                }
 
-            @Override
-            public void onFailure(Call<List<TrajetModel>> call, Throwable t) {
-                Toast.makeText(getActivity(), "echec de connexion", Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<List<TrajetModel>> call, Throwable t) {
+                    Toast.makeText(getActivity(), "echec de connexion", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
     }
     private void insertionTrajetDialog(){
         ConstraintLayout trajet_dialog=binding.getRoot().findViewById(R.id.formulaire_trajet);
@@ -164,6 +168,7 @@ public class TrajetAdminFragment extends Fragment {
         if(alertDialog.getWindow()!=null){
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
+        alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
     }
     private boolean validationFormAjoutTrajet(){

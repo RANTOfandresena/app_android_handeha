@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -60,21 +61,21 @@ public class ListPassagerActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Gérer le clic sur l'icône "retour"
                 onSupportNavigateUp();
             }
         });
     }
     @Override
     public boolean onSupportNavigateUp() {
-        // Gérer la navigation "retour"
         onBackPressed();
         return true;
     }
 
     private void getlistReservation(){
+        String idTrajet = getIntent().getStringExtra("idTrajet");
+        Toast.makeText(this, idTrajet, Toast.LENGTH_LONG).show();
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
-        Call<List<ReservationModel>> getcall=apiService.getReservationidTrajet("1");
+        Call<List<ReservationModel>> getcall=apiService.getReservationidTrajet(idTrajet);
         getcall.enqueue(new Callback<List<ReservationModel>>() {
             @Override
             public void onResponse(Call<List<ReservationModel>> call, Response<List<ReservationModel>> response) {

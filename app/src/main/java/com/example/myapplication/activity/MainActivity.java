@@ -62,7 +62,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements TransportFragment.ToolbarVisibilityListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements LocationListener,RechercheFragment.OnCitySelectedListener {
     //private ActivityMainBinding binding;
     FloatingActionButton fab;
     private LocationManager locationManager;
@@ -77,14 +77,21 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
 
     DrawerLayout drawerLayout;
     BottomNavigationView bottomNavigationView;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
 
-    CarteFragment carteFragment=new CarteFragment();
+    private CarteFragment carteFragment;
+    private TransportFragment transportFragment;
+    private TrajetAdminFragment trajetAdminFragment;
+    private RechercheFragment rechercheFragment;
+    private ReservationFragment reservationFragment;
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNavigationView=findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setBackground(null);
         drawerLayout=findViewById(R.id.drawer_layout);
         toolbar=findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -104,13 +111,13 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         );
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        if(savedInstanceState==null){
+        /*if(savedInstanceState==null){
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new TransportFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
-        }
-        replaceFragment(carteFragment);
+        }*/
 
-        bottomNavigationView.setBackground(null);
+
+        /*replaceFragment(carteFragment);
         //action Item dans le navigation
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if(item.getItemId()==R.id.carte){
@@ -127,8 +134,9 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
                 replaceFragment(new ReservationFragment());
             }
             return true;
-        });
+        });*/
         //
+        gestionFenetre();
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -145,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
         }
-
     }
 
     private  void replaceFragment(Fragment fragment) {
@@ -210,15 +217,7 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
     }
 
 
-    @Override
-    public void cacherToolbar() {
-        getSupportActionBar().hide();
-    }
 
-    @Override
-    public void afficherToolbar() {
-        getSupportActionBar().show();
-    }
 
     @Override
     protected void onResume() {
@@ -309,5 +308,99 @@ public class MainActivity extends AppCompatActivity implements TransportFragment
     @Override
     public void onLocationChanged(@NonNull Location location) {
         Toast.makeText(this, String.valueOf(location.getLatitude())+String.valueOf(location.getLatitude()) , Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCitySelected(double latitude, double longitude) {
+        if (carteFragment != null) {
+            afficherFragment("CARTE_FRAGMENT");
+            bottomNavigationView.setSelectedItemId(R.id.carte);
+            carteFragment.updateMapLocation(latitude, longitude);
+        }
+    }
+    private void gestionFenetre(){
+        carteFragment = new CarteFragment();
+        transportFragment = new TransportFragment();
+        trajetAdminFragment = new TrajetAdminFragment();
+        rechercheFragment = new RechercheFragment();
+        reservationFragment = new ReservationFragment();
+
+        fragmentManager = getSupportFragmentManager();
+
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.frame_layout, carteFragment, "CARTE_FRAGMENT");
+        fragmentTransaction.add(R.id.frame_layout, transportFragment, "TRANSPORT_FRAGMENT");
+        fragmentTransaction.add(R.id.frame_layout, trajetAdminFragment, "TRAJET_ADMIN_FRAGMENT");
+        fragmentTransaction.add(R.id.frame_layout, rechercheFragment, "RECHERCHE_FRAGMENT");
+        fragmentTransaction.add(R.id.frame_layout, reservationFragment, "RESERVATION_FRAGMENT");
+
+        // Masquer tous les fragments sauf le premier
+        fragmentTransaction.hide(transportFragment);
+        fragmentTransaction.hide(trajetAdminFragment);
+        fragmentTransaction.hide(rechercheFragment);
+        fragmentTransaction.hide(reservationFragment);
+
+        fragmentTransaction.commit();
+        bottomNavigationView.setBackground(null);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId()==R.id.carte) {
+                afficherFragment("CARTE_FRAGMENT");
+            }else if(item.getItemId()==R.id.transport) {
+                if (userLogin != null && userLogin.isEst_conducteur()) {
+                    afficherFragment("TRAJET_ADMIN_FRAGMENT");
+                } else {
+                    afficherFragment("TRANSPORT_FRAGMENT");
+                }
+            }else if(item.getItemId()==R.id.recherche) {
+                afficherFragment("RECHERCHE_FRAGMENT");
+            }else if(item.getItemId()==R.id.reservation) {
+                afficherFragment("RESERVATION_FRAGMENT");
+            }
+            return true;
+        });
+    }
+    private void afficherFragment(String tag) {
+        fragmentTransaction = fragmentManager.beginTransaction();
+
+        Fragment carteFragment = fragmentManager.findFragmentByTag("CARTE_FRAGMENT");
+        Fragment transportFragment = fragmentManager.findFragmentByTag("TRANSPORT_FRAGMENT");
+        Fragment trajetAdminFragment = fragmentManager.findFragmentByTag("TRAJET_ADMIN_FRAGMENT");
+        Fragment rechercheFragment = fragmentManager.findFragmentByTag("RECHERCHE_FRAGMENT");
+        Fragment reservationFragment = fragmentManager.findFragmentByTag("RESERVATION_FRAGMENT");
+
+        fragmentTransaction.hide(carteFragment);
+        fragmentTransaction.hide(transportFragment);
+        fragmentTransaction.hide(trajetAdminFragment);
+        fragmentTransaction.hide(rechercheFragment);
+        fragmentTransaction.hide(reservationFragment);
+        //toolbarVisibilityListener= (TransportFragment.ToolbarVisibilityListener) context;
+        //toolbarVisibilityListener.cacherToolbar();
+
+        //toolbarVisibilityListener.afficherToolbar();
+        //toolbarVisibilityListener=null;
+        switch (tag) {
+            case "CARTE_FRAGMENT":
+                getSupportActionBar().show();
+                fragmentTransaction.show(carteFragment);
+                break;
+            case "TRANSPORT_FRAGMENT":
+                getSupportActionBar().hide();
+                fragmentTransaction.show(transportFragment);
+                break;
+            case "TRAJET_ADMIN_FRAGMENT":
+                getSupportActionBar().show();
+                fragmentTransaction.show(trajetAdminFragment);
+                break;
+            case "RECHERCHE_FRAGMENT":
+                getSupportActionBar().show();
+                fragmentTransaction.show(rechercheFragment);
+                break;
+            case "RESERVATION_FRAGMENT":
+                getSupportActionBar().show();
+                fragmentTransaction.show(reservationFragment);
+                break;
+        }
+
+        fragmentTransaction.commit();
     }
 }

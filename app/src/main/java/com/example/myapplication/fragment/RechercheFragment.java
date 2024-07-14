@@ -1,5 +1,6 @@
 package com.example.myapplication.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,35 +16,34 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.example.myapplication.adapteur.ItemClickListener;
 import com.example.myapplication.adapteur.PositionLieuAdapter;
-import com.example.myapplication.apiService.NominatimApi;
-import com.example.myapplication.apiClass.NominatimResponse;
 import com.example.myapplication.R;
-import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.adapteur.TrajetAdapter;
+import com.example.myapplication.bddsqlite.DatabaseHelper;
 import com.example.myapplication.databinding.FragmentRechercheBinding;
 import com.example.myapplication.model.PositionLieuModel;
+import com.example.myapplication.model.VilleModel;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link RechercheFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RechercheFragment extends Fragment {
+public class RechercheFragment extends Fragment  implements AdapterView.OnItemClickListener , ItemClickListener {
     private FragmentRechercheBinding binding;
+    private DatabaseHelper dbHelper;
 
     private RecyclerView recyclerView;
     private PositionLieuAdapter adapter;
@@ -59,10 +59,35 @@ public class RechercheFragment extends Fragment {
     private String mParam2;
 
     private View rootView;
-    ArrayList<PositionLieuModel> positionLieuList;
+    ArrayList<VilleModel> positionLieuList;
+    private OnCitySelectedListener mListener;
 
-    public RechercheFragment() {
-        // Required empty public constructor
+    @Override
+    public void onButtonClick(VilleModel ville) {
+        Toast.makeText(getContext(), ville.getNomVille(), Toast.LENGTH_SHORT).show();
+        double latitude = Double.parseDouble(ville.getLat());
+        double longitude = Double.parseDouble(ville.getLon());
+        cityClicked(latitude, longitude);
+    }
+
+    public interface OnCitySelectedListener {
+        void onCitySelected(double latitude, double longitude);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnCitySelectedListener) {
+            mListener = (OnCitySelectedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnCitySelectedListener");
+        }
+    }
+    private void cityClicked(double latitude, double longitude) {
+        if (mListener != null) {
+            mListener.onCitySelected(latitude, longitude);
+        }
     }
 
     public static RechercheFragment newInstance(String param1, String param2) {
@@ -87,15 +112,15 @@ public class RechercheFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //View view = inflater.inflate(R.layout.fragment_recherche, container, false);
         binding=FragmentRechercheBinding.inflate(inflater,container,false);
+        dataBase();
         recyclerView=binding.listRecherche;
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         positionLieuList = new ArrayList<>();
-        adapter = new PositionLieuAdapter(positionLieuList);
-        lire_csv();
+        adapter = new PositionLieuAdapter(positionLieuList,getContext(),this);
+        recyclerView.setAdapter(adapter);
         return binding.getRoot();
     }
     @Override
@@ -108,13 +133,14 @@ public class RechercheFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                recherche(query);
+                //recherche(query);
+                rechercheVille(query);
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
-
+                if(newText.length()>2)
+                    rechercheVille(newText);
                 return false;
             }
         });
@@ -122,33 +148,49 @@ public class RechercheFragment extends Fragment {
     private void resultat(String a){
         Toast.makeText(requireContext(), a, Toast.LENGTH_SHORT).show();
     }
-    private void lire_csv(){
-        FileInputStream fis = null;
+
+    private boolean initialisationBDD(Context context){
         try {
-            fis = getActivity().openFileInput("madagascar.csv");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 4) {
-                    positionLieuList.add(new PositionLieuModel(parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), parts[3]));
-                }
+            InputStream inputStream=context.getAssets().open(DatabaseHelper.DBNAME);
+            String outFileName=DatabaseHelper.DBLOCATION+DatabaseHelper.DBNAME;
+            OutputStream outputStream=new FileOutputStream(outFileName);
+            byte[]buff= new byte[1024];
+            int length=0;
+            while ((length=inputStream.read(buff))>0){
+                outputStream.write(buff,0,length);
             }
-            reader.close();
-            adapter.notifyDataSetChanged();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            outputStream.flush();
+            outputStream.close();
+            Toast.makeText(context, "base de donne copir", Toast.LENGTH_SHORT).show();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
-    private void recherche(String nomLieu){
-        List<PositionLieuModel> pos_list = new ArrayList<>();
-        for (PositionLieuModel item : positionLieuList) {
-            if (item.getName().toLowerCase().contains(nomLieu.toLowerCase())) {
-                pos_list.add(item);
+    private void rechercheVille(String nomVille) {
+        List<VilleModel> villes = dbHelper.rechercheVille(nomVille);
+        if (villes.isEmpty()) {
+            Toast.makeText(getContext(), "Ville non trouvée", Toast.LENGTH_SHORT).show();
+        } else {
+            adapter.filterList(villes);
+        }
+    }
+    private void dataBase(){
+        dbHelper=new DatabaseHelper(getContext());
+        File databse=getContext().getApplicationContext().getDatabasePath(DatabaseHelper.DBNAME);
+        if(false==databse.exists()){
+            dbHelper.getReadableDatabase();
+            if(initialisationBDD(getContext())){
+                Toast.makeText(getContext(), "copie database", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(getContext(), "copie database erreur", Toast.LENGTH_SHORT).show();
             }
         }
-        adapter.filterList(pos_list);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
     }
 }

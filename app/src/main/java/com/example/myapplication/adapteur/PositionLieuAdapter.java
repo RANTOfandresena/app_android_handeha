@@ -1,22 +1,31 @@
 package com.example.myapplication.adapteur;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.PositionLieuModel;
+import com.example.myapplication.model.VilleModel;
 
 import java.util.List;
 
 public class PositionLieuAdapter extends RecyclerView.Adapter<PositionLieuAdapter.PositionLieuViewHolder>{
-    private List<PositionLieuModel> listPositionLieuModel;
-    public PositionLieuAdapter(List<PositionLieuModel> listPositionLieuModel) {
-        this.listPositionLieuModel = listPositionLieuModel;
+
+    private List<VilleModel> listPositionLieuModel;
+    private Context context;
+    private static  ItemClickListener itemClickListener;
+    public PositionLieuAdapter(List<VilleModel> ville, Context context,ItemClickListener itemClickListener) {
+        this.listPositionLieuModel = ville;
+        this.context=context;
+        this.itemClickListener=itemClickListener;
     }
     @NonNull
     @Override
@@ -28,10 +37,15 @@ public class PositionLieuAdapter extends RecyclerView.Adapter<PositionLieuAdapte
 
     @Override
     public void onBindViewHolder(@NonNull PositionLieuViewHolder holder, int position) {
-        PositionLieuModel positionLieuModel=listPositionLieuModel.get(position);
-        holder.nom_lieu.setText(positionLieuModel.getName());
+        VilleModel positionLieuModel=listPositionLieuModel.get(position);
+        /*holder.nom_lieu.setText(positionLieuModel.getNomVille());
+        holder.nom_lieu.setOnClickListener(v->{
+            Toast.makeText(context, "long:"+String.valueOf(positionLieuModel.getLon())+"  Lat:"+String.valueOf(positionLieuModel.getLat()), Toast.LENGTH_SHORT).show();
+        });*/
+        holder.bind(positionLieuModel,position);
 
     }
+
 
     @Override
     public int getItemCount() {
@@ -39,15 +53,18 @@ public class PositionLieuAdapter extends RecyclerView.Adapter<PositionLieuAdapte
     }
 
     public static class PositionLieuViewHolder extends RecyclerView.ViewHolder {
-        // Elements de votre vue
         public TextView nom_lieu;
 
         public PositionLieuViewHolder(View itemView) {
             super(itemView);
             nom_lieu = itemView.findViewById(R.id.lieu_recherche);
         }
+        public void bind(final VilleModel ville, final int position){
+            nom_lieu.setText(ville.getNomVille());
+            itemView.setOnClickListener(v->itemClickListener.onButtonClick(ville));
+        }
     }
-    public void filterList(List<PositionLieuModel> filteredList) {
+    public void filterList(List<VilleModel> filteredList) {
         listPositionLieuModel = filteredList;
         notifyDataSetChanged();
     }

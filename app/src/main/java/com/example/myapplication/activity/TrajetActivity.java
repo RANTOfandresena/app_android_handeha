@@ -3,12 +3,14 @@ package com.example.myapplication.activity;
 import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -45,6 +47,7 @@ public class TrajetActivity extends AppCompatActivity {
     private List<Button> bouttonplace;
     private List<Integer> placeReserver;
     private UtilisateurModel chauffeur;
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +86,7 @@ public class TrajetActivity extends AppCompatActivity {
             postApireservation();
         });
         setContentView(binding.getRoot());
+        actionToolbar();
     }
 
     public void decremente(int nombre ){
@@ -224,5 +228,24 @@ public class TrajetActivity extends AppCompatActivity {
 
             }
         });
+    }
+    private void actionToolbar() {
+        toolbar=findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Drawable btnretour = getResources().getDrawable(R.drawable.baseline_arrow_back_24);
+        toolbar.setNavigationIcon(btnretour);
+        toolbar=findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Gérer le clic sur l'icône "retour"
+                onSupportNavigateUp();
+            }
+        });
+    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
