@@ -1,19 +1,26 @@
 package com.example.myapplication.fragment;
 
+import static com.example.myapplication.allConstant.Allconstant.ROUTE_URL;
+
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.apiService.Openrouteservice;
+import com.example.myapplication.model.RouteResponse;
 
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Point;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
@@ -26,6 +33,11 @@ import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 
 import java.io.File;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -107,7 +119,14 @@ public class CarteFragment extends Fragment {
                 mapDataStore,
                 mapView.getModel().mapViewPosition,
                 AndroidGraphicFactory.INSTANCE
-        );
+        ) {
+            @Override
+            public boolean onLongPress(LatLong tapLatLong, Point thisXY, Point tapXY) {
+                // Appel de la méthode onLongPress avec la position de la pression longue
+                CarteFragment.this.onLongPress(tapLatLong);
+                return true;
+            }
+        };
         tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.DEFAULT);
         mapView.getLayerManager().getLayers().add(tileRendererLayer);
 
@@ -115,6 +134,24 @@ public class CarteFragment extends Fragment {
         mapView.setZoomLevel((byte) 9);
         parametreArgument();
         return rootView;
+    }
+    protected void onLongPress(final LatLong position) {
+        //Toast.makeText(getContext(), String.valueOf(position.latitude), Toast.LENGTH_SHORT).show();
+
+        Call<RouteResponse> getRoute= RetrofitClient.getApiRoute().getRoute("2.3522,48.8566", "-0.1278,51.5074",ROUTE_URL);
+        getRoute.enqueue(new Callback<RouteResponse>() {
+            @Override
+            public void onResponse(Call<RouteResponse> call, Response<RouteResponse> response) {
+                List<List<Double>> coordinates = response.body().features.get(0).geometry.coordinates;
+                Toast.makeText(getContext(), "gggggggggg", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), coordinates.toString(), Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onFailure(Call<RouteResponse> call, Throwable t) {
+                String errorMessage = t.getMessage() != null ? t.getMessage() : "Une erreur s'est produite";
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     @Override
     public void onResume(){

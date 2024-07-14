@@ -49,6 +49,7 @@ dependencies {
     implementation("com.jakewharton.threetenabp:threetenabp:1.3.1")
 
     //mapsforge
+    //implementation("com.github.mapsforge:mapsforge-mapbox-tilelayer:0.21.0")
 
     implementation("org.mapsforge:mapsforge-core:0.21.0")
     implementation("org.mapsforge:mapsforge-map:0.21.0")
@@ -63,19 +64,9 @@ dependencies {
     //traitement csv
     implementation("com.opencsv:opencsv:5.5.2")
 
-    /*implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.firebaseui:firebase-ui-database:7.1.1")
-    implementation("com.google.firebase:firebase-database:21.0.0")
-    implementation("com.google.firebase:firebase-auth:23.0.0")
-    implementation("com.google.firebase:firebase-storage:21.0.0")*/
-
     implementation("androidx.navigation:navigation-fragment:2.7.7")
     implementation("androidx.navigation:navigation-ui:2.7.7")
 
-    //input type image
-
-    //
     implementation("de.hdodenhof:circleimageview:3.1.0")
 
     //requete api
@@ -87,12 +78,6 @@ dependencies {
     //chargement image
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
-
-    //api("com.theartofdev.edmodo:android-image-cropper:2.7.0")
-    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    //implementation("mysql:mysql-connector-java:5.1.49")
-    //implementation("androidx.appcompat:appcompat:1.7.0")
-    //implementation("org.mindrot:jbcrypt:0.4")
 
 
 }

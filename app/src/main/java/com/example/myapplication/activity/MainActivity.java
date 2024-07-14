@@ -25,6 +25,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,6 +53,7 @@ import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.outile.UserManage;
+import com.example.myapplication.permissions.AppPermissions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -65,6 +67,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements LocationListener,RechercheFragment.OnCitySelectedListener {
     //private ActivityMainBinding binding;
     FloatingActionButton fab;
+    private AppPermissions appPermissions;
     private LocationManager locationManager;
     private Button seconnecter;
     private Toolbar toolbar;
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
         }
+        demandePermition();
     }
 
     private  void replaceFragment(Fragment fragment) {
@@ -402,5 +406,40 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
         fragmentTransaction.commit();
+    }
+    private void demandePermition(){
+        appPermissions = new AppPermissions();
+        appPermissions = new AppPermissions();
+
+        // Vérifiez et demandez les permissions de stockage
+        if (!appPermissions.isStorageOk(this)) {
+            appPermissions.requestStoragePermission(this);
+        }
+
+        // Vérifiez et demandez les permissions de SMS
+        if (!appPermissions.isSmsSendPermissionGranted(this)) {
+            appPermissions.requestSmsSendPermission(this);
+        }
+        if (!appPermissions.isSmsReceivePermissionGranted(this)) {
+            appPermissions.requestSmsReceivePermission(this);
+        }
+        if (!appPermissions.isSmsReadPermissionGranted(this)) {
+            appPermissions.requestSmsReadPermission(this);
+        }
+
+        // Vérifiez et demandez de désactiver les optimisations de batterie
+        if (!appPermissions.isIgnoringBatteryOptimizations(this)) {
+            appPermissions.requestIgnoreBatteryOptimizations(this);
+        }
+
+        // Vérifiez et demandez les permissions de localisation
+        if (!appPermissions.isLocationPermissionGranted(this)) {
+            appPermissions.requestLocationPermission(this);
+        }
+
+        // Vérifiez et demandez d'activer la localisation si désactivée
+        if (!appPermissions.isLocationEnabled(this)) {
+            appPermissions.requestEnableLocation(this);
+        }
     }
 }
