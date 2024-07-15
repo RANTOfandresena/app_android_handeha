@@ -1,24 +1,29 @@
 package com.example.myapplication.fragment;
 
-import static com.example.myapplication.allConstant.Allconstant.ROUTE_URL;
+
+import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
 
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.apiClass.RetrofitClient;
-import com.example.myapplication.apiService.Openrouteservice;
+import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.model.RouteResponse;
+import com.example.myapplication.outile.PaintOutile;
 
 import org.mapsforge.core.graphics.Bitmap;
+import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
@@ -28,9 +33,11 @@ import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
+import org.mapsforge.core.graphics.Color;
 
 import java.io.File;
 import java.util.List;
@@ -38,6 +45,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +61,7 @@ public class CarteFragment extends Fragment {
     private MapView mapView;
     private TileCache tileCache;
     private LayerManager layerManager;
+    private ApiService apiService;
     private Marker marker;
 
     // TODO: Rename and change types of parameters
@@ -95,6 +104,7 @@ public class CarteFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_carte, container, false);
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
 
         AndroidGraphicFactory.createInstance(getActivity().getApplication());
 
@@ -132,26 +142,13 @@ public class CarteFragment extends Fragment {
 
         mapView.setCenter(new LatLong(-18.766947,48.869107));
         mapView.setZoomLevel((byte) 9);
-        parametreArgument();
+        rootView.findViewById(R.id.position).setOnClickListener(v -> {
+            get_route();
+        });
         return rootView;
     }
     protected void onLongPress(final LatLong position) {
-        //Toast.makeText(getContext(), String.valueOf(position.latitude), Toast.LENGTH_SHORT).show();
-
-        Call<RouteResponse> getRoute= RetrofitClient.getApiRoute().getRoute("2.3522,48.8566", "-0.1278,51.5074",ROUTE_URL);
-        getRoute.enqueue(new Callback<RouteResponse>() {
-            @Override
-            public void onResponse(Call<RouteResponse> call, Response<RouteResponse> response) {
-                List<List<Double>> coordinates = response.body().features.get(0).geometry.coordinates;
-                Toast.makeText(getContext(), "gggggggggg", Toast.LENGTH_SHORT).show();
-                Toast.makeText(getContext(), coordinates.toString(), Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onFailure(Call<RouteResponse> call, Throwable t) {
-                String errorMessage = t.getMessage() != null ? t.getMessage() : "Une erreur s'est produite";
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-            }
-        });
+        //
     }
     @Override
     public void onResume(){
@@ -213,4 +210,25 @@ public class CarteFragment extends Fragment {
             throw new IllegalStateException("LayerManager n'est pas initialisé.");
         }
     }
+    private void get_route(){
+        Call<RouteResponse> call = apiService.getRoute(-19.833333, 47.016667, -18.916667, 47.533333);
+        call.enqueue(new Callback<RouteResponse>() {
+            @Override
+            public void onResponse(Call<RouteResponse> call, Response<RouteResponse> response) {
+                List<LatLong> latLongs=response.body().conversionLatLong();
+                Paint paint = PaintOutile.paint;
+                paint.setColor(AndroidGraphicFactory.INSTANCE.createColor(Color.BLUE));
+                paint.setStrokeWidth(5);
+                Polyline polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
+                polyline.getLatLongs().addAll(latLongs);
+                mapView.getLayerManager().getLayers().add(polyline);
+                Toast.makeText(getContext(), "gg", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onFailure(Call<RouteResponse> call, Throwable t) {
+                Toast.makeText(getContext(), "echec", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

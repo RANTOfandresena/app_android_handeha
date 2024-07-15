@@ -2,7 +2,11 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
 }
-
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
 android {
     namespace = "com.example.myapplication"
     compileSdk = 34
@@ -74,10 +78,13 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.7.1")
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    implementation("com.squareup.retrofit2:converter-jackson:2.9.0")
 
     //chargement image
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.3")
 
 
 }
