@@ -86,5 +86,13 @@ dependencies {
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.12.3")
 
+    implementation("commons-codec:commons-codec:1.15")
+
+    implementation("androidx.room:room-runtime:2.5.0")
+    annotationProcessor("androidx.room:room-compiler:2.5.0")
+    implementation("androidx.room:room-ktx:2.5.0")
+
+
+
 
 }

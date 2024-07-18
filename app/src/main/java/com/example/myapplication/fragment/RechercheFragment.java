@@ -161,7 +161,7 @@ public class RechercheFragment extends Fragment  implements AdapterView.OnItemCl
             }
             outputStream.flush();
             outputStream.close();
-            Toast.makeText(context, "base de donne copir", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "base de donne copié", Toast.LENGTH_SHORT).show();
             return true;
         } catch (Exception e) {
             e.printStackTrace();

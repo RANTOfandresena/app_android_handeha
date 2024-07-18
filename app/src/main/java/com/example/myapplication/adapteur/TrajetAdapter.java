@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
+import com.example.myapplication.model.VehiculeModel;
+import com.example.myapplication.outile.Algo;
 import com.example.myapplication.outile.DateChange;
 
 import java.util.List;
@@ -49,7 +51,7 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
             holder.lieuDepart.setText(trajet.getLieuDepart());
             holder.lieuArrive.setText(trajet.getLieuArrive());
             holder.horaire.setText("Depart : "+ DateChange.changerLaDate(trajet.getHoraire()));
-            holder.placeLibre.setText("Place libre :"+trajet.getAttribute());
+            holder.placeLibre.setText("Place libre :"+ Algo.compterNumbre(trajet.getSiegeReserver(),0));
             holder.prix.setText(trajet.getPrix()+"/personne");
         }else if(reservationList!=null){
             ReservationModel reservation = reservationList.get(position);
@@ -102,6 +104,10 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
                 }
             });
         }
+    }
+    public void ajoutTrajet(TrajetModel item) {
+        trajetList.add(item);
+        notifyItemInserted(trajetList.size() - 1);
     }
     public interface OnItemClickListener {
         void onItemClick(int position);

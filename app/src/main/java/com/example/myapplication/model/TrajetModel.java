@@ -1,13 +1,19 @@
 package com.example.myapplication.model;
 
 import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import com.example.myapplication.outile.DateChange;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
+@Entity(tableName = "trajet")
 public class TrajetModel implements Serializable {
+    @PrimaryKey(autoGenerate = true)
     @SerializedName("idTrajet")
     private int idTrajet;
     @SerializedName("lieuDepart")
@@ -22,14 +28,32 @@ public class TrajetModel implements Serializable {
     private String attribute;
     @SerializedName("idVehicule")
     private int idVehicule;
+    @Ignore
     @Embedded
     private VehiculeModel vehicule;
     @SerializedName("idUser")
     private int idUser;
+    @Ignore
     @SerializedName("chauffeur")
     private UtilisateurModel user;
+    @SerializedName("siegeReserver")
+    private List<Integer> siegeReserver;
+    @Ignore
+    public TrajetModel(int idTrajet, String lieuDepart, String lieuArrive, String horaire, String prix, String attribute, int idVehicule, VehiculeModel vehicule, int idUser, UtilisateurModel user,List<Integer> siegeReserver) {
+        this.idTrajet = idTrajet;
+        this.lieuDepart = lieuDepart;
+        this.lieuArrive = lieuArrive;
+        this.horaire = horaire;
+        this.prix = prix;
+        this.attribute = attribute;
+        this.idVehicule = idVehicule;
+        this.vehicule = vehicule;
+        this.idUser = idUser;
+        this.user = user;
+        this.siegeReserver=siegeReserver;
+    }
 
-    public TrajetModel(int idTrajet, String lieuDepart, String lieuArrive, String horaire, String prix, String attribute, int idVehicule, int idUser) {
+    public TrajetModel(int idTrajet, String lieuDepart, String lieuArrive, String horaire, String prix, String attribute, int idVehicule, int idUser,List<Integer> siegeReserver) {
         this.idTrajet = idTrajet;
         this.lieuDepart = lieuDepart;
         this.lieuArrive = lieuArrive;
@@ -38,7 +62,9 @@ public class TrajetModel implements Serializable {
         this.attribute = attribute;
         this.idVehicule = idVehicule;
         this.idUser = idUser;
+        this.siegeReserver=siegeReserver;
     }
+    @Ignore
     public TrajetModel(String lieuDepart, String lieuArrive, String horaire, String prix, int idVehicule, int idUser) {
         this.lieuDepart = lieuDepart;
         this.lieuArrive = lieuArrive;
@@ -49,7 +75,13 @@ public class TrajetModel implements Serializable {
         this.idUser = idUser;
     }
 
+    public List<Integer> getSiegeReserver() {
+        return siegeReserver;
+    }
 
+    public void setSiegeReserver(List<Integer> siegeReserver) {
+        this.siegeReserver = siegeReserver;
+    }
 
     public int getIdTrajet() {
         return idTrajet;

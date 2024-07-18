@@ -37,6 +37,8 @@ import com.example.myapplication.adapteur.VoiturePetitListAdapter;
 import com.example.myapplication.allConstant.Calendrier;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
+import com.example.myapplication.bddsqlite.ConnectBddSqlite;
+import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.databinding.FragmentTrajetAdminBinding;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
@@ -62,7 +64,9 @@ public class TrajetAdminFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private FragmentTrajetAdminBinding binding;
+    private AppDatabase bddsqlite;
     private ApiService apiService;
+    private AppDatabase bdsqlite;
     private View dialogView;
     private RecyclerView recyclerView;
     private TrajetAdapter adapter;
@@ -98,13 +102,14 @@ public class TrajetAdminFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding=FragmentTrajetAdminBinding.inflate(inflater,container,false);
-
+        bddsqlite=ConnectBddSqlite.connectBdd(getContext());
         userManage=new UserManage(getContext());
         user=userManage.getUser();
         getTrajetListApi();
         binding.ajoutTrajet.setOnClickListener(view->{
             insertionTrajetDialog();
         });
+        bdsqlite= ConnectBddSqlite.connectBdd(getContext());
         return binding.getRoot();
     }
     public void insertDataAdapter(){
@@ -133,15 +138,22 @@ public class TrajetAdminFragment extends Fragment {
                     trajetList.clear();
                     trajetList=response.body();
                     insertDataAdapter();
+                    bddsqlite.trajetDao().viderTable();
+                    bddsqlite.trajetDao().insertTrajets(response.body());
                 }
-
                 @Override
                 public void onFailure(Call<List<TrajetModel>> call, Throwable t) {
                     Toast.makeText(getActivity(), "echec de connexion", Toast.LENGTH_SHORT).show();
+
+                    trajetList.clear();
+                    trajetList=bddsqlite.trajetDao().getAllTrajets();
+                    if(!trajetList.isEmpty()){
+                        insertDataAdapter();
+                        Toast.makeText(getActivity(), "ce sont des donne hors ligne ", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
-
     }
     private void insertionTrajetDialog(){
         ConstraintLayout trajet_dialog=binding.getRoot().findViewById(R.id.formulaire_trajet);
@@ -225,7 +237,8 @@ public class TrajetAdminFragment extends Fragment {
             @Override
             public void onResponse(Call<TrajetModel> call, Response<TrajetModel> response) {
                 if(response.isSuccessful()){
-                    trajetList.add(response.body());
+                    //trajetList.add(response.body());
+                    adapter.ajoutTrajet(response.body());
                     Toast.makeText(getActivity(), "Trajet cree avec succes", Toast.LENGTH_LONG).show();
                     alertDialog.dismiss();
                 }else {
@@ -263,8 +276,7 @@ public class TrajetAdminFragment extends Fragment {
                         selectionnerVehicule = (VehiculeModel) parent.getItemAtPosition(position);
 
                         // Afficher l'ID du véhicule dans un Toast
-                        Toast.makeText(getActivity(), "ID du véhicule: " + selectionnerVehicule.getIdVehicule(), Toast.LENGTH_SHORT).show();
-
+                        //Toast.makeText(getActivity(), "ID du véhicule: " + selectionnerVehicule.getIdVehicule(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }

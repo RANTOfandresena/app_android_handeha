@@ -4,7 +4,6 @@ package com.example.myapplication.fragment;
 import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
 
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,8 +19,12 @@ import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.model.RouteResponse;
 import com.example.myapplication.outile.PaintOutile;
+import com.example.myapplication.outile.TraceCarte;
+import com.example.myapplication.outile.Utils;
 
 import org.mapsforge.core.graphics.Bitmap;
+import org.mapsforge.core.graphics.Cap;
+import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
@@ -31,6 +34,7 @@ import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.layer.LayerManager;
+import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.overlay.Polyline;
@@ -40,6 +44,7 @@ import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.core.graphics.Color;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -155,7 +160,6 @@ public class CarteFragment extends Fragment {
         super.onResume();
         //mapView.onStartTemporaryDetach();
     }
-
     @Override
     public void onPause(){
         //mapView.onSt
@@ -178,7 +182,7 @@ public class CarteFragment extends Fragment {
             mapView.setZoomLevel((byte) 15); // Ajuster le niveau de zoom si nécessaire
 
             // Ajouter un marqueur pour la ville
-            Marker marker = createMarker(cityPosition);
+            marker = createMarker(cityPosition);
             mapView.getLayerManager().getLayers().add(marker);
         }
     }
@@ -188,7 +192,7 @@ public class CarteFragment extends Fragment {
         Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
         bitmap.scaleTo(50, 50); // Adapter la taille de l'icône si nécessaire
 
-        Marker marker = new Marker(position, bitmap, 0, 0);
+        marker = new Marker(position, bitmap, 0, 0);
         return marker;
     }
     public void updateMapLocation(double latitude, double longitude) {
@@ -201,28 +205,34 @@ public class CarteFragment extends Fragment {
         mapView.setCenter(point);
     }
     public void ajoutMarker(LatLong point) {
-        if (layerManager != null) {
-            Drawable drawable = getResources().getDrawable(R.drawable.baseline_add_location_24);
-            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
-            Marker marker = new Marker(point, bitmap, 0, -bitmap.getHeight() / 2);
-            layerManager.getLayers().add(marker);
-        } else {
-            throw new IllegalStateException("LayerManager n'est pas initialisé.");
+        layerManager = mapView.getLayerManager();
+        if (marker != null) {
+            layerManager.getLayers().remove(marker);
         }
+        marker=createMarker(point);
+        layerManager.getLayers().add(marker);
     }
     private void get_route(){
         Call<RouteResponse> call = apiService.getRoute(-19.833333, 47.016667, -18.916667, 47.533333);
         call.enqueue(new Callback<RouteResponse>() {
             @Override
             public void onResponse(Call<RouteResponse> call, Response<RouteResponse> response) {
-                List<LatLong> latLongs=response.body().conversionLatLong();
-                Paint paint = PaintOutile.paint;
-                paint.setColor(AndroidGraphicFactory.INSTANCE.createColor(Color.BLUE));
-                paint.setStrokeWidth(5);
-                Polyline polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
-                polyline.getLatLongs().addAll(latLongs);
-                mapView.getLayerManager().getLayers().add(polyline);
-                Toast.makeText(getContext(), "gg", Toast.LENGTH_SHORT).show();
+                if(response.isSuccessful()){
+                    ajoutMarker(new LatLong(-18.916667, 47.533333));
+                    List<LatLong> latLongs=response.body().conversionLatLong();
+                    TraceCarte traceCarte=new TraceCarte(mapView.getLayerManager().getLayers());
+                    //traceCarte.tracerUnPolyLine(new LatLong(-18.916667, 47.533333),new LatLong(-18.216667, 47.733333));
+                    //traceCarte.tracerUnPolyLine(new LatLong(-18.216667, 47.733333),new LatLong(-18.816667, 48.733333));
+                    for (int i = 0; i < 10; i+=1) {
+                        //traceCarte.tracerUnPolyLine(latLongs.get(i),latLongs.get(i+10));
+                        //ajoutMarker(latLongs.get(i));
+                    }
+                    //traceCarte.addLatLongs(latLongs);
+                    //traceCarte.tracerPolylines();
+                    Toast.makeText(getContext(), "gg", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getContext(), "Echec ", Toast.LENGTH_SHORT).show();
+                }
             }
             @Override
             public void onFailure(Call<RouteResponse> call, Throwable t) {
@@ -230,5 +240,44 @@ public class CarteFragment extends Fragment {
             }
         });
     }
+    /*private void addPolyline(List<LatLong> latLongs) {
+        aint paint = Utils.createPaint(AndroidGraphicFactory.INSTANCE.createColor(Color.BLUE), 80, Style.STROKE);
+       Polyline polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
+      polyline.getLatLongs().addAll(latLongs);
+       mapView.getLayerManager().getLayers().add(polyline);
+        addOverlayLayers(mapView.getLayerManager().getLayers(),latLongs);
+    }
+    protected void addOverlayLayers(Layers layers,List<LatLong> latL) {
 
+        Polyline polyline = new Polyline(Utils.createPaint(
+                AndroidGraphicFactory.INSTANCE.createColor(Color.BLUE), 8,
+                Style.STROKE), AndroidGraphicFactory.INSTANCE);
+        List<LatLong> latLongs = polyline.getLatLongs();
+        latLongs.addAll(latL);
+        layers.add(polyline);
+    }
+    private void drawLine(LatLong pointA, LatLong pointB) {
+        Paint paint = AndroidGraphicFactory.INSTANCE.createPaint();
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(5);
+        paint.setStyle(Style.STROKE);
+        paint.setStrokeCap(Cap.ROUND);
+
+        Polyline polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
+        polyline.getLatLongs().addAll(Arrays.asList(pointA, pointB));
+        mapView.getLayerManager().getLayers().add(polyline);
+    }
+    private void drawlie(List<LatLong> latLongs){
+        Paint paint = AndroidGraphicFactory.INSTANCE.createPaint();
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(5);
+        paint.setStyle(Style.STROKE);
+        paint.setStrokeCap(Cap.ROUND);
+        Polyline polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
+        for(int i=0 ;i!=latLongs.size()-1;i++){
+            polyline.getLatLongs().addAll(Arrays.asList(latLongs.get(i), latLongs.get(i+1)));
+            //polyline.setPoints(latLongs);
+        }
+        mapView.getLayerManager().getLayers().add(polyline);
+    }*/
 }

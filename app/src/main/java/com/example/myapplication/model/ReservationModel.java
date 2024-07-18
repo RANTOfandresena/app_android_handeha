@@ -1,9 +1,18 @@
 package com.example.myapplication.model;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.myapplication.model.convertisseur.IntegerListConverter;
+import com.example.myapplication.model.convertisseur.TrajetModelConverter;
+import com.example.myapplication.model.convertisseur.UtilisateurModelConverter;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
-
+@Entity(tableName = "reservation")
+@TypeConverters({UtilisateurModelConverter.class, IntegerListConverter.class, TrajetModelConverter.class})
 public class ReservationModel {
+    @PrimaryKey(autoGenerate = true)
     @SerializedName("idReservation")
     private int idReservation;
 

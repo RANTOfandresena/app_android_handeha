@@ -5,13 +5,21 @@ import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +36,7 @@ import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.model.VehiculeModel;
+import com.example.myapplication.outile.Algo;
 import com.example.myapplication.outile.PlaceVoiture;
 import com.example.myapplication.outile.UserManage;
 
@@ -72,6 +81,7 @@ public class TrajetActivity extends AppCompatActivity {
                 binding.arrive.setText(trajetModel.getLieuArrive());
                 binding.date.setText("Depart : "+trajetModel.getHoraire());
                 binding.prix.setText("Prix : "+trajetModel.getPrix());
+                binding.placelibre.setText("Places Libres : "+ Algo.compterNumbre(trajetModel.getSiegeReserver(),0));
                 getVoiture(trajetModel.getIdVehicule());
             }else {
                 Toast.makeText(this, "trajetModel: "+trajetModel+" chauffeur"+chauffeur, Toast.LENGTH_SHORT).show();
@@ -83,7 +93,13 @@ public class TrajetActivity extends AppCompatActivity {
         }
         binding.valider.setOnClickListener(view->{
             //afficherReservationPlace();
-            postApireservation();
+            if(binding.totalprix.getText().toString().equalsIgnoreCase("Montont Total : 0ar")){
+                Toast.makeText(this, "Vous avez reservé aucune place", Toast.LENGTH_SHORT).show();
+            }else {
+                //postApireservation();
+                confirmationPaimentAppel();
+            }
+
         });
         setContentView(binding.getRoot());
         actionToolbar();
@@ -116,6 +132,62 @@ public class TrajetActivity extends AppCompatActivity {
         if(alertDialog.getWindow()!=null){
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+    }
+    private void confirmationPaimentAppel(){
+        ConstraintLayout trajet_dialog=findViewById(R.id.dialog_confirmation_payement);
+        View view= LayoutInflater.from(TrajetActivity.this).inflate(R.layout.dialog_confirmation_payement,trajet_dialog);
+        Button btn_effectuer=view.findViewById(R.id.btn_effectuer);
+        Button btn_retour=view.findViewById(R.id.btn_retour);
+        Button btn_copie=view.findViewById(R.id.btn_copie);
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(TrajetActivity.this);
+        builder.setView(view);
+        final AlertDialog alertDialog=builder.create();
+        btn_copie.findViewById(R.id.btn_copie).setOnClickListener(v->{
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("Label", "apprefOkOk");
+            clipboard.setPrimaryClip(clipData);
+            Toast.makeText(TrajetActivity.this, "Le 'raison' est copié dans le presse-papiers", Toast.LENGTH_SHORT).show();
+            btn_effectuer.findViewById(R.id.btn_effectuer).setVisibility(View.VISIBLE);
+        });
+        btn_retour.findViewById(R.id.btn_retour).setOnClickListener(v->{
+            alertDialog.dismiss();
+        });
+        btn_effectuer.findViewById(R.id.btn_effectuer ).setOnClickListener(v->{
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("Label", "apprefOkOk");
+            clipboard.setPrimaryClip(clipData);
+            //requestPermissionCall();
+            //if(estAutoriserCall()){//-------------------------
+            String codeUSSD = "#111*1*2*0340264169*1000*1#";
+
+            // Check for permission before initiating USSD call
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                // Request permission if not granted
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1);
+                return;
+            }
+
+            // Encode the "#" symbol for reliable USSD execution
+            String encodedHash = Uri.encode("#");
+            Uri uri = Uri.parse("tel:" + codeUSSD.replace("#", encodedHash));
+
+            // Use ACTION_DIAL for better compatibility
+            Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+            startActivity(intent);
+
+            // Optionally, display the USSD code for user reference
+            Toast.makeText(this, codeUSSD, Toast.LENGTH_SHORT).show();
+            //}else{
+              //  requestPermissionCall();
+            //}//--------------------------
+        });
+        if(alertDialog.getWindow()!=null){
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+        alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
     }
 
@@ -146,27 +218,34 @@ public class TrajetActivity extends AppCompatActivity {
                 params.width = 150;
                 params.height = 150;
                 params.setMargins(8, 8, 8, 8);
-                button.setBackgroundColor(getResources().getColor(R.color.trasparent));
+                //button.setBackgroundColor(getResources().getColor(R.color.trasparent));
 
                 // Si c'est le premier bouton, fusionnez avec le deuxième
                 if (i == 0 && j == 0) {
                     params.columnSpec = GridLayout.spec(j, 2); // Occupe deux colonnes
                     button.setText("chauffeur");
+                    button.setBackgroundResource(R.drawable.button_stylee);
                     firstButtonMerged = true;  // Indique que le premier bouton a été fusionné
                 } else {
                     // Ajustez les indices de colonne pour les boutons suivants
                     params.columnSpec = GridLayout.spec(j);
                     button.setText(String.valueOf(placeNumber));
-                    button.setBackgroundColor(getResources().getColor(R.color.white));
-                    button.setTextColor(getResources().getColor(R.color.lavender));
 
+                    if(trajetModel.getSiegeReserver().get(placeNumber-1)!=0){
+                        //button.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_place));
+                        button.setTextColor(getResources().getColor(R.color.white));
+                        button.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    }else{
+                        button.setBackgroundColor(getResources().getColor(R.color.white));
+                        button.setTextColor(getResources().getColor(R.color.lavender));
+                        button.setBackgroundResource(R.drawable.button_stylee);
+                    }
                     bouttonplace.add(button);
                     placeNumber++;
                 }
 
                 params.rowSpec = GridLayout.spec(i);
                 button.setLayoutParams(params);
-                button.setBackgroundResource(R.drawable.button_stylee);
                 gridLayout.addView(button);
             }
         }
@@ -196,23 +275,27 @@ public class TrajetActivity extends AppCompatActivity {
             Button btn=bouttonplace.get(i);
             btn.setOnClickListener(v -> {
                 int numplace=Integer.parseInt(btn.getText().toString());
-                btn.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_place));
-                if(!placeReserver.contains(numplace)){
-                    placeReserver.add(numplace);
-                    btn.setBackgroundColor(getResources().getColor(R.color.lavender));
-                    btn.setTextColor(getResources().getColor(R.color.white));
-                }else{
-                    placeReserver.remove((Integer) numplace);
-                    btn.setBackgroundColor(getResources().getColor(R.color.white));
-                    btn.setTextColor(getResources().getColor(R.color.lavender));
+                if(trajetModel.getSiegeReserver().get(numplace-1)==0){
+                    btn.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_place));
+                    if(!placeReserver.contains(numplace)){
+                        placeReserver.add(numplace);
+                        btn.setBackgroundColor(getResources().getColor(R.color.lavender));
+                        btn.setTextColor(getResources().getColor(R.color.white));
+                    }else{
+                        placeReserver.remove((Integer) numplace);
+                        btn.setBackgroundColor(getResources().getColor(R.color.white));
+                        btn.setTextColor(getResources().getColor(R.color.lavender));
+                    }
+                    binding.voyageur.setText(String.valueOf(placeReserver.size()));
+                    String strprix = trajetModel.getPrix();
+                    strprix = strprix.replace(".00", "");
+                    binding.totalprix.setText("Montont Total : "+placeReserver.size()*Integer.parseInt(strprix)+"ar");
+                    binding.placelibre.setText("Places Libres : "+ String.valueOf(Algo.compterNumbre(trajetModel.getSiegeReserver(),0)-placeReserver.size()));
                 }
-                binding.voyageur.setText(String.valueOf(placeReserver.size()));
-                String strprix = trajetModel.getPrix();
-                strprix = strprix.replace(".00", "");
-                binding.totalprix.setText("Montont Total : "+placeReserver.size()*Integer.parseInt(strprix)+"ar");
             });
         }
     }
+
     private void postApireservation(){
         int idutilisateur=Integer.parseInt(userManage.getUser().getId());
         ReservationModel reservationModel=new ReservationModel(idutilisateur,trajetModel.getIdTrajet(),placeReserver);
@@ -247,5 +330,15 @@ public class TrajetActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+    public void requestPermissionCall(){
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.CALL_PHONE,
+                },
+                1);
+    }
+    public boolean estAutoriserCall(){
+        return ActivityCompat.checkSelfPermission(this,Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED;
     }
 }

@@ -15,7 +15,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class  DatabaseHelper extends SQLiteOpenHelper {
     public static final String DBNAME = "database.db";
     public static String DBLOCATION="/data/data/com.example.myapplication/databases/";
     public final Context context;

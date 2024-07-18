@@ -96,7 +96,7 @@
 
                 <!-- Available Seats -->
                 <TextView
-                    android:id="@+id/place_libre"
+                    android:id="@+id/placelibre"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Places libres : 16"
@@ -150,6 +150,7 @@
                         android:gravity="center"
                         android:text="0"
                         android:textSize="30sp" />
+
                     <!--ImageButton
                         android:id="@+id/btnPlus"
                         android:layout_width="wrap_content"
@@ -158,6 +159,10 @@
                         android:layout_marginLeft="15dp"
                         android:background="?attr/selectableItemBackgroundBorderless" /-->
                 </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="choisiser votre place :"/>
 
             </LinearLayout>
             <GridLayout
@@ -208,7 +213,7 @@
                 <View
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@color/purple_500"
+                    android:background="@color/colorAccent"
                     android:layout_marginLeft="4dp" />
                 <TextView
                     android:layout_width="0dp"
@@ -233,20 +238,21 @@
                 android:textColor="@color/lavender"
                 app:layout_constraintBottom_toTopOf="@+id/placee"
                 app:layout_constraintTop_toBottomOf="@+id/valider"/>
+
             <Button
+                android:id="@+id/valider"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/valider"
+                android:layout_marginStart="0.67in"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="40dp"
+                android:backgroundTint="@color/green"
                 android:text="valider la reservation"
                 android:textSize="14sp"
                 app:cornerRadius="12dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                android:backgroundTint="@color/green"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/totalprix"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/totalprix" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

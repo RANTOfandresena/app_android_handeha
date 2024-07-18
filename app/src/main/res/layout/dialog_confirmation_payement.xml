@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:id="@+id/dialog_confirmation_payement"
+    android:background="@drawable/cunstum_bkg">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RelativeLayout
+                android:id="@+id/textinfo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="MissingConstraints">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/infooo"
+                    android:text="Vous dever envoyer l'argent a cette personne :"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/nom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/infooo"
+                    android:text="Nom et prenom:test"
+                    android:textColor="@color/lavender"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <!-- Arrow -->
+                <TextView
+                    android:id="@+id/numero"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Numero :O333333333"
+                    android:layout_below="@id/nom"
+                    android:textSize="14sp"
+                    android:textColor="@color/lavender"
+                    android:textStyle="bold"/>
+
+                <!-- Price -->
+                <TextView
+                    android:id="@+id/prix"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/numero"
+                    android:layout_alignParentStart="true"
+                    android:text="Prix total :0Ar"
+                    android:textColor="@color/lavender"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/nbplace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/textinfo">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ajouter ceci dans le 'Raison' pendant le paiment:"
+                    android:textSize="16sp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="zuayiuyzaudheyde"
+                        android:textStyle="italic"
+                        android:textColor="@color/purple_500"
+                        android:textSize="20sp"/>
+                    <Button
+                        android:id="@+id/btn_copie"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="copie le 'Raison'"
+                        android:src="@drawable/copie"
+                        android:background="@drawable/radious_btn"
+                        android:drawableStart="@drawable/baseline_content_copy_24"
+                        app:fabSize="normal"
+                        app:tint="@color/white" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/optionbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/nbplace">
+
+                <Button
+                    android:id="@+id/btn_effectuer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:text="Effectuer le paiement"
+                    android:visibility="gone"
+                    android:backgroundTint="@color/green"
+                    android:drawableStart="@drawable/baseline_content_copy_24"
+                    android:drawablePadding="8dp"/>
+
+                <Button
+                    android:id="@+id/btn_retour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#A14D5EE8"
+                    android:text="Retour" />
+
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

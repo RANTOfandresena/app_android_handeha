@@ -1,5 +1,7 @@
 package com.example.myapplication.outile;
 
+import java.util.List;
+
 public class PlaceVoiture {
     public static int[][] generatePlace(int longe, int larg) {
         int[][] matrix = new int[larg][longe];

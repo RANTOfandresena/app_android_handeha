@@ -20,6 +20,8 @@ import com.example.myapplication.R;
 import com.example.myapplication.adapteur.ReservationUtilisateurAdapter;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
+import com.example.myapplication.bddsqlite.ConnectBddSqlite;
+import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.databinding.ActivityListPassagerBinding;
 import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.UtilisateurModel;
@@ -37,11 +39,13 @@ public class ListPassagerActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ReservationUtilisateurAdapter adapter;
     private ApiService apiService;
+    private AppDatabase databaseSql;
     private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding=ActivityListPassagerBinding.inflate(getLayoutInflater());
+        databaseSql= ConnectBddSqlite.connectBdd(this);
         setContentView(binding.getRoot());
         binding.aucunPassager.setVisibility(View.INVISIBLE);
         actionToolbar();
@@ -85,11 +89,19 @@ public class ListPassagerActivity extends AppCompatActivity {
                 adapter = new ReservationUtilisateurAdapter(ListPassagerActivity.this, reservationModelList);
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(ListPassagerActivity.this));
+                databaseSql.reservationDao().viderTable(idTrajet);
+                databaseSql.reservationDao().insertReservations(reservationModelList);
             }
 
             @Override
             public void onFailure(Call<List<ReservationModel>> call, Throwable t) {
                 Toast.makeText(ListPassagerActivity.this, "achec de connexion", Toast.LENGTH_SHORT).show();
+                reservationModelList=databaseSql.reservationDao().getAllReservations(idTrajet);
+                if(reservationModelList.isEmpty())
+                    binding.aucunPassager.setVisibility(View.VISIBLE);
+                adapter = new ReservationUtilisateurAdapter(ListPassagerActivity.this, reservationModelList);
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(ListPassagerActivity.this));
             }
         });
     }

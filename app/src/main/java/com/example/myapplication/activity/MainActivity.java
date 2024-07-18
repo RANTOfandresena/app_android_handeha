@@ -13,8 +13,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.StartForegroundCalledOnStoppedServiceException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +26,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -54,6 +57,7 @@ import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.outile.UserManage;
 import com.example.myapplication.permissions.AppPermissions;
+import com.example.myapplication.service.SmsService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -103,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         userManage=new UserManage(this);
         userLogin=userManage.getUser();
 
+        lancerService();
         sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         updateMenuItems();
         ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(
@@ -312,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onLocationChanged(@NonNull Location location) {
         Toast.makeText(this, String.valueOf(location.getLatitude())+String.valueOf(location.getLatitude()) , Toast.LENGTH_SHORT).show();
+        carteFragment.updateMapLocation(location.getLatitude(), location.getLongitude());
     }
 
     @Override
@@ -441,5 +447,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (!appPermissions.isLocationEnabled(this)) {
             appPermissions.requestEnableLocation(this);
         }
+    }
+    private void lancerService(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent serviceIntent=new Intent(this, SmsService.class);
+            startForegroundService(serviceIntent);
+            forgeBackgroundServiceRuning();
+        }
+    }
+    public boolean forgeBackgroundServiceRuning(){
+        ActivityManager activityManager= (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo serviceInfo:activityManager.getRunningServices(Integer.MAX_VALUE)){
+            if(SmsService.class.getName().equals(serviceInfo.service.getClassName())){
+                return true;
+            }
+        }
+        return false;
     }
 }
