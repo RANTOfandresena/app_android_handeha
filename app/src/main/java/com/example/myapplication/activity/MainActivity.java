@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -28,6 +29,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -58,6 +60,11 @@ import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.outile.UserManage;
 import com.example.myapplication.permissions.AppPermissions;
 import com.example.myapplication.service.SmsService;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -68,11 +75,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements LocationListener,RechercheFragment.OnCitySelectedListener {
+public class MainActivity extends AppCompatActivity implements RechercheFragment.OnCitySelectedListener {
     //private ActivityMainBinding binding;
     FloatingActionButton fab;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private AppPermissions appPermissions;
-    private LocationManager locationManager;
+    //private LocationManager locationManager;
     private Button seconnecter;
     private Toolbar toolbar;
     private NavigationView navigationView;
@@ -157,10 +165,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 return false;
             }
         });
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        /*locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-        }
+        }*/
         demandePermition();
     }
 
@@ -314,11 +322,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         alertDialog.show();
     }
 
-    @Override
+    /*@Override
     public void onLocationChanged(@NonNull Location location) {
         Toast.makeText(this, String.valueOf(location.getLatitude())+String.valueOf(location.getLatitude()) , Toast.LENGTH_SHORT).show();
         carteFragment.updateMapLocation(location.getLatitude(), location.getLongitude());
-    }
+    }*/
 
     @Override
     public void onCitySelected(double latitude, double longitude) {
@@ -463,5 +471,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
         }
         return false;
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //getLastLocation();
+            } else {
+                // Permission denied
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }

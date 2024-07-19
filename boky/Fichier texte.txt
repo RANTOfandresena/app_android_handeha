@@ -1,0 +1,1 @@
+https://javadoc.io/doc/org.mapsforge/mapsforge-map-android

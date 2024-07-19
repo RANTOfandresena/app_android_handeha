@@ -16,7 +16,7 @@ import com.example.myapplication.model.convertisseur.IntegerListConverter;
 import com.example.myapplication.model.convertisseur.TrajetModelConverter;
 import com.example.myapplication.model.convertisseur.UtilisateurModelConverter;
 
-@Database(entities = {TrajetModel.class, ReservationModel.class, PaiementModel.class}, version = 2)
+@Database(entities = {TrajetModel.class, ReservationModel.class, PaiementModel.class}, version = 1,exportSchema = false  )
 @TypeConverters({UtilisateurModelConverter.class, IntegerListConverter.class, TrajetModelConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     public abstract TrajetDao trajetDao();
