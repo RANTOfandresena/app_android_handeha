@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
     private AppPermissions appPermissions;
     //private LocationManager locationManager;
     private Button seconnecter;
-    private Toolbar toolbar;
+    public Toolbar toolbar;
     private NavigationView navigationView;
     SharedPreferences sharedPreferences;
     private ApiService apiService;

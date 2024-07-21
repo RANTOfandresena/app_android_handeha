@@ -50,6 +50,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -138,19 +140,32 @@ public class TrajetAdminFragment extends Fragment {
                     trajetList.clear();
                     trajetList=response.body();
                     insertDataAdapter();
-                    bddsqlite.trajetDao().viderTable();
-                    bddsqlite.trajetDao().insertTrajets(response.body());
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            bddsqlite.trajetDao().viderTable();
+                            bddsqlite.trajetDao().insertTrajets(response.body());
+                        }
+                    });
                 }
                 @Override
                 public void onFailure(Call<List<TrajetModel>> call, Throwable t) {
                     Toast.makeText(getActivity(), "echec de connexion", Toast.LENGTH_SHORT).show();
 
-                    trajetList.clear();
-                    trajetList=bddsqlite.trajetDao().getAllTrajets();
-                    if(!trajetList.isEmpty()){
-                        insertDataAdapter();
-                        Toast.makeText(getActivity(), "ce sont des donne hors ligne ", Toast.LENGTH_SHORT).show();
-                    }
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            trajetList.clear();
+                            trajetList=bddsqlite.trajetDao().getAllTrajets();
+                            if(!trajetList.isEmpty()){
+                                insertDataAdapter();
+                                Toast.makeText(getActivity(), "ce sont des donne hors ligne ", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
                 }
             });
         }
@@ -173,7 +188,8 @@ public class TrajetAdminFragment extends Fragment {
             public void onClick(View v) {
                 if(validationFormAjoutTrajet()){
                     insertionTrajetApi(alertDialog);
-                    //Toast.makeText(getActivity(), "Trajet cree avec succes", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getActivity(), String.valueOf(selectionnerVehicule.getIdVehicule()), Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
@@ -232,6 +248,7 @@ public class TrajetAdminFragment extends Fragment {
     }
     private void insertionTrajetApi(AlertDialog alertDialog){
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Toast.makeText(getActivity(), String.valueOf(trajetModel.getIdUser()), Toast.LENGTH_SHORT).show();
         Call<TrajetModel> postCall = apiService.insertionTrajetApi(trajetModel);
         postCall.enqueue(new Callback<TrajetModel>() {
             @Override

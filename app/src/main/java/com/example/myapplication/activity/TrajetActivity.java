@@ -6,13 +6,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -26,17 +29,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.databinding.ActivityTrajetBinding;
+import com.example.myapplication.model.PaiementModel;
 import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.model.VehiculeModel;
 import com.example.myapplication.outile.Algo;
+import com.example.myapplication.outile.EncodeurTableauFixe;
 import com.example.myapplication.outile.PlaceVoiture;
 import com.example.myapplication.outile.UserManage;
 
@@ -50,6 +56,8 @@ import retrofit2.Response;
 
 public class TrajetActivity extends AppCompatActivity {
     private ActivityTrajetBinding binding;
+    private BroadcastReceiver smsVerification;
+    private String montantTotal;
     private UserManage userManage;
     private TrajetModel trajetModel;
     private ApiService apiService;
@@ -57,15 +65,17 @@ public class TrajetActivity extends AppCompatActivity {
     private List<Integer> placeReserver;
     private UtilisateurModel chauffeur;
     private Toolbar toolbar;
+    private PaiementModel paiementModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding=ActivityTrajetBinding.inflate(getLayoutInflater());
         apiService = RetrofitClient.getClient(URL_SERVER, null).create(ApiService.class);
-
+        paiementModel=new PaiementModel();
         userManage=new UserManage(this);
         bouttonplace=new ArrayList<>();
         placeReserver=new ArrayList<>();
+        smsVetificationRecoi();
         /*binding.btnMoins.setOnClickListener(view->{
             decremente(-1);
         });
@@ -83,6 +93,7 @@ public class TrajetActivity extends AppCompatActivity {
                 binding.prix.setText("Prix : "+trajetModel.getPrix());
                 binding.placelibre.setText("Places Libres : "+ Algo.compterNumbre(trajetModel.getSiegeReserver(),0));
                 getVoiture(trajetModel.getIdVehicule());
+                paiementModel.setNumero(chauffeur.getNumero());
             }else {
                 Toast.makeText(this, "trajetModel: "+trajetModel+" chauffeur"+chauffeur, Toast.LENGTH_SHORT).show();
                 finish();
@@ -138,16 +149,23 @@ public class TrajetActivity extends AppCompatActivity {
     private void confirmationPaimentAppel(){
         ConstraintLayout trajet_dialog=findViewById(R.id.dialog_confirmation_payement);
         View view= LayoutInflater.from(TrajetActivity.this).inflate(R.layout.dialog_confirmation_payement,trajet_dialog);
+        TextView nomTextView=view.findViewById(R.id.nom);
+        nomTextView.setText("Nom et prenom:"+chauffeur.getFirst_name() +" "+chauffeur.getLast_name());
+        TextView numeroTextView=view.findViewById(R.id.numero);
+        numeroTextView.setText("Numero :"+chauffeur.getNumero());
+        TextView prixTextView=view.findViewById(R.id.prix);
+        prixTextView.setText("Prix total :"+paiementModel.getMontant()+"ar");
+        TextView refapp=view.findViewById(R.id.refapp);
+        refapp.setText(paiementModel.getRefapp());
         Button btn_effectuer=view.findViewById(R.id.btn_effectuer);
         Button btn_retour=view.findViewById(R.id.btn_retour);
         Button btn_copie=view.findViewById(R.id.btn_copie);
-
         AlertDialog.Builder builder=new AlertDialog.Builder(TrajetActivity.this);
         builder.setView(view);
         final AlertDialog alertDialog=builder.create();
         btn_copie.findViewById(R.id.btn_copie).setOnClickListener(v->{
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clipData = ClipData.newPlainText("Label", "apprefOkOk");
+            ClipData clipData = ClipData.newPlainText("Label", paiementModel.getRefapp());
             clipboard.setPrimaryClip(clipData);
             Toast.makeText(TrajetActivity.this, "Le 'raison' est copié dans le presse-papiers", Toast.LENGTH_SHORT).show();
             btn_effectuer.findViewById(R.id.btn_effectuer).setVisibility(View.VISIBLE);
@@ -157,20 +175,19 @@ public class TrajetActivity extends AppCompatActivity {
         });
         btn_effectuer.findViewById(R.id.btn_effectuer ).setOnClickListener(v->{
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clipData = ClipData.newPlainText("Label", "apprefOkOk");
+            ClipData clipData = ClipData.newPlainText("Label", paiementModel.getRefapp());
             clipboard.setPrimaryClip(clipData);
             //requestPermissionCall();
             //if(estAutoriserCall()){//-------------------------
-            String codeUSSD = "#111*1*2*0340264169*1000*1#";
+            String num=chauffeur.getNumero();
+            Toast.makeText(this, "num chauffeur:"+num, Toast.LENGTH_SHORT).show();
+            String codeUSSD = "#111*1*2*"+paiementModel.getNumero()+"*"+paiementModel.getMontant() +"*1#";
 
-            // Check for permission before initiating USSD call
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                // Request permission if not granted
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1);
                 return;
             }
-
-            // Encode the "#" symbol for reliable USSD execution
+            // Encode le "#" symbole pour l'execution USSD
             String encodedHash = Uri.encode("#");
             Uri uri = Uri.parse("tel:" + codeUSSD.replace("#", encodedHash));
 
@@ -289,8 +306,12 @@ public class TrajetActivity extends AppCompatActivity {
                     binding.voyageur.setText(String.valueOf(placeReserver.size()));
                     String strprix = trajetModel.getPrix();
                     strprix = strprix.replace(".00", "");
+                    montantTotal=String.valueOf(placeReserver.size()*Integer.parseInt(strprix));
                     binding.totalprix.setText("Montont Total : "+placeReserver.size()*Integer.parseInt(strprix)+"ar");
                     binding.placelibre.setText("Places Libres : "+ String.valueOf(Algo.compterNumbre(trajetModel.getSiegeReserver(),0)-placeReserver.size()));
+                    //int[] placeConversion=EncodeurTableauFixe.convertListToIntArray(placeReserver);
+                    paiementModel.setRefapp(EncodeurTableauFixe.encodeArray1(placeReserver));
+                    paiementModel.setMontant(Long.parseLong(montantTotal));
                 }
             });
         }
@@ -340,5 +361,26 @@ public class TrajetActivity extends AppCompatActivity {
     }
     public boolean estAutoriserCall(){
         return ActivityCompat.checkSelfPermission(this,Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED;
+    }
+    private void smsVetificationRecoi(){
+        smsVerification = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("paiement_received_action")) {
+                    String paiementString = intent.getStringExtra("paiement");
+                    PaiementModel smspaiement=PaiementModel.parseFromStringClient(paiementString);
+
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(smsVerification, new IntentFilter("paiement_received_action"));
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(smsVerification);
+    }
+    private void verificationSms(String paiement){
+
     }
 }

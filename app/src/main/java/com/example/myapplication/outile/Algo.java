@@ -12,4 +12,26 @@ public class Algo {
         }
         return nombre;
     }
+    public static String printIntArray(List<Integer> array) {
+        String a="[";
+        for (int i = 0; i < array.size(); i++) {
+            a+=String.valueOf(array.get(i));
+            if (i < array.size() - 1) {
+                a+=", ";
+            }
+        }
+        a+="]";
+        return a;
+    }
+    public static String printIntArray(int[] array) {
+        String a="[";
+        for (int i = 0; i < array.length; i++) {
+            a+=String.valueOf(array[i]);
+            if (i < array.length - 1) {
+                a+=", ";
+            }
+        }
+        a+="]";
+        return a;
+    }
 }

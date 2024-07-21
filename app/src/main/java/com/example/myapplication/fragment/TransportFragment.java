@@ -53,7 +53,6 @@ import retrofit2.Response;
  * create an instance of this fragment.
  */
 public class TransportFragment extends Fragment {
-    OkHttpClient client;
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -112,7 +111,6 @@ public class TransportFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_transport, container, false);
         sharedPreferences = getActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE);
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
-        client=new OkHttpClient();
         daty=rootView.findViewById(R.id.date);
         calendrier = Calendar.getInstance();
         recyclerView=rootView.findViewById(R.id.resultat);
@@ -168,11 +166,11 @@ public class TransportFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 if(user!=null){
-                    retrofit2.Call<List<UtilisateurModel>> getCall = apiService.getUtilisateurId(trajetList.get(position).getIdUser());
-                    getCall.enqueue(new Callback<List<UtilisateurModel>>() {
+                    retrofit2.Call<UtilisateurModel> getCall = apiService.getUtilisateurId(trajetList.get(position).getIdUser());
+                    getCall.enqueue(new Callback<UtilisateurModel>() {
                         @Override
-                        public void onResponse(Call<List<UtilisateurModel>> call, Response<List<UtilisateurModel>> response) {
-                            UtilisateurModel chauffeur=response.body().get(0);
+                        public void onResponse(Call<UtilisateurModel> call, Response<UtilisateurModel> response) {
+                            UtilisateurModel chauffeur=response.body();
                             Intent intent=new Intent(getActivity(), TrajetActivity.class);
                             intent.putExtra("chaufeurModel",chauffeur);
                             intent.putExtra("data",trajetList.get(position));
@@ -182,7 +180,7 @@ public class TransportFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<List<UtilisateurModel>> call, Throwable t) {
+                        public void onFailure(Call<UtilisateurModel> call, Throwable t) {
                             Toast.makeText(getContext(), "echec de connexion", Toast.LENGTH_SHORT).show();
                         }
                     });

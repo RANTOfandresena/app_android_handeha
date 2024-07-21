@@ -12,7 +12,6 @@ import java.util.List;
 public interface TrajetDao {
     @Insert
     void insertTrajets(List<TrajetModel> trajets);
-
     @Query("DELETE FROM trajet")
     void viderTable();
 

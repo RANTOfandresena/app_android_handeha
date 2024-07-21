@@ -115,7 +115,7 @@ public class PaiementModel {
         this.nomRemetant = nomRemetant;
     }
     @Ignore
-    public static PaiementModel parseFromString(String input) {
+    public static PaiementModel parseFromStringAdmin(String input) {
         PaiementModel paiement = new PaiementModel();
 
         Pattern pattern = Pattern.compile(
@@ -138,5 +138,27 @@ public class PaiementModel {
         }
 
 
+    }
+
+    @Ignore
+    public static PaiementModel parseFromStringClient(String input) {
+        PaiementModel paiement = new PaiementModel();
+        Pattern pattern = Pattern.compile(
+               "^(\\d{1,3}(?: \\d{3})*) Ar envoye a ([\\w\\s]+) \\((\\d+)\\) le (\\d{2}/\\d{2}/\\d{2}) a (\\d{2}:\\d{2}).* Frais: (\\d{1,3}(?: \\d{3})*) Ar.* Raison: ([\\w\\s]+).* Ref: (\\d+)$"
+        );
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            String montantStr = matcher.group(1).replace(" ", "");
+            paiement.setMontant(Integer.parseInt(montantStr));
+            paiement.setNomRemetant(matcher.group(2));
+            paiement.setNumero(matcher.group(3));
+            paiement.setDatePaiement(matcher.group(4) + " " + matcher.group(5));
+            paiement.setRef(matcher.group(8));
+            paiement.setRefapp(matcher.group(7)); // raison
+            return paiement;
+        } else {
+            return null;
+        }
     }
 }

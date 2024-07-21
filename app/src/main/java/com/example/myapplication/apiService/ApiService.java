@@ -38,8 +38,8 @@ public interface ApiService {
     Call<UtilisateurModel> setUtilisateur(@Body UtilisateurModel utilisateurModel);
     @GET("api/user/")
     Call<List<UtilisateurModel>> getUtilisateur(@Query("numero") String numero);
-    @GET("api/user/")
-    Call<List<UtilisateurModel>> getUtilisateurId(@Query("idUser") int id);
+    @GET("api/user/{id}/")
+    Call<UtilisateurModel> getUtilisateurId(@Path("id") int id);
     @POST("dj-rest-auth/login/")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
     @POST("dj-rest-auth/logout/")

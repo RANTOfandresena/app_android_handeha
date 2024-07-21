@@ -99,11 +99,14 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
     private LayerManager layerManager;
     private ApiService apiService;
     private Marker marker;
+    private MainActivity mainActivity;
     private float[] gravity;
     private float[] geomagnetic;
     private float azimuth;
     private SensorManager sensorManager;
     private Sensor rotationVectorSensor, accelerometer, magnetometer;
+    private float max=0;
+    private AngleRotation angleRotation;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -153,8 +156,10 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         AndroidGraphicFactory.createInstance(getActivity().getApplication());
         mapView = rootView.findViewById(R.id.cartee);
         mapView.setClickable(true);
+        angleRotation=new AngleRotation();
         mapView.getMapScaleBar().setVisible(true);
         mapView.setBuiltInZoomControls(true);
+        mainActivity= (MainActivity) getActivity();
 
         tileCache = AndroidUtil.createTileCache(
                 getActivity(),
@@ -389,7 +394,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
                 a=false;
             }
             if(a)
-                addMarker(new LatLong(lat,lon));
+                addMarker(new LatLong(-19.85587166666,47.02742499999));
         }
     }
 
@@ -412,20 +417,6 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        /*if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            float[] rotationMatrix = new float[9];
-            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
-            float[] orientation = new float[3];
-            SensorManager.getOrientation(rotationMatrix, orientation);
-            float degre = (float) Math.toDegrees(orientation[0]); // Rotation autour de l'axe Z
-            degre = (degre + 360) % 360;
-
-            if (localisationMarker != null) {
-                Toast.makeText(getContext(), String.valueOf(degre), Toast.LENGTH_SHORT).show();
-                localisationMarker.setBitmap(AngleRotation.getImageDirection(degre,getResources()));
-                mapView.repaint();
-            }
-        }*/
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
             gravity = event.values;
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
@@ -442,7 +433,13 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
                     azimuth += 360;
                 }
                 if (localisationMarker != null) {
+                    int index= (int) (azimuth/22.6);
+                    if(max<azimuth)
+                        max=azimuth;
+                    String resourceName = "d" + index;
+
                     localisationMarker.setBitmap(AngleRotation.getImageDirection(azimuth,getContext()));
+                    mainActivity.toolbar.setTitle(String.valueOf(max)+"||"+resourceName);
                     mapView.repaint();
                 }
             }

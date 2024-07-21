@@ -11,18 +11,25 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.myapplication.activity.TrajetActivity;
 import com.example.myapplication.bddsqlite.ConnectBddSqlite;
 import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.model.PaiementModel;
 import com.example.myapplication.model.TrajetModel;
+import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.service.SmsService;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class MySmsReceiver extends BroadcastReceiver {
     private static final String TAG = MySmsReceiver.class.getSimpleName();
     public static final String pdu_type = "pdus";
     private AppDatabase conn;
+    private UtilisateurModel userLogin;
+    private UserManage userManage;
 
     @Override
     public IBinder peekService(Context context, Intent service) {
@@ -33,6 +40,8 @@ public class MySmsReceiver extends BroadcastReceiver {
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onReceive(Context context, Intent intent) {
+        userManage=new UserManage(context);
+        userLogin=userManage.getUser();
         conn=ConnectBddSqlite.connectBdd(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Intent serviceIntent=new Intent(context, SmsService.class);
@@ -63,11 +72,25 @@ public class MySmsReceiver extends BroadcastReceiver {
                 strMessage += "SMS from " + msgs[i].getOriginatingAddress();
                 strMessage += " :" + msgs[i].getMessageBody() + "\n";
                 // Log and display the SMS message.
-                Toast.makeText(context, msgs[i].getOriginatingAddress(), Toast.LENGTH_LONG).show();
-                PaiementModel paiement=PaiementModel.parseFromString(msgs[i].getMessageBody());
-                if(paiement!=null && msgs[i].getOriginatingAddress().equals("+261346756924")){
+                //Toast.makeText(context, msgs[i].getOriginatingAddress(), Toast.LENGTH_LONG).show();
+                if(userLogin!=null){
+                    if (userLogin.isEst_conducteur()){
+                        PaiementModel paiement=PaiementModel.parseFromStringAdmin(msgs[i].getMessageBody());
+                        if(paiement!=null && msgs[i].getOriginatingAddress().equals("+261346756924")){
+
+                        }
+                    }else{
+                        PaiementModel paiement=PaiementModel.parseFromStringClient(msgs[i].getMessageBody());
+                        if(paiement!=null && msgs[i].getOriginatingAddress().equals("+261346756924")){
+                            Toast.makeText(context, "gg", Toast.LENGTH_SHORT).show();
+                            Intent intentt = new Intent("paiement_received_action");
+                            intentt.putExtra("paiement", msgs[i].getMessageBody());
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(intentt);
+                        }
+                    }
 
                 }
+
             }
         }
     }
