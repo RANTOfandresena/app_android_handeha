@@ -35,6 +35,8 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
+import com.example.myapplication.bddsqlite.ConnectBddSqlite;
+import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.databinding.ActivityTrajetBinding;
 import com.example.myapplication.model.PaiementModel;
 import com.example.myapplication.model.ReservationModel;
@@ -49,6 +51,8 @@ import com.example.myapplication.outile.UserManage;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,6 +60,7 @@ import retrofit2.Response;
 
 public class TrajetActivity extends AppCompatActivity {
     private ActivityTrajetBinding binding;
+    private AlertDialog alertDialog;
     private BroadcastReceiver smsVerification;
     private String montantTotal;
     private UserManage userManage;
@@ -66,6 +71,7 @@ public class TrajetActivity extends AppCompatActivity {
     private UtilisateurModel chauffeur;
     private Toolbar toolbar;
     private PaiementModel paiementModel;
+    private AppDatabase bddSqlite;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +81,7 @@ public class TrajetActivity extends AppCompatActivity {
         userManage=new UserManage(this);
         bouttonplace=new ArrayList<>();
         placeReserver=new ArrayList<>();
+        bddSqlite=ConnectBddSqlite.connectBdd(this);
         smsVetificationRecoi();
         /*binding.btnMoins.setOnClickListener(view->{
             decremente(-1);
@@ -131,20 +138,20 @@ public class TrajetActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder=new AlertDialog.Builder(TrajetActivity.this);
         builder.setView(view);
-        final AlertDialog alertDialog=builder.create();
+        final AlertDialog alertDialogOK=builder.create();
         okvalider.findViewById(R.id.valider).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertDialog.dismiss();
+                alertDialogOK.dismiss();
                 finish();
                 Toast.makeText(TrajetActivity.this, "reservation effectuer", Toast.LENGTH_SHORT).show();
             }
         });
-        if(alertDialog.getWindow()!=null){
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        if(alertDialogOK.getWindow()!=null){
+            alertDialogOK.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.show();
+        alertDialogOK.setCanceledOnTouchOutside(false);
+        alertDialogOK.show();
     }
     private void confirmationPaimentAppel(){
         ConstraintLayout trajet_dialog=findViewById(R.id.dialog_confirmation_payement);
@@ -162,12 +169,12 @@ public class TrajetActivity extends AppCompatActivity {
         Button btn_copie=view.findViewById(R.id.btn_copie);
         AlertDialog.Builder builder=new AlertDialog.Builder(TrajetActivity.this);
         builder.setView(view);
-        final AlertDialog alertDialog=builder.create();
+        alertDialog=builder.create();
         btn_copie.findViewById(R.id.btn_copie).setOnClickListener(v->{
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = ClipData.newPlainText("Label", paiementModel.getRefapp());
             clipboard.setPrimaryClip(clipData);
-            Toast.makeText(TrajetActivity.this, "Le 'raison' est copié dans le presse-papiers", Toast.LENGTH_SHORT).show();
+            Toast.makeText(TrajetActivity.this, "Le 'description' est copié dans le presse-papiers", Toast.LENGTH_SHORT).show();
             btn_effectuer.findViewById(R.id.btn_effectuer).setVisibility(View.VISIBLE);
         });
         btn_retour.findViewById(R.id.btn_retour).setOnClickListener(v->{
@@ -317,19 +324,39 @@ public class TrajetActivity extends AppCompatActivity {
         }
     }
 
-    private void postApireservation(){
+    private void postApireservation(PaiementModel smspaiement){
         int idutilisateur=Integer.parseInt(userManage.getUser().getId());
         ReservationModel reservationModel=new ReservationModel(idutilisateur,trajetModel.getIdTrajet(),placeReserver);
         Call<ReservationModel> postCall = apiService.postReservation(reservationModel);
         postCall.enqueue(new Callback<ReservationModel>() {
             @Override
             public void onResponse(Call<ReservationModel> call, Response<ReservationModel> response) {
-                afficherReservationPlace();
+                ReservationModel reservationVerifier=response.body();
+                Toast.makeText(TrajetActivity.this, "reservation envoyer", Toast.LENGTH_SHORT).show();
+                smspaiement.setIdReservation(reservationVerifier.getIdReservation());
+                Call<PaiementModel> postCall = apiService.postPaiement(smspaiement);
+                postCall.enqueue(new Callback<PaiementModel>() {
+                    @Override
+                    public void onResponse(Call<PaiementModel> call, Response<PaiementModel> response) {
+                        Toast.makeText(TrajetActivity.this, "payement envoyer", Toast.LENGTH_SHORT).show();
+                        alertDialog.dismiss();
+                        insertionReservationPaimentSQLite(reservationVerifier,response.body());
+                        afficherReservationPlace();
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaiementModel> call, Throwable t) {
+                        //postApireservation(smspaiement);
+                        Toast.makeText(TrajetActivity.this, "echec de connexion", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
             }
 
             @Override
             public void onFailure(Call<ReservationModel> call, Throwable t) {
-
+                Toast.makeText(TrajetActivity.this, "echec de connexion", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -369,6 +396,7 @@ public class TrajetActivity extends AppCompatActivity {
                 if (intent.getAction().equals("paiement_received_action")) {
                     String paiementString = intent.getStringExtra("paiement");
                     PaiementModel smspaiement=PaiementModel.parseFromStringClient(paiementString);
+                    verificationSms(smspaiement);
 
                 }
             }
@@ -380,7 +408,26 @@ public class TrajetActivity extends AppCompatActivity {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(smsVerification);
     }
-    private void verificationSms(String paiement){
+    private void verificationSms(PaiementModel smspaiement){
+        boolean vola=smspaiement.getMontant()>=paiementModel.getMontant();
+        boolean nomerao=smspaiement.getNumero().equals(paiementModel.getNumero());
+        boolean famatarana=smspaiement.getRefapp().equals(paiementModel.getRefapp());
+        if(vola && nomerao && famatarana){
+            Toast.makeText(this, "SMS verifiver avec succes", Toast.LENGTH_SHORT).show();
+            postApireservation(smspaiement);
+        }else{
+            Toast.makeText(this, "verification incomplet", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void insertionReservationPaimentSQLite(ReservationModel r,PaiementModel p){
 
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                bddSqlite.reservationDao().insertReservation(r);
+                bddSqlite.paiementDao().insertPaiement(p);
+            }
+        });
     }
 }

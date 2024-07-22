@@ -220,49 +220,6 @@ public class TransportFragment extends Fragment {
                 voyageur.setText(String.valueOf(resultat));
         }
     }
-    private void afficherPlace(int[][] places, GridLayout gridLayout) {
-        /*int rowCount = places.length;
-        int colCount = 0;
-        for (int[] row : places) {
-            if (row.length > colCount) {
-                colCount = row.length;
-            }
-        }
-        gridLayout.setColumnCount(colCount);
-        gridLayout.setRowCount(rowCount);
-
-        // Générer les boutons en fonction du tableau de données
-        int placeNumber = 1;
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < places[i].length; j++) {
-                Button button = new Button(getActivity());
-                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.width = 150;
-                params.height = 150;
-                params.setMargins(8, 8, 8, 8);
-                params.columnSpec = GridLayout.spec(j);
-                params.rowSpec = GridLayout.spec(i);
-                button.setLayoutParams(params);
-                button.setText(String.valueOf(placeNumber));
-                placeNumber++;
-
-                button.setBackgroundResource(R.drawable.button_stylee);
-
-                // Définir la couleur de fond en fonction de la valeur du tableau
-                if (places[i][j] == 0) {
-                    button.setBackgroundColor(Color.YELLOW);
-                } else if (places[i][j] == 1) {
-                    button.setBackgroundColor(Color.GRAY);
-                } else if (places[i][j] == 2) {
-                    button.setBackgroundColor(Color.BLUE);
-                }
-
-                // Ajouter le bouton au GridLayout
-                gridLayout.addView(button);
-            }
-        }*/
-    }
-
     public interface ToolbarVisibilityListener{
         void cacherToolbar();
         void afficherToolbar();

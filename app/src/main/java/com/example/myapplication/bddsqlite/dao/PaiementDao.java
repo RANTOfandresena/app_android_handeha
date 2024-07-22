@@ -11,7 +11,8 @@ import java.util.List;
 public interface PaiementDao {
     @Insert
     void insertPaiement(PaiementModel paiement);
-
+    @Query("DELETE FROM paiementModel")
+    void supprPaiements();
     @Query("SELECT * FROM paiementModel")
     List<PaiementModel> getAllPaiements();
 }

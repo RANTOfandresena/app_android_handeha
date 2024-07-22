@@ -11,8 +11,16 @@ import java.util.List;
 public interface ReservationDao {
     @Insert
     void insertReservations(List<ReservationModel> reservations);
+    @Insert
+    void insertReservation(ReservationModel reservations);
     @Query("DELETE FROM reservation WHERE idTrajet=:id")
     void viderTable(String id);
+
+    @Query("DELETE FROM reservation")
+    void viderTable();
     @Query("SELECT * FROM reservation WHERE idTrajet=:id")
     List<ReservationModel> getAllReservations(String id);
+
+    @Query("SELECT * FROM reservation")
+    List<ReservationModel> getAllReservations();
 }

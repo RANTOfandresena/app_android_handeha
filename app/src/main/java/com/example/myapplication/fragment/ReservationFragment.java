@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.example.myapplication.adapteur.TrajetAdapter;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
+import com.example.myapplication.bddsqlite.ConnectBddSqlite;
+import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.databinding.FragmentReservationBinding;
 import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
@@ -23,6 +25,8 @@ import com.example.myapplication.outile.UserManage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,6 +53,7 @@ public class ReservationFragment extends Fragment {
     private ApiService apiService;
     private List<TrajetModel> listtrajet;
     private RecyclerView recyclerView;
+    private AppDatabase bddSqlite;
 
     public ReservationFragment() {
         // Required empty public constructor
@@ -71,10 +76,10 @@ public class ReservationFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding=FragmentReservationBinding.inflate(inflater,container,false);
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        bddSqlite= ConnectBddSqlite.connectBdd(getContext());
         recyclerView=binding.resultat;
         user=new UserManage(getContext());
        // binding.resultat.setVisibility(View.GONE);
@@ -103,6 +108,7 @@ public class ReservationFragment extends Fragment {
                         }else {
                             binding.resultat.setVisibility(View.VISIBLE);
                             binding.aucunReservation.setVisibility(View.GONE);
+                            postDataSQLite(response.body());
                             obtientData(response.body());
                         }
                     }else {
@@ -110,20 +116,42 @@ public class ReservationFragment extends Fragment {
                     }
 
                 }
-
                 @Override
                 public void onFailure(Call<List<ReservationModel>> call, Throwable t) {
                     Toast.makeText(getContext(), "echec de connexion", Toast.LENGTH_SHORT).show();
+                    getReservationSQLite();
                 }
             });
 
         }
     }
-
     private void obtientData(List<ReservationModel> reservationModelList) {
         adapter=new TrajetAdapter(false,reservationModelList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
     }
-
+    private void postDataSQLite(List<ReservationModel> ListReservation){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                bddSqlite.reservationDao().viderTable();
+                if(!ListReservation.isEmpty()){
+                    bddSqlite.reservationDao().insertReservations(ListReservation);
+                }
+            }
+        });
+    }
+    private void getReservationSQLite(){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<ReservationModel> reservationSQLite=bddSqlite.reservationDao().getAllReservations();
+                if(!reservationSQLite.isEmpty()){
+                    obtientData(reservationSQLite);
+                }
+            }
+        });
+    }
 }

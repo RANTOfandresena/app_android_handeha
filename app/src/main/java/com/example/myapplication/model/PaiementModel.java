@@ -24,7 +24,7 @@ public class PaiementModel {
     private String ref;
     @SerializedName("refapp")
     private String refapp;
-    @SerializedName("nomRemetant")
+    @SerializedName("nom")
     private String nomRemetant;
     @SerializedName("datePaiement")
     private String datePaiement;
@@ -136,8 +136,6 @@ public class PaiementModel {
         }else{
             return null;
         }
-
-
     }
 
     @Ignore

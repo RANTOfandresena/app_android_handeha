@@ -12,21 +12,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/cunstum_bkg"
+        android:padding="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
+
         <TextView
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="reservation effectuer"
-            android:textSize="14sp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
-            android:textStyle="bold"
+            android:text="reservation effectuer"
             android:textColor="@color/lavender"
-            app:layout_constraintTop_toBottomOf="@+id/okok"/>
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/okok" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

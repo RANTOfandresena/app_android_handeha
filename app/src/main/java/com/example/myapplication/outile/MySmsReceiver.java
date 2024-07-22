@@ -72,9 +72,10 @@ public class MySmsReceiver extends BroadcastReceiver {
                 strMessage += "SMS from " + msgs[i].getOriginatingAddress();
                 strMessage += " :" + msgs[i].getMessageBody() + "\n";
                 // Log and display the SMS message.
-                //Toast.makeText(context, msgs[i].getOriginatingAddress(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "msm:"+msgs[i].getOriginatingAddress(), Toast.LENGTH_LONG).show();
                 if(userLogin!=null){
                     if (userLogin.isEst_conducteur()){
+                        Toast.makeText(context, "admin", Toast.LENGTH_SHORT).show();
                         PaiementModel paiement=PaiementModel.parseFromStringAdmin(msgs[i].getMessageBody());
                         if(paiement!=null && msgs[i].getOriginatingAddress().equals("+261346756924")){
 
@@ -82,15 +83,18 @@ public class MySmsReceiver extends BroadcastReceiver {
                     }else{
                         PaiementModel paiement=PaiementModel.parseFromStringClient(msgs[i].getMessageBody());
                         if(paiement!=null && msgs[i].getOriginatingAddress().equals("+261346756924")){
-                            Toast.makeText(context, "gg", Toast.LENGTH_SHORT).show();
                             Intent intentt = new Intent("paiement_received_action");
                             intentt.putExtra("paiement", msgs[i].getMessageBody());
                             LocalBroadcastManager.getInstance(context).sendBroadcast(intentt);
+
+                            Intent activityIntent = new Intent(context, TrajetActivity.class);
+                            activityIntent.putExtra("paiement", msgs[i].getMessageBody());
+                            activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            context.startActivity(activityIntent);
                         }
                     }
 
                 }
-
             }
         }
     }

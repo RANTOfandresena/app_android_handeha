@@ -2,6 +2,7 @@ package com.example.myapplication.apiService;
 
 import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.LoginResponse;
+import com.example.myapplication.model.PaiementModel;
 import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.RouteResponse;
 import com.example.myapplication.model.TrajetModel;
@@ -72,6 +73,8 @@ public interface ApiService {
             @Query("lat2") double lat2,
             @Query("lon2") double lon2
     );
+    @POST("api/paiement/")
+    Call<PaiementModel> postPaiement(@Body PaiementModel paiement);
 
 
 }
