@@ -40,6 +40,7 @@ import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.bddsqlite.ConnectBddSqlite;
 import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.databinding.FragmentTrajetAdminBinding;
+import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.model.VehiculeModel;
@@ -68,7 +69,6 @@ public class TrajetAdminFragment extends Fragment {
     private FragmentTrajetAdminBinding binding;
     private AppDatabase bddsqlite;
     private ApiService apiService;
-    private AppDatabase bdsqlite;
     private View dialogView;
     private RecyclerView recyclerView;
     private TrajetAdapter adapter;
@@ -111,7 +111,6 @@ public class TrajetAdminFragment extends Fragment {
         binding.ajoutTrajet.setOnClickListener(view->{
             insertionTrajetDialog();
         });
-        bdsqlite= ConnectBddSqlite.connectBdd(getContext());
         return binding.getRoot();
     }
     public void insertDataAdapter(){
@@ -146,6 +145,7 @@ public class TrajetAdminFragment extends Fragment {
                         public void run() {
                             bddsqlite.trajetDao().viderTable();
                             bddsqlite.trajetDao().insertTrajets(response.body());
+                            getReservationDesTrajet();
                         }
                     });
                 }
@@ -161,7 +161,7 @@ public class TrajetAdminFragment extends Fragment {
                             trajetList=bddsqlite.trajetDao().getAllTrajets();
                             if(!trajetList.isEmpty()){
                                 insertDataAdapter();
-                                Toast.makeText(getActivity(), "ce sont des donne hors ligne ", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getActivity(), "ce sont des donne hors ligne ", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -302,7 +302,29 @@ public class TrajetAdminFragment extends Fragment {
                 Toast.makeText(getActivity(), "echec de connexion", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void getReservationDesTrajet(){
+        for(TrajetModel trajet:trajetList){
+            apiService.getReservationidTrajet(String.valueOf(trajet.getIdTrajet())).enqueue(new Callback<List<ReservationModel>>() {
+                @Override
+                public void onResponse(Call<List<ReservationModel>> call, Response<List<ReservationModel>> response) {
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            bddsqlite.reservationDao().viderTable(String.valueOf(trajet.getIdTrajet()));
+                            bddsqlite.reservationDao().insertReservations(response.body());
+                        }
+                    });
+                }
 
+                @Override
+                public void onFailure(Call<List<ReservationModel>> call, Throwable t) {
+                    Toast.makeText(getContext(), "echec de connexion", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
 
     }
 }

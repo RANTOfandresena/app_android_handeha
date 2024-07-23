@@ -99,6 +99,9 @@ public class TrajetActivity extends AppCompatActivity {
                 binding.date.setText("Depart : "+trajetModel.getHoraire());
                 binding.prix.setText("Prix : "+trajetModel.getPrix());
                 binding.placelibre.setText("Places Libres : "+ Algo.compterNumbre(trajetModel.getSiegeReserver(),0));
+                binding.nomc.setText("Nom : "+chauffeur.getFirst_name());
+                binding.prenomc.setText("Prenom : "+chauffeur.getLast_name());
+                binding.numeroc.setText("Numero :"+chauffeur.getNumero());
                 getVoiture(trajetModel.getIdVehicule());
                 paiementModel.setNumero(chauffeur.getNumero());
             }else {

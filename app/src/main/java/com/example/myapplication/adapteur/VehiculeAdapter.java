@@ -40,6 +40,7 @@ public class VehiculeAdapter extends RecyclerView.Adapter<VehiculeAdapter.Vehicu
         } catch (Resources.NotFoundException e) {}
         holder.numeroVehiculeTextView.setText("Numero du voiture:"+item.getNumeroVehicule());
         holder.capaciteTextView.setText(String.valueOf("nombre de place :"+item.getCapacite()));
+        holder.typeVehicule.setText("Type de vehicule :"+item.getPosition());
     }
     @Override
     public int getItemCount() {
@@ -49,15 +50,17 @@ public class VehiculeAdapter extends RecyclerView.Adapter<VehiculeAdapter.Vehicu
     public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
         public TextView numeroVehiculeTextView;
-        public TextView capaciteTextView;
+        public TextView capaciteTextView,typeVehicule;
         public ImageButton editButton;
         public ImageButton deleteButton;
+
 
         public VehiculeViewHolder(View itemView,final OnItemClickListener listener,final OnItemRetourClickListener listenerRetour) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageview);
             numeroVehiculeTextView = itemView.findViewById(R.id.numero_vehicule);
             capaciteTextView = itemView.findViewById(R.id.capacite);
+            typeVehicule=itemView.findViewById(R.id.typeVehicule);
             editButton = itemView.findViewById(R.id.btn_edit);
             deleteButton = itemView.findViewById(R.id.btn_suppr);
             editButton.setOnClickListener(v->{

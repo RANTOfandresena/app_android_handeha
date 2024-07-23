@@ -2,6 +2,7 @@ package com.example.myapplication.fragment;
 
 import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.myapplication.activity.InscriptionActivity;
+import com.example.myapplication.activity.LoginActivity;
+import com.example.myapplication.activity.MainActivity;
 import com.example.myapplication.adapteur.TrajetAdapter;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
@@ -85,6 +89,9 @@ public class ReservationFragment extends Fragment {
        // binding.resultat.setVisibility(View.GONE);
         binding.aucunReservation.setVisibility(View.GONE);
         binding.seConnect.setVisibility(View.GONE);
+        binding.seConnect.setOnClickListener(v->{
+            startActivity(new Intent(getContext(), LoginActivity.class));
+        });
         listtrajet=new ArrayList<>();
         gestionAuth();
         return  binding.getRoot();

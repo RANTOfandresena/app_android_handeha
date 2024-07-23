@@ -9,7 +9,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 public class AngleRotation {
     public static Bitmap getImageDirection(double degrees, Context context) {
-        int index= (int) (degrees/22.6);
+        int index= (int) (degrees/22.6);//12>4,8>0,1>9
         if (index == -1 || index>361) {
             return null;
         } else {

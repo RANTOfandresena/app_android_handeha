@@ -46,7 +46,7 @@ public class ProfilActivity extends AppCompatActivity {
     private VehiculeAdapter adapter;
     private View dialogView;
     private Button btn_enregistrer,btn_retour;
-    private TextInputEditText place_large,place_long,num_voiture;
+    private TextInputEditText place_large,place_long,num_voiture,type;
     private ImageButton edit_place;
     private GridLayout gridLayout;
     private ApiService apiService;
@@ -59,8 +59,9 @@ public class ProfilActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityProfilBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         userManage=new UserManage(this);
+        binding.nomUser.setText(userManage.getUser().getFirst_name()+" "+userManage.getUser().getLast_name());
+        binding.numUser.setText(userManage.getUser().getNumero());
         binding.ajoutVoiture.setOnClickListener(v->{
             VehiculeModel vehiculeModel=new VehiculeModel("","4","6",userManage.getUser().getId());
             modifierVehicule(vehiculeModel,true,-1);
@@ -98,11 +99,13 @@ public class ProfilActivity extends AppCompatActivity {
         btn_retour=dialogView.findViewById(R.id.btn_retour);
         place_large=dialogView.findViewById(R.id.place_large);
         place_long=dialogView.findViewById(R.id.place_long);
+        type=dialogView.findViewById(R.id.type);
         num_voiture=dialogView.findViewById(R.id.num_voiture);
         edit_place=dialogView.findViewById(R.id.edit_place);
         gridLayout=dialogView.findViewById(R.id.placee);
         place_large.setText(vehiculeModel.getNb_colonne());
         place_long.setText(vehiculeModel.getNb_rangee());
+        type.setText(vehiculeModel.getPosition());
         int[][] place= PlaceVoiture.generatePlace(
                 Integer.parseInt(vehiculeModel.getNb_colonne()),
                 Integer.parseInt(vehiculeModel.getNb_rangee())
@@ -124,6 +127,7 @@ public class ProfilActivity extends AppCompatActivity {
             vehiculeModel.setNumeroVehicule(num_voiture.getText().toString());
             vehiculeModel.setNb_colonne(place_large.getText().toString());
             vehiculeModel.setNb_rangee(place_long.getText().toString());
+            vehiculeModel.setPosition(type.getText().toString());
             int capa=Integer.parseInt(place_large.getText().toString())*Integer.parseInt(place_long.getText().toString())-2;
             vehiculeModel.setCapacite(capa);
             if(isajout){
@@ -263,11 +267,22 @@ public class ProfilActivity extends AppCompatActivity {
         postCall.enqueue(new Callback<VehiculeModel>() {
             @Override
             public void onResponse(Call<VehiculeModel> call, Response<VehiculeModel> response) {
-                // Mettre à jour la liste des véhicules dans l'Adapter
-                vehiculeList.set(position, response.body()); // positionToUpdate est l'indice du véhicule modifié
-                adapter.notifyDataSetChanged();
-                Toast.makeText(ProfilActivity.this, "Modification enregistrer", Toast.LENGTH_SHORT).show();
-                alertDialog.dismiss();
+                if(response.isSuccessful()){
+                    vehiculeList.set(position, response.body());
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(ProfilActivity.this, "Modification enregistrer", Toast.LENGTH_SHORT).show();
+                    alertDialog.dismiss();
+                }else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        ErrorResponse errorResponse = new Gson().fromJson(errorBody, ErrorResponse.class);
+                        Toast.makeText(ProfilActivity.this, errorResponse.getError(), Toast.LENGTH_SHORT).show();
+                        alertDialog.dismiss();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
             }
             @Override
             public void onFailure(Call<VehiculeModel> call, Throwable t) {
@@ -308,9 +323,22 @@ public class ProfilActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 //vehiculeList.remove(position);
-                adapter.removeItem(position);
-                Toast.makeText(ProfilActivity.this, "Voiture supprimer", Toast.LENGTH_SHORT).show();
-                alertDialog.dismiss();
+                if(response.isSuccessful()){
+                    adapter.removeItem(position);
+                    Toast.makeText(ProfilActivity.this, "Voiture supprimer", Toast.LENGTH_SHORT).show();
+                    alertDialog.dismiss();
+                }else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        ErrorResponse errorResponse = new Gson().fromJson(errorBody, ErrorResponse.class);
+                        Toast.makeText(ProfilActivity.this, errorResponse.getError(), Toast.LENGTH_SHORT).show();
+                        alertDialog.dismiss();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+
             }
 
             @Override
@@ -319,6 +347,13 @@ public class ProfilActivity extends AppCompatActivity {
                 alertDialog.dismiss();
             }
         });
-    }
 
+    }
+    public class ErrorResponse {
+        private String error;
+
+        public String getError() {
+            return error;
+        }
+    }
 }

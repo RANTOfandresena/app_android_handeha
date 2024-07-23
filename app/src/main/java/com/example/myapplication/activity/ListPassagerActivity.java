@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -28,6 +29,8 @@ import com.example.myapplication.model.UtilisateurModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -89,19 +92,19 @@ public class ListPassagerActivity extends AppCompatActivity {
                 adapter = new ReservationUtilisateurAdapter(ListPassagerActivity.this, reservationModelList);
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(ListPassagerActivity.this));
-                databaseSql.reservationDao().viderTable(idTrajet);
-                databaseSql.reservationDao().insertReservations(reservationModelList);
+                postReservationSQLite(idTrajet);
             }
 
             @Override
             public void onFailure(Call<List<ReservationModel>> call, Throwable t) {
                 Toast.makeText(ListPassagerActivity.this, "achec de connexion", Toast.LENGTH_SHORT).show();
-                reservationModelList=databaseSql.reservationDao().getAllReservations(idTrajet);
+                /*reservationModelList=databaseSql.reservationDao().getAllReservations(idTrajet);
                 if(reservationModelList.isEmpty())
                     binding.aucunPassager.setVisibility(View.VISIBLE);
                 adapter = new ReservationUtilisateurAdapter(ListPassagerActivity.this, reservationModelList);
                 recyclerView.setAdapter(adapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(ListPassagerActivity.this));
+                recyclerView.setLayoutManager(new LinearLayoutManager(ListPassagerActivity.this));*/
+                getReservationSQLite(idTrajet);
             }
         });
     }
@@ -112,5 +115,34 @@ public class ListPassagerActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    private void getReservationSQLite(String idTrajet){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                reservationModelList=databaseSql.reservationDao().getAllReservations(idTrajet);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Mettre à jour le TextView
+                        if(reservationModelList.isEmpty())
+                            binding.aucunPassager.setVisibility(View.VISIBLE);
+                        adapter = new ReservationUtilisateurAdapter(ListPassagerActivity.this, reservationModelList);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(ListPassagerActivity.this));
+                    }
+                });
+            }
+        }).start();
+    }
+    private void postReservationSQLite(String idTrajet){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                databaseSql.reservationDao().viderTable(idTrajet);
+                databaseSql.reservationDao().insertReservations(reservationModelList);
+            }
+        });
     }
 }

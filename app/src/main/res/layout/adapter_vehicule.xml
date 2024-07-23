@@ -29,11 +29,19 @@
         android:layout_below="@id/numero_vehicule"
         android:textColor="@color/black"
         android:text="681 hj"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/typeVehicule"
+        android:layout_toEndOf="@id/imageview"
+        android:layout_below="@id/capacite"
+        android:textColor="@color/black"
+        android:text="Mazda"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@id/imageview"
+        android:layout_below="@id/typeVehicule"
         android:layout_marginTop="10dp"
         android:background="#DAD8D8"/>
 

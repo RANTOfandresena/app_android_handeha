@@ -24,6 +24,84 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <!--_______________________ -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="18dp"
+                android:background="@drawable/background_item"
+                android:layout_margin="12dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/infoc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:text="Information sur le chauffeur"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/nomc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/infoc"
+                    android:text="Nom:test"
+                    android:textColor="@color/lavender"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/prenomc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/nomc"
+                    android:layout_marginTop="0dp"
+                    android:text="Prenom:test"
+                    android:textColor="@color/lavender"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+                <!-- Arrow -->
+                <TextView
+                    android:id="@+id/numeroc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Numero :"
+                    android:layout_below="@id/prenomc"
+                    android:textSize="14sp"
+                    android:textColor="@color/lavender"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/infov"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="Information sur le Voiture"
+                    android:layout_below="@id/numeroc"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/numerov"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Numero du voiture :"
+                    android:layout_below="@id/infov"
+                    android:textSize="14sp"
+                    android:textColor="@color/lavender"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/marquev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Marque du voiture :"
+                    android:layout_below="@id/numerov"
+                    android:textSize="14sp"
+                    android:textColor="@color/lavender"
+                    android:textStyle="bold"/>
+            </RelativeLayout>
+            <!--_______________________ -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:id="@+id/info"

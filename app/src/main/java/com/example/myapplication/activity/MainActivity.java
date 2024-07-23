@@ -45,9 +45,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.myapplication.adapteur.ReservationUtilisateurAdapter;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
+import com.example.myapplication.bddsqlite.ConnectBddSqlite;
+import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.fragment.CarteFragment;
 import com.example.myapplication.R;
 import com.example.myapplication.fragment.RechercheFragment;
@@ -71,6 +75,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import android.Manifest;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -82,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
     private AppPermissions appPermissions;
     //private LocationManager locationManager;
     private Button seconnecter;
+    private AppDatabase databaseSql;
     public Toolbar toolbar;
     private NavigationView navigationView;
     SharedPreferences sharedPreferences;
@@ -106,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNavigationView=findViewById(R.id.bottomNavigationView);
+        databaseSql= ConnectBddSqlite.connectBdd(this);
         bottomNavigationView.setBackground(null);
         drawerLayout=findViewById(R.id.drawer_layout);
         toolbar=findViewById(R.id.toolbar);
@@ -287,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     userManage.deconnect();
                     editor.apply();
+                    suppressionDonneSQlite();
                     startActivity(new Intent(MainActivity.this, MainActivity.class));
                     finish();
                 }else Toast.makeText(MainActivity.this, "echec de deconnexion", Toast.LENGTH_SHORT).show();
@@ -333,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
         if (carteFragment != null) {
             afficherFragment("CARTE_FRAGMENT");
             bottomNavigationView.setSelectedItemId(R.id.carte);
-            carteFragment.updateMapLocation(latitude, longitude);
+            carteFragment.villeSelectionner(latitude, longitude);
         }
     }
     private void gestionFenetre(){
@@ -487,5 +497,16 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
     @Override
     protected void onPause() {
         super.onPause();
+    }
+    private void suppressionDonneSQlite(){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                databaseSql.paiementDao().supprPaiements();
+                databaseSql.reservationDao().viderTable();
+                databaseSql.trajetDao().viderTable();
+            }
+        });
     }
 }

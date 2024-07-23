@@ -180,7 +180,6 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         ) {
             @Override
             public boolean onLongPress(LatLong tapLatLong, Point thisXY, Point tapXY) {
-                // Appel de la méthode onLongPress avec la position de la pression longue
                 CarteFragment.this.onLongPress(tapLatLong);
                 return true;
             }
@@ -191,7 +190,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         mapView.setCenter(new LatLong(-18.766947,48.869107));
         mapView.setZoomLevel((byte) 9);
         rootView.findViewById(R.id.position).setOnClickListener(v -> {
-            get_route();
+            localisation();
         });
         return rootView;
     }
@@ -199,15 +198,22 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
 
 
     protected void onLongPress(final LatLong position) {
-            //activity.getLastLocation();
-        Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
-        localisation();
+        ajoutMarker(position);
+        mapView.setCenter(position);
+
     }
     @Override
     public void onResume(){
         super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        /*sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
+        List<Sensor> sensorsList=sensorManager.getSensorList(Sensor.TYPE_ALL);
+        for(Sensor s:sensorsList){}*/
+        sensorManager.registerListener(
+                this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+                SensorManager.SENSOR_DELAY_UI
+        );
 
         //mapView.onStartTemporaryDetach();
     }
@@ -243,21 +249,24 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         localisationMarker = new Marker(position, mfBitmap, 0, 0);
         mapView.getLayerManager().getLayers().add(localisationMarker);
     }
-    private void addMarker(LatLong position) {
-        // Charger l'icône depuis les ressources drawable
-        // Créer le marqueur
+    private void localisationMarkerOrientation(LatLong position) {
         Bitmap mfBitmap = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.d4));
-        mfBitmap.scaleTo(60, 60);
         localisationMarker = new Marker(position, mfBitmap, 0, 0);
         mapView.getLayerManager().getLayers().add(localisationMarker);
     }
-    public void updateMapLocation(double latitude, double longitude) {
+    private void addMarker(LatLong position) {
+        Bitmap mfBitmap = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.d4));
+        mfBitmap.scaleTo(60, 60);
+        mapView.setZoomLevel((byte) 17);
+        localisationMarker = new Marker(position, mfBitmap, 0, 0);
+        mapView.setCenter(position);
+        mapView.getLayerManager().getLayers().add(localisationMarker);
+    }
+    public void villeSelectionner(double latitude, double longitude) {
         LatLong point = new LatLong(latitude, longitude);
-        layerManager = mapView.getLayerManager();
-        if (marker != null) {
-            layerManager.getLayers().remove(marker);
-        }
+
         ajoutMarker(point);
+        mapView.setZoomLevel((byte) 14);
         mapView.setCenter(point);
     }
     public void ajoutMarker(LatLong point) {
@@ -265,6 +274,8 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         if (marker != null) {
             layerManager.getLayers().remove(marker);
         }
+        Bitmap mfBitmap = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.localisation));
+        marker=new Marker(point, mfBitmap, 0, 0);
         //createMarker(point);
         layerManager.getLayers().add(marker);
     }
@@ -389,12 +400,10 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
 
                 Toast.makeText(getContext(), String.valueOf(lat)+"|autre|"+String.valueOf(lon), Toast.LENGTH_LONG).show();
             }else {
-                Toast.makeText(getContext(), "impossible de localiser", Toast.LENGTH_LONG).show();
-                addMarker(new LatLong(-18.766947,48.869107));
-                a=false;
+                //Toast.makeText(getContext(), "impossible de localiser", Toast.LENGTH_LONG).show();
+                addMarker(new LatLong(-19.856163, 47.027164));
             }
-            if(a)
-                addMarker(new LatLong(-19.85587166666,47.02742499999));
+
         }
     }
 
@@ -415,37 +424,23 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         alertDialog.show();
     }
 
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-            gravity = event.values;
-        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
-            geomagnetic = event.values;
-        if (gravity != null && geomagnetic != null) {
-            float R[] = new float[9];
-            float I[] = new float[9];
-            boolean success = SensorManager.getRotationMatrix(R, I, gravity, geomagnetic);
-            if (success) {
-                float orientation[] = new float[3];
-                SensorManager.getOrientation(R, orientation);
-                azimuth = (float) Math.toDegrees(orientation[0]); // orientation contains: azimut, pitch and roll
-                if (azimuth < 0) {
-                    azimuth += 360;
-                }
-                if (localisationMarker != null) {
-                    int index= (int) (azimuth/22.6);
-                    if(max<azimuth)
-                        max=azimuth;
-                    String resourceName = "d" + index;
-
-                    localisationMarker.setBitmap(AngleRotation.getImageDirection(azimuth,getContext()));
-                    mainActivity.toolbar.setTitle(String.valueOf(max)+"||"+resourceName);
-                    mapView.repaint();
-                }
-            }
+        if (localisationMarker != null) {
+            int degre=Math.round(event.values[0]);
+            //int index= (int) (degre/22.6);
+            //String resourceName = "d" + index;
+            Bitmap bitmap=AngleRotation.getImageDirection(degre,getContext());
+            localisationMarker.setBitmap(bitmap);
+            //mainActivity.toolbar.setTitle(String.valueOf(degre)+"||"+resourceName);
+            Layers layers=mapView.getLayerManager().getLayers();
+            layers.remove(localisationMarker);
+            layers.add(localisationMarker);
+            mapView.repaint();
         }
-
     }
+
 
 
     @Override
