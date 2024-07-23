@@ -44,6 +44,7 @@ import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.model.VehiculeModel;
 import com.example.myapplication.outile.Algo;
+import com.example.myapplication.outile.DateChange;
 import com.example.myapplication.outile.EncodeurTableauFixe;
 import com.example.myapplication.outile.PlaceVoiture;
 import com.example.myapplication.outile.UserManage;
@@ -96,7 +97,7 @@ public class TrajetActivity extends AppCompatActivity {
             if(trajetModel!=null && chauffeur!=null){
                 binding.depart.setText(trajetModel.getLieuDepart());
                 binding.arrive.setText(trajetModel.getLieuArrive());
-                binding.date.setText("Depart : "+trajetModel.getHoraire());
+                binding.date.setText("Depart : "+ DateChange.changerLaDate(trajetModel.getHoraire()));
                 binding.prix.setText("Prix : "+trajetModel.getPrix());
                 binding.placelibre.setText("Places Libres : "+ Algo.compterNumbre(trajetModel.getSiegeReserver(),0));
                 binding.nomc.setText("Nom : "+chauffeur.getFirst_name());
@@ -290,6 +291,9 @@ public class TrajetActivity extends AppCompatActivity {
                 int[][] places= PlaceVoiture.generatePlace(longe,large);
                 afficherPlace(places,binding.placee);
                 actionbtn();
+                binding.numerov.setText("Numero du voiture : "+voiture.getNumeroVehicule());
+                if(voiture.getPosition()!=null)
+                    binding.marquev.setText("Marque du voiture : "+voiture.getPosition());
             }
             @Override
             public void onFailure(Call<List<VehiculeModel>> call, Throwable t) {

@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.example.myapplication.activity.InscriptionActivity;
 import com.example.myapplication.activity.LoginActivity;
 import com.example.myapplication.activity.MainActivity;
+import com.example.myapplication.activity.MonReservationActivity;
+import com.example.myapplication.activity.TrajetActivity;
 import com.example.myapplication.adapteur.TrajetAdapter;
 import com.example.myapplication.apiClass.RetrofitClient;
 import com.example.myapplication.apiService.ApiService;
@@ -25,6 +27,7 @@ import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.databinding.FragmentReservationBinding;
 import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
+import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.outile.UserManage;
 
 import java.util.ArrayList;
@@ -135,6 +138,36 @@ public class ReservationFragment extends Fragment {
     private void obtientData(List<ReservationModel> reservationModelList) {
         adapter=new TrajetAdapter(false,reservationModelList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                if(user!=null){
+                    retrofit2.Call<UtilisateurModel> getCall = apiService.getUtilisateurId(reservationModelList.get(position).getTrajet().getIdUser());
+                    getCall.enqueue(new Callback<UtilisateurModel>() {
+                        @Override
+                        public void onResponse(Call<UtilisateurModel> call, Response<UtilisateurModel> response) {
+                            UtilisateurModel chauffeur=response.body();
+                            Intent intent=new Intent(getActivity(), MonReservationActivity.class);
+                            intent.putExtra("chaufeurModel",chauffeur);
+                            intent.putExtra("data",reservationModelList.get(position).getTrajet());
+                            //voyageur=rootView.findViewById(R.id.voyageur);
+                            //intent.putExtra("nbplace",voyageur.getText().toString());
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onFailure(Call<UtilisateurModel> call, Throwable t) {
+                            Toast.makeText(getContext(), "echec de connexion", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }else{
+                    Intent intent=new Intent(getContext(), LoginActivity.class);
+                    startActivity(intent);
+                    getActivity().finish();
+                }
+
+            }
+        });
         recyclerView.setAdapter(adapter);
     }
     private void postDataSQLite(List<ReservationModel> ListReservation){
