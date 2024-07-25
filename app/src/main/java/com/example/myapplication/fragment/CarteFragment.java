@@ -72,6 +72,7 @@ import org.mapsforge.core.graphics.Color ;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,6 +91,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private LocationManager locationManager;
+    private TraceCarte traceCarte;
     private RotateView rotateMarker ;
     private MainActivity activity;
     private static final String ARG_PARAM1 = "param1";
@@ -112,6 +114,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
     private String mParam1;
     private String mParam2;
     private Marker localisationMarker;
+    private List<Marker> listPoints;
 
     public CarteFragment() {
         // Required empty public constructor
@@ -192,6 +195,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         rootView.findViewById(R.id.position).setOnClickListener(v -> {
             localisation();
         });
+        listPoints=new ArrayList<>();
         return rootView;
     }
 
@@ -199,8 +203,8 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
 
     protected void onLongPress(final LatLong position) {
         ajoutMarker(position);
-        mapView.setCenter(position);
-
+        //mapView.setCenter(position);
+        get_route();
     }
     @Override
     public void onResume(){
@@ -287,16 +291,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
                 if(response.isSuccessful()){
                     ajoutMarker(new LatLong(-18.916667, 47.533333));
                     List<LatLong> latLongs=response.body().conversionLatLong();
-                    TraceCarte traceCarte=new TraceCarte(mapView.getLayerManager().getLayers());
-                    //traceCarte.tracerUnPolyLine(new LatLong(-18.916667, 47.533333),new LatLong(-18.216667, 47.733333));
-                    //traceCarte.tracerUnPolyLine(new LatLong(-18.216667, 47.733333),new LatLong(-18.816667, 48.733333));
-                    for (int i = 0; i < 10; i+=1) {
-                        //traceCarte.tracerUnPolyLine(latLongs.get(i),latLongs.get(i+10));
-                        //ajoutMarker(latLongs.get(i));
-                    }
-                    //traceCarte.addLatLongs(latLongs);
-                    //traceCarte.tracerPolylines();
-                    Toast.makeText(getContext(), "gg", Toast.LENGTH_SHORT).show();
+                    tracerChemain(latLongs);
                 }else{
                     Toast.makeText(getContext(), "Echec ", Toast.LENGTH_SHORT).show();
                 }
@@ -321,46 +316,6 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
     public void onLocationChanged(@NonNull Location location) {
 
     }
-    /*private void addPolyline(List<LatLong> latLongs) {
-        aint paint = Utils.createPaint(AndroidGraphicFactory.INSTANCE.createColor(Color.BLUE), 80, Style.STROKE);
-       Polyline polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
-      polyline.getLatLongs().addAll(latLongs);
-       mapView.getLayerManager().getLayers().add(polyline);
-        addOverlayLayers(mapView.getLayerManager().getLayers(),latLongs);
-    }
-    protected void addOverlayLayers(Layers layers,List<LatLong> latL) {
-
-        Polyline polyline = new Polyline(Utils.createPaint(
-                AndroidGraphicFactory.INSTANCE.createColor(Color.BLUE), 8,
-                Style.STROKE), AndroidGraphicFactory.INSTANCE);
-        List<LatLong> latLongs = polyline.getLatLongs();
-        latLongs.addAll(latL);
-        layers.add(polyline);
-    }
-    private void drawLine(LatLong pointA, LatLong pointB) {
-        Paint paint = AndroidGraphicFactory.INSTANCE.createPaint();
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(5);
-        paint.setStyle(Style.STROKE);
-        paint.setStrokeCap(Cap.ROUND);
-
-        Polyline polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
-        polyline.getLatLongs().addAll(Arrays.asList(pointA, pointB));
-        mapView.getLayerManager().getLayers().add(polyline);
-    }
-    private void drawlie(List<LatLong> latLongs){
-        Paint paint = AndroidGraphicFactory.INSTANCE.createPaint();
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(5);
-        paint.setStyle(Style.STROKE);
-        paint.setStrokeCap(Cap.ROUND);
-        Polyline polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
-        for(int i=0 ;i!=latLongs.size()-1;i++){
-            polyline.getLatLongs().addAll(Arrays.asList(latLongs.get(i), latLongs.get(i+1)));
-            //polyline.setPoints(latLongs);
-        }
-        mapView.getLayerManager().getLayers().add(polyline);
-    }*/
     private void localisation() {
         locationManager= (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -402,8 +357,10 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
             }else {
                 //Toast.makeText(getContext(), "impossible de localiser", Toast.LENGTH_LONG).show();
                 addMarker(new LatLong(-19.856163, 47.027164));
+                a=false;
             }
-
+            if(a)
+                addMarker(new LatLong(lat, lon));
         }
     }
 
@@ -440,11 +397,13 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
             mapView.repaint();
         }
     }
-
-
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+    public void tracerChemain(List<LatLong> points){
+        traceCarte=new TraceCarte(mapView.getLayerManager().getLayers());
+        traceCarte.addLatLongs(points);
+        traceCarte.tracerPolylines();
     }
 }

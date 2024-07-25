@@ -191,6 +191,11 @@ public class TransportFragment extends Fragment {
                 }
 
             }
+
+            @Override
+            public void onCartClick(int position) {
+
+            }
         });
         recyclerView.setAdapter(adapter);
     }

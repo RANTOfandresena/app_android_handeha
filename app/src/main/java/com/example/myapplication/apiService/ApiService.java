@@ -1,5 +1,6 @@
 package com.example.myapplication.apiService;
 
+import com.example.myapplication.model.CoordonneApiNomVille;
 import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.PaiementModel;
@@ -72,6 +73,12 @@ public interface ApiService {
             @Query("lon1") double lon1,
             @Query("lat2") double lat2,
             @Query("lon2") double lon2
+    );
+    @GET("reverse")
+    Call<CoordonneApiNomVille> getNomVille(
+            @Query("format") String format,
+            @Query("lat") double latitude,
+            @Query("lon") double longitude
     );
     @POST("api/paiement/")
     Call<PaiementModel> postPaiement(@Body PaiementModel paiement);

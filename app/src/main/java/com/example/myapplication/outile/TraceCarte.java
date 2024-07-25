@@ -6,6 +6,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.overlay.Polyline;
 
@@ -76,5 +77,14 @@ public class TraceCarte {
      */
     public void setStrokeWidth(float width) {
         this.paint.setStrokeWidth(width);
+    }
+    public void supprimerToutesLesPolylines() {
+        List<Layer> layersToRemove = new ArrayList<>();
+        for (Layer layer : layers) {
+            if (layer instanceof Polyline) {
+                layersToRemove.add(layer);
+            }
+        }
+        layers.removeAll(layersToRemove);
     }
 }

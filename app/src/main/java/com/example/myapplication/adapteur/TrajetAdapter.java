@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,6 +83,7 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
     public class TrajetViewHolder extends RecyclerView.ViewHolder{
         public TextView lieuDepart, lieuArrive, horaire, prix,placeLibre;
         public Button btn_reserver;
+        public ImageButton voirCart;
         public TrajetViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             lieuDepart = itemView.findViewById(R.id.depart);
@@ -90,6 +92,7 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
             prix = itemView.findViewById(R.id.prix);
             placeLibre = itemView.findViewById(R.id.place_libre);
             btn_reserver=itemView.findViewById(R.id.reserver);
+            voirCart=itemView.findViewById(R.id.carteVoir);
             if(isChauffer){
                 btn_reserver.setText("Voir la list des passagers");
             }else if(trajetList==null){
@@ -103,6 +106,14 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
                     }
                 }
             });
+            voirCart.setOnClickListener(v->{
+                if (listener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onCartClick(position);
+                    }
+                }
+            });
         }
     }
     public void ajoutTrajet(TrajetModel item) {
@@ -111,6 +122,7 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
     }
     public interface OnItemClickListener {
         void onItemClick(int position);
+        void onCartClick(int position);
     }
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;

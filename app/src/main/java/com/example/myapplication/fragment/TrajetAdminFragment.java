@@ -1,37 +1,28 @@
 package com.example.myapplication.fragment;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
 
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
-import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewbinding.ViewBinding;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activity.ListPassagerActivity;
-import com.example.myapplication.activity.MainActivity;
-import com.example.myapplication.activity.TrajetActivity;
 import com.example.myapplication.adapteur.TrajetAdapter;
 import com.example.myapplication.adapteur.VoiturePetitListAdapter;
 import com.example.myapplication.allConstant.Calendrier;
@@ -40,12 +31,16 @@ import com.example.myapplication.apiService.ApiService;
 import com.example.myapplication.bddsqlite.ConnectBddSqlite;
 import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.databinding.FragmentTrajetAdminBinding;
+import com.example.myapplication.model.CoordonneApiNomVille;
 import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.model.VehiculeModel;
 import com.example.myapplication.outile.UserManage;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
+import org.mapsforge.core.model.LatLong;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,10 +58,11 @@ import retrofit2.Response;
  * Use the {@link TrajetAdminFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TrajetAdminFragment extends Fragment {
+public class TrajetAdminFragment extends Fragment implements CarteDialogFragment.DialogListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private FragmentTrajetAdminBinding binding;
+    private CarteDialogFragment carte;
     private AppDatabase bddsqlite;
     private ApiService apiService;
     private View dialogView;
@@ -108,6 +104,7 @@ public class TrajetAdminFragment extends Fragment {
         userManage=new UserManage(getContext());
         user=userManage.getUser();
         getTrajetListApi();
+        carte=CarteDialogFragment.newInstance(TrajetAdminFragment.this);
         binding.ajoutTrajet.setOnClickListener(view->{
             insertionTrajetDialog();
         });
@@ -125,6 +122,11 @@ public class TrajetAdminFragment extends Fragment {
                 Intent intent=new Intent(getActivity(), ListPassagerActivity.class);
                 intent.putExtra("idTrajet",String.valueOf(trajetList.get(position).getIdTrajet()));
                 startActivity(intent);
+            }
+
+            @Override
+            public void onCartClick(int position) {
+                Toast.makeText(getContext(), "gg"+String.valueOf(position), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -175,6 +177,7 @@ public class TrajetAdminFragment extends Fragment {
         dialogView= LayoutInflater.from(getActivity()).inflate(R.layout.formulaire_trajet,trajet_dialog);
         Button okvalider=dialogView.findViewById(R.id.formulaire_trajet_valider);
         AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+
         builder.setView(dialogView);
         autoCompleteTextView=dialogView.findViewById(R.id.idVehicle);
         final AlertDialog alertDialog=builder.create();
@@ -182,6 +185,15 @@ public class TrajetAdminFragment extends Fragment {
         listVoiture();
         textInputEditText_horaire.setOnClickListener(view->{
             calendar=Calendrier.afficheCalendrier(requireActivity(),textInputEditText_horaire,true);
+        });
+        TextInputLayout lieuDepartLayout = dialogView.findViewById(R.id.lieuDepartLayout);
+        lieuDepartLayout.setEndIconOnClickListener(v->{
+            afficheCarte(true);
+        });
+        //lieuArriveLayout
+        TextInputLayout lieuArriveLayout = dialogView.findViewById(R.id.lieuArriveLayout);
+        lieuArriveLayout.setEndIconOnClickListener(v->{
+            afficheCarte(false);
         });
         okvalider.findViewById(R.id.formulaire_trajet_valider).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -326,5 +338,15 @@ public class TrajetAdminFragment extends Fragment {
 
         }
 
+    }
+    private void afficheCarte(boolean estDepart){
+        carte.estDepart=estDepart;
+        carte.show(getParentFragmentManager(), "CarteDialogFragment");
+    }
+
+
+    @Override
+    public void retourLatLong(LatLong latLong, String nom) {
+        Toast.makeText(getContext(), "gggg:"+nom, Toast.LENGTH_SHORT).show();
     }
 }

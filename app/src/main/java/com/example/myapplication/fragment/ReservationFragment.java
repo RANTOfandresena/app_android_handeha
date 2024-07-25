@@ -167,6 +167,11 @@ public class ReservationFragment extends Fragment {
                 }
 
             }
+
+            @Override
+            public void onCartClick(int position) {
+
+            }
         });
         recyclerView.setAdapter(adapter);
     }

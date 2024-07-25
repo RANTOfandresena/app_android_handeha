@@ -22,7 +22,7 @@ public class RouteResponse {
     public List<LatLong> conversionLatLong(){
         List<LatLong> latLongs = new ArrayList<>();
         for (List<Double> coordonnee : route_coords) {
-            latLongs.add(new LatLong(coordonnee.get(0), coordonnee.get(1)));
+            latLongs.add(new LatLong(coordonnee.get(1), coordonnee.get(0)));
         }
         return latLongs;
     }
