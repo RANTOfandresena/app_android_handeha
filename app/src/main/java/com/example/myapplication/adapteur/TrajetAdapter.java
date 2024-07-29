@@ -2,6 +2,9 @@ package com.example.myapplication.adapteur;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.example.myapplication.allConstant.Allconstant.URL_SERVER;
+
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,25 +17,40 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.helper.widget.Layer;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.apiClass.RetrofitClient;
+import com.example.myapplication.apiService.ApiService;
+import com.example.myapplication.fragment.CarteDialogFragment;
 import com.example.myapplication.model.ReservationModel;
+import com.example.myapplication.model.RouteResponse;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.VehiculeModel;
 import com.example.myapplication.outile.Algo;
 import com.example.myapplication.outile.DateChange;
+import com.example.myapplication.outile.ParcelableLatLong;
+
+import org.mapsforge.core.model.LatLong;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetViewHolder> {
     private List<TrajetModel> trajetList;
+    private ApiService apiService;
     private List<ReservationModel> reservationList;
     private OnItemClickListener listener;
     private boolean isChauffer;
-    public TrajetAdapter(List<TrajetModel> trajetList,boolean isChauffer) {
+    private FragmentManager fragmentManager;
+    public TrajetAdapter(List<TrajetModel> trajetList,boolean isChauffer,FragmentManager fragmentManager) {
         this.trajetList = trajetList;
         this.isChauffer=isChauffer;
+        this.fragmentManager=fragmentManager;
     }
     public TrajetAdapter( boolean isChauffer,List<ReservationModel> reservationList) {
         this.reservationList = reservationList;
@@ -49,15 +67,23 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
     public void onBindViewHolder(@NonNull TrajetAdapter.TrajetViewHolder holder, int position) {
         if(trajetList!=null){
             TrajetModel trajet=trajetList.get(position);
-            holder.lieuDepart.setText(trajet.getLieuDepart());
-            holder.lieuArrive.setText(trajet.getLieuArrive());
+            String lieuDeparts=trajet.getLieuDepart();
+            String[] lieuDepart = lieuDeparts.split("\\|");
+            holder.lieuDepart.setText(lieuDepart[0]);
+            String lieuArrives=trajet.getLieuArrive();
+            String[] lieuArrive = lieuArrives.split("\\|");
+            holder.lieuArrive.setText(lieuArrive[0]);
             holder.horaire.setText("Depart : "+ DateChange.changerLaDate(trajet.getHoraire()));
             holder.placeLibre.setText("Place libre :"+ Algo.compterNumbre(trajet.getSiegeReserver(),0));
-            holder.prix.setText(trajet.getPrix()+"/personne");
+            holder.prix.setText(trajet.getPrix().replace(".00", "")+"Ar/personne");
         }else if(reservationList!=null){
             ReservationModel reservation = reservationList.get(position);
-            holder.lieuDepart.setText(reservation.getTrajet().getLieuDepart());
-            holder.lieuArrive.setText(reservation.getTrajet().getLieuArrive());
+            String lieuDeparts=reservation.getTrajet().getLieuDepart();
+            String[] lieuDepart = lieuDeparts.split("\\|");
+            holder.lieuDepart.setText(lieuDepart[0]);
+            String lieuArrives=reservation.getTrajet().getLieuArrive();
+            String[] lieuArrive = lieuArrives.split("\\|");
+            holder.lieuArrive.setText(lieuArrive[0]);
             holder.horaire.setText("Depart : " + DateChange.changerLaDate(reservation.getTrajet().getHoraire()));
             holder.placeLibre.setText("nombre de place reserver :" + String.valueOf(reservation.getSiegeNumero().size()));
             String strprix=reservation.getTrajet().getPrix();
@@ -110,7 +136,17 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
                 if (listener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        listener.onCartClick(position);
+                        String lieuDeparts=trajetList.get(position).getLieuDepart();
+                        String[] lieuDepart = lieuDeparts.split("\\|");
+
+                        String lieuArrives=trajetList.get(position).getLieuArrive();
+                        String[] lieuArrive = lieuArrives.split("\\|");
+
+                        LatLong depart = ParcelableLatLong.StringToLatLong(lieuDepart[1],lieuDepart[2]);
+                        LatLong arrive = ParcelableLatLong.StringToLatLong(lieuArrive[1], lieuArrive[2]);
+                        boolean disableLongPress = true;
+                        Toast.makeText(itemView.getContext(), "", Toast.LENGTH_SHORT).show();
+                        get_route(position,depart,arrive,disableLongPress,itemView.getContext());
                     }
                 }
             });
@@ -126,5 +162,30 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
     }
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
+    }
+    private void get_route(int position,LatLong a, LatLong b,boolean disableLongPress, Context c){
+        apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
+        Call<RouteResponse> call = apiService.getRoute(a.getLatitude(), a.getLongitude(), b.getLatitude(), b.getLongitude());
+        call.enqueue(new Callback<RouteResponse>() {
+            @Override
+            public void onResponse(Call<RouteResponse> call, Response<RouteResponse> response) {
+                if(response.isSuccessful()){
+                    List<LatLong> latLongs=response.body().conversionLatLong();
+                    CarteDialogFragment dialogFragment = CarteDialogFragment.newInstance(latLongs, disableLongPress, new CarteDialogFragment.DialogListener() {
+                        @Override public void retourLatLong(LatLong latLong, String nom, boolean depart) {
+                            // Handle the returned data here
+                        }});
+
+                    dialogFragment.show(fragmentManager, "CarteDialogFragment");
+                    listener.onCartClick(position);
+                }else{
+                    Toast.makeText(c, "Echec ", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<RouteResponse> call, Throwable t) {
+                Toast.makeText(c, "echec", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

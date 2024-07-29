@@ -13,11 +13,12 @@ import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.PaiementModel;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.convertisseur.IntegerListConverter;
+import com.example.myapplication.model.convertisseur.PaiementModelConverter;
 import com.example.myapplication.model.convertisseur.TrajetModelConverter;
 import com.example.myapplication.model.convertisseur.UtilisateurModelConverter;
 
 @Database(entities = {TrajetModel.class, ReservationModel.class, PaiementModel.class}, version = 1,exportSchema = false  )
-@TypeConverters({UtilisateurModelConverter.class, IntegerListConverter.class, TrajetModelConverter.class})
+@TypeConverters({UtilisateurModelConverter.class, IntegerListConverter.class, TrajetModelConverter.class, PaiementModelConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     public abstract TrajetDao trajetDao();
     public abstract ReservationDao reservationDao();

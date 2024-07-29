@@ -3,6 +3,8 @@ package com.example.myapplication.model;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
@@ -10,7 +12,7 @@ import java.util.regex.Pattern;
 
 import com.google.gson.annotations.SerializedName;
 @Entity(tableName = "paiementModel")
-public class PaiementModel {
+public class PaiementModel implements Serializable {
     @PrimaryKey(autoGenerate = true)
     @SerializedName("idPaiement")
     private int idPaiement;

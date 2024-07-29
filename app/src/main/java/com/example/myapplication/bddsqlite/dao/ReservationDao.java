@@ -12,7 +12,7 @@ public interface ReservationDao {
     @Insert
     void insertReservations(List<ReservationModel> reservations);
     @Insert
-    void insertReservation(ReservationModel reservations);
+    long insertReservation(ReservationModel reservations);
     @Query("DELETE FROM reservation WHERE idTrajet=:id")
     void viderTable(String id);
 

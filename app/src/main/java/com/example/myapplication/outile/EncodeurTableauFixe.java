@@ -3,6 +3,7 @@ package com.example.myapplication.outile;
 //import org.apache.commons.codec.binary.Base64;
 import android.util.Base64;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
@@ -86,5 +87,12 @@ public class EncodeurTableauFixe {
             array[i] = list.get(i);
         }
         return array;
+    }
+    public static List<Integer> convertieIntArToList(int[] array){
+        List<Integer> list=new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            list.add(array[i]);
+        }
+        return list;
     }
 }

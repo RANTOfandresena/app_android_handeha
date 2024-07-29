@@ -79,6 +79,7 @@ public class TrajetAdminFragment extends Fragment implements CarteDialogFragment
     private UserManage userManage;
     SharedPreferences sharedPreferences;
     private UtilisateurModel user;
+    private LatLong lieuDepartLatLong,lieuArriverLatLong;
 
     public static TrajetAdminFragment newInstance(String param1, String param2) {
         TrajetAdminFragment fragment = new TrajetAdminFragment();
@@ -114,7 +115,7 @@ public class TrajetAdminFragment extends Fragment implements CarteDialogFragment
         recyclerView=binding.resultat;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         boolean accessAdmin=user!=null && user.isEst_conducteur();
-        adapter=new TrajetAdapter(trajetList,accessAdmin);
+        adapter=new TrajetAdapter(trajetList,accessAdmin,getParentFragmentManager());
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
             @Override
@@ -126,7 +127,7 @@ public class TrajetAdminFragment extends Fragment implements CarteDialogFragment
 
             @Override
             public void onCartClick(int position) {
-                Toast.makeText(getContext(), "gg"+String.valueOf(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "ggggg"+String.valueOf(position), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -222,7 +223,6 @@ public class TrajetAdminFragment extends Fragment implements CarteDialogFragment
         textInputEditText_horaire = dialogView.findViewById(R.id.horaire);
         String horaire= textInputEditText_horaire.getText().toString();
 
-
         /*TextInputEditText textInputEditText_attribute = dialogView.findViewById(R.id.attribute);
         String attribute= textInputEditText_attribute.getText().toString();*/
 
@@ -249,8 +249,8 @@ public class TrajetAdminFragment extends Fragment implements CarteDialogFragment
         }
         autoCompleteTextView.setError(null);
         trajetModel=new TrajetModel(
-                lieuDepart,
-                lieuArrive,
+                lieuDepart+"|"+lieuDepartLatLong.getLatitude()+"|"+lieuDepartLatLong.getLongitude(),
+                lieuArrive+"|"+lieuArriverLatLong.getLatitude()+"|"+lieuArriverLatLong.getLongitude(),
                 horaire,
                 prix,
                 selectionnerVehicule.getIdVehicule(),
@@ -335,18 +335,22 @@ public class TrajetAdminFragment extends Fragment implements CarteDialogFragment
                     Toast.makeText(getContext(), "echec de connexion", Toast.LENGTH_SHORT).show();
                 }
             });
-
         }
-
     }
     private void afficheCarte(boolean estDepart){
         carte.estDepart=estDepart;
         carte.show(getParentFragmentManager(), "CarteDialogFragment");
     }
-
-
     @Override
-    public void retourLatLong(LatLong latLong, String nom) {
-        Toast.makeText(getContext(), "gggg:"+nom, Toast.LENGTH_SHORT).show();
+    public void retourLatLong(LatLong latLong, String nom ,boolean estDepart) {
+        TextInputEditText textInputEditText;
+        if(estDepart){
+            lieuDepartLatLong=latLong;
+            textInputEditText = dialogView.findViewById(R.id.lieuDepart);
+        }else{
+            lieuArriverLatLong=latLong;
+            textInputEditText = dialogView.findViewById(R.id.lieuArrive);
+        }
+        textInputEditText.setText(nom);
     }
 }

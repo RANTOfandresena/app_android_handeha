@@ -1,0 +1,69 @@
+
+Merci madame le President de jury de m’avoir donné la parole.
+
+Mr Dame bonjour. Avant de commencer ma presentation permettez-moi de parler en Malagasy.
+-----------click---------------
+Voalohany indrindra dia isaorana Andriamanitra lehibe nanome fotoana sy hery ary fahasalamana
+nahafahana nanantanteraka izao dingana izao. Manaraka izany dia isaorana manokana ireto olona
+voalaza anarana manaraka ireto :
+
+Andriamatoa RAVOLOMANANA Mamy Raoul,Profesora amin’ny laharana ambony, filohan’ny Oniverisitean’Antananarivo, amin’ny andraikitra lehibe izay iantsorohany amin’ny fitantanana sy fampandrihanana ny raharaham-pampianarana manerana ny oniverisitean’Antananarivo.
+
+manaraka izany
+
+Andriamatoa ANTSONAINARIVONY Ononamandimby,dokotera, talehan’ny “Institue d’Enseignement Supérieur d’Antsirabe Vakinankaratra”, amin’ny fandrindrany ny eto amin’ny sekoly ka ahafahana manao izao asa fikaroana izao.
+
+Ramatoa RANAIVOSOA Mamitiana Lalaonirina Olivette, Dokotera, lehiben’ny sampampihofanana “Automatisme et Informatique”, izay sady talen’izao fikarohana izao.
+
+Andriamatoa ANDRIANAiVO Herifidy Malalaniaina, nanoro lalana ahy sy nanampy indrindra tamin’ny fanatanterahana an’ity Fikarohana ity, teo koa izy nanoro hevitra sy nandrisika ahy hatramin’ny farany.
+
+Andriamatoa ANDRIAMITANTSOA Soloarinala, Mpampianatra mpanampy, anisan’ny mpitsara izao asa fikarohana izao ;
+
+Andriamatoa RANDRIAMIARISON Zilga Heritiana ,Mpampianatra mpanampy, anisan’ny mpitsara izao asa fikarohana izao ihany koa;
+
+Ireo mpampianatra rehetra izay nampita fahalalana sy nanome fiofanana ho ahy hatramin’ny taona voalohany ka hatramin’izao taona fahatelo izao.
+
+Ireo Ray amandReny nikolokolo sy nanabe ary nanohana nandritry ny dingana izay efa nodiavina hatr’izay ka mbola manohana hatrany amin’izao fotoana lehibe izao.
+
+Ireo fianakaviana sy namana rehetra izay nanampy na ara-kevitra na ara-tsaina nahatontosana izao atrik’asa izao.
+
+Ho fanohizana izao fanehoana izao de mamela ahy iteny
+am teny frantsay.
+
+-----------click---------------
+Aujourd'hui, je vais vous présenter notre APPLICATION DE RÉSERVATION DE TRANSPORT POUR UNE COOPÉRATIVE EN LIGNE : qui de nom «Handeha»
+
+Ce projet vise à améliorer l'efficacité et l'expérience utilisateur des services de transport public en Madagascar, en introduisant la réservation en ligne.
+-----------click---------------
+slide 2:Contexte Général du Transport Public
+
+Le transport public à Madagascar est un secteur vital, mais il rencontre plusieurs défis, notamment en termes de coordination des trajets et de satisfaction des usagers.
+-----------click---------------
+Les méthodes traditionnelles de gestion des réservations et de suivi sont souvent inefficaces et entraînent des problèmes pour les utilisateurs.
+-----------click---------------
+Slide 3:Réservation en Ligne
+-----------click---------------
+La réservation en ligne offre de nombreux avantages:
+Elle permet aux utilisateurs d'accéder aux services de transport à tout moment, 24 heures sur 24, 7 jours sur 7.
+
+Elle réduit les files d'attente et les délais d'attente, offrant ainsi une meilleure gestion des trajets et un confort accru pour les utilisateurs.
+
+En outre, la réservation en ligne minimise les erreurs humaines, rendant le processus de réservation plus fiable et efficace.
+
+-----------click---------------
+
+Pour les opérateurs de transport, la réservation en ligne optimise l'utilisation des ressources disponibles,
+améliore la planification des trajets et augmente la satisfaction client.
+En conséquence, les opérateurs peuvent offrir un service plus cohérent et de meilleure qualité.
+
+-----------click---------------
+
+Slide 4: Plan
+Notre plan se divise 3 parties.
+
+-----------click---------------
+ Nous commencerons par une présentation globale du projet,
+ puis nous passerons aux outils que nous avons utilisés pour le développer, au final la demonstration.
+
+-----------click---------------
+Slide 5: Étude de l'Existant

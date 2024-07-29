@@ -32,7 +32,14 @@ public class UtilisateurModel implements Serializable {
         this.password=password;
         this.est_conducteur=est_conducteur;
     }
-    public UtilisateurModel(String id,String first_name, String last_name, String numero, String cin, String username, String mdp1,boolean est_conducteur) {
+
+    public UtilisateurModel(String first_name, String last_name, String numero) {
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.numero = numero;
+    }
+
+    public UtilisateurModel(String id, String first_name, String last_name, String numero, String cin, String username, String mdp1, boolean est_conducteur) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.numero = numero;

@@ -95,8 +95,14 @@ public class TrajetActivity extends AppCompatActivity {
             trajetModel =(TrajetModel) intent.getSerializableExtra("data");
             chauffeur=(UtilisateurModel) intent.getSerializableExtra("chaufeurModel");
             if(trajetModel!=null && chauffeur!=null){
-                binding.depart.setText(trajetModel.getLieuDepart());
-                binding.arrive.setText(trajetModel.getLieuArrive());
+
+                String lieuDeparts=trajetModel.getLieuDepart();
+                String[] lieuDepart = lieuDeparts.split("\\|");
+                binding.depart.setText(lieuDepart[0]);
+                String lieuArrives=trajetModel.getLieuDepart();
+                String[] lieuArrive = lieuArrives.split("\\|");
+                binding.arrive.setText(lieuArrive[0]);
+
                 binding.date.setText("Depart : "+ DateChange.changerLaDate(trajetModel.getHoraire()));
                 binding.prix.setText("Prix : "+trajetModel.getPrix());
                 binding.placelibre.setText("Places Libres : "+ Algo.compterNumbre(trajetModel.getSiegeReserver(),0));
@@ -324,7 +330,7 @@ public class TrajetActivity extends AppCompatActivity {
                     binding.totalprix.setText("Montont Total : "+placeReserver.size()*Integer.parseInt(strprix)+"ar");
                     binding.placelibre.setText("Places Libres : "+ String.valueOf(Algo.compterNumbre(trajetModel.getSiegeReserver(),0)-placeReserver.size()));
                     //int[] placeConversion=EncodeurTableauFixe.convertListToIntArray(placeReserver);
-                    paiementModel.setRefapp(EncodeurTableauFixe.encodeArray1(placeReserver));
+                    paiementModel.setRefapp(EncodeurTableauFixe.encodeArray1(placeReserver)+" 0h"+String.valueOf(trajetModel.getIdTrajet())+" 0h"+userManage.getUser().getId());
                     paiementModel.setMontant(Long.parseLong(montantTotal));
                 }
             });

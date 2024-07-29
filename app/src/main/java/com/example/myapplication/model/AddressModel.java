@@ -1,22 +1,80 @@
 package com.example.myapplication.model;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.annotations.SerializedName;
 
 public class AddressModel {
-    private String village;
-    private String county;
-    private String state;
-    private String ISO3166_2_lvl3;
-    private String country;
-    private String country_code;
+    @SerializedName("city")
+    private String city;
 
-    public AddressModel(String village, String county, String state, String ISO3166_2_lvl3, String country, String country_code) {
-        this.village = village;
-        this.county = county;
-        this.state = state;
-        this.ISO3166_2_lvl3 = ISO3166_2_lvl3;
-        this.country = country;
-        this.country_code = country_code;
+    @SerializedName("town")
+    private String town;
+
+    @SerializedName("village")
+    private String village;
+
+    @SerializedName("hamlet")
+    private String hamlet;
+
+    @SerializedName("county")
+    private String county;
+
+    @SerializedName("state")
+    private String state;
+
+    @SerializedName("province")
+    private String province;
+
+    @SerializedName("region")
+    private String region;
+
+    @SerializedName("country")
+    private String country;
+
+    @SerializedName("suburb")
+    private String suburb;
+
+    @SerializedName("locality")
+    private String locality;
+
+    @SerializedName("postcode")
+    private String postcode;
+
+    @SerializedName("district")
+    private String district;
+
+    @SerializedName("neighborhood")
+    private String neighborhood;
+    public String getFirstNonNullAttribute() {
+        if (city != null) return city;       // Priorité : Ville
+        if (town != null) return town;       // Petite ville ou bourg
+        if (village != null) return village; // Village
+        if (hamlet != null) return hamlet;   // Hameau
+        if (suburb != null) return suburb;   // Quartier ou banlieue
+        if (district != null) return district; // District
+        if (county != null) return county;   // Comté
+        if (region != null) return region;   // Région
+        if (state != null) return state;     // État
+        if (province != null) return province; // Province
+        if (country != null) return country; // Pays
+        if (postcode != null) return postcode; // Code postal
+        return null; // Si tous les attributs sont null
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getTown() {
+        return town;
+    }
+
+    public void setTown(String town) {
+        this.town = town;
     }
 
     public String getVillage() {
@@ -25,6 +83,14 @@ public class AddressModel {
 
     public void setVillage(String village) {
         this.village = village;
+    }
+
+    public String getHamlet() {
+        return hamlet;
+    }
+
+    public void setHamlet(String hamlet) {
+        this.hamlet = hamlet;
     }
 
     public String getCounty() {
@@ -43,12 +109,20 @@ public class AddressModel {
         this.state = state;
     }
 
-    public String getISO3166_2_lvl3() {
-        return ISO3166_2_lvl3;
+    public String getProvince() {
+        return province;
     }
 
-    public void setISO3166_2_lvl3(String ISO3166_2_lvl3) {
-        this.ISO3166_2_lvl3 = ISO3166_2_lvl3;
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public String getCountry() {
@@ -59,11 +133,62 @@ public class AddressModel {
         this.country = country;
     }
 
-    public String getCountry_code() {
-        return country_code;
+    public String getSuburb() {
+        return suburb;
     }
 
-    public void setCountry_code(String country_code) {
-        this.country_code = country_code;
+    public void setSuburb(String suburb) {
+        this.suburb = suburb;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getNeighborhood() {
+        return neighborhood;
+    }
+
+    public void setNeighborhood(String neighborhood) {
+        this.neighborhood = neighborhood;
+    }
+    @Override
+    public String toString() {
+        return "Address{" +
+                "city='" + city + '\'' +
+                ", town='" + town + '\'' +
+                ", village='" + village + '\'' +
+                ", hamlet='" + hamlet + '\'' +
+                ", county='" + county + '\'' +
+                ", state='" + state + '\'' +
+                ", province='" + province + '\'' +
+                ", region='" + region + '\'' +
+                ", country='" + country + '\'' +
+                ", suburb='" + suburb + '\'' +
+                ", locality='" + locality + '\'' +
+                ", postcode='" + postcode + '\'' +
+                ", district='" + district + '\'' +
+                ", neighborhood='" + neighborhood + '\'' +
+                '}';
     }
 }

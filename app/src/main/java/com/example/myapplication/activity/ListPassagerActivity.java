@@ -80,7 +80,6 @@ public class ListPassagerActivity extends AppCompatActivity {
 
     private void getlistReservation(){
         String idTrajet = getIntent().getStringExtra("idTrajet");
-        Toast.makeText(this, idTrajet, Toast.LENGTH_LONG).show();
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
         Call<List<ReservationModel>> getcall=apiService.getReservationidTrajet(idTrajet);
         getcall.enqueue(new Callback<List<ReservationModel>>() {

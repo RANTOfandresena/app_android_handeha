@@ -18,8 +18,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
-import android.widget.GridLayout;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +52,6 @@ import retrofit2.Response;
  * create an instance of this fragment.
  */
 public class TransportFragment extends Fragment {
-
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private ToolbarVisibilityListener toolbarVisibilityListener;
@@ -72,6 +70,7 @@ public class TransportFragment extends Fragment {
     private String mParam2;
     SharedPreferences sharedPreferences;
     private ApiService apiService;
+    private EditText depart,arrive;
 
     public TransportFragment() {
         // Required empty public constructor
@@ -109,6 +108,8 @@ public class TransportFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_transport, container, false);
+        depart=rootView.findViewById(R.id.depart);
+        arrive=rootView.findViewById(R.id.ariver);
         sharedPreferences = getActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE);
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
         daty=rootView.findViewById(R.id.date);
@@ -161,7 +162,7 @@ public class TransportFragment extends Fragment {
     private void getTrajet() {
         UtilisateurModel user=userManage.getUser();
         boolean accessAdmin=user!=null && user.isEst_conducteur();
-        adapter=new TrajetAdapter(trajetList,accessAdmin);
+        adapter=new TrajetAdapter(trajetList,accessAdmin,getParentFragmentManager());
         adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -191,7 +192,6 @@ public class TransportFragment extends Fragment {
                 }
 
             }
-
             @Override
             public void onCartClick(int position) {
 
@@ -200,8 +200,11 @@ public class TransportFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
     private void getTrajetApi(){
+        String d=depart.getText().toString();
+        String a=arrive.getText().toString();
+        String dat=daty.getText().toString();
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
-        retrofit2.Call<List<TrajetModel>> getCall = apiService.getTrajet("horaire");
+        retrofit2.Call<List<TrajetModel>> getCall = apiService.getTrajetRecherche(a,d,dat);//getTrajetRecherche
         getCall.enqueue(new Callback<List<TrajetModel>>() {
             @Override
             public void onResponse(retrofit2.Call<List<TrajetModel>> call, Response<List<TrajetModel>> response) {

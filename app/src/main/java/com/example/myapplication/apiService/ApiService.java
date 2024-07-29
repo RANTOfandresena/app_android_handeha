@@ -25,10 +25,12 @@ public interface ApiService {
     //trajet
     @GET("api/trajet/")
     Call<List<TrajetModel>> getTrajet(@Query("ordering") String ordering);
-    @GET("api/trajet")
-    Call<List<TrajetModel>> getTrajetRecherche(@Query("lieuArrive") String lieuArrive,
-                                       @Query("lieuDepart") String lieuDepart,
-                                       @Query("horaire") String horaire);
+    @GET("api/trajet/filtreDonne/")
+    Call<List<TrajetModel>> getTrajetRecherche(
+            @Query("lieuArrive") String lieuArrive,
+            @Query("lieuDepart") String lieuDepart,
+            @Query("horaire") String horaire
+    );
 
     @GET("api/trajet/")
     Call<List<TrajetModel>> getTrajetUser(@Query("ordering") String ordering, @Query("idUser") int idUser);

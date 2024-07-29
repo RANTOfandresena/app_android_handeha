@@ -14,6 +14,8 @@ public interface TrajetDao {
     void insertTrajets(List<TrajetModel> trajets);
     @Query("DELETE FROM trajet")
     void viderTable();
+    @Query("SELECT * FROM trajet WHERE idTrajet=:id")
+    TrajetModel getTrajetId(String id);
 
     @Query("SELECT * FROM trajet")
     List<TrajetModel> getAllTrajets();

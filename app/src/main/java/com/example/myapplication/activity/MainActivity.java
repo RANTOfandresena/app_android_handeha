@@ -370,6 +370,14 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
 
         fragmentTransaction.commit();
         bottomNavigationView.setBackground(null);
+
+        if(userLogin != null && userLogin.isEst_conducteur()){
+            Menu menu = bottomNavigationView.getMenu();
+            MenuItem itemToHide = menu.findItem(R.id.reservation);
+            if (itemToHide != null) {
+                itemToHide.setVisible(false);
+            }
+        }
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId()==R.id.carte) {
                 afficherFragment("CARTE_FRAGMENT");

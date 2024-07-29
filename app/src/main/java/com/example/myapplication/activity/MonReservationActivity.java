@@ -7,12 +7,19 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
@@ -23,6 +30,7 @@ import com.example.myapplication.bddsqlite.database.AppDatabase;
 import com.example.myapplication.databinding.ActivityMonReservationBinding;
 import com.example.myapplication.databinding.ActivityTrajetBinding;
 import com.example.myapplication.model.PaiementModel;
+import com.example.myapplication.model.ReservationModel;
 import com.example.myapplication.model.TrajetModel;
 import com.example.myapplication.model.UtilisateurModel;
 import com.example.myapplication.model.VehiculeModel;
@@ -51,6 +59,7 @@ public class MonReservationActivity extends AppCompatActivity {
     private UtilisateurModel chauffeur;
     private Toolbar toolbar;
     private PaiementModel paiementModel;
+    private ReservationModel reservationM;
     private AppDatabase bddSqlite;
 
 
@@ -69,9 +78,14 @@ public class MonReservationActivity extends AppCompatActivity {
         if(intent!=null){
             trajetModel =(TrajetModel) intent.getSerializableExtra("data");
             chauffeur=(UtilisateurModel) intent.getSerializableExtra("chaufeurModel");
-            if(trajetModel!=null && chauffeur!=null){
-                binding.depart.setText(trajetModel.getLieuDepart());
-                binding.arrive.setText(trajetModel.getLieuArrive());
+            reservationM=(ReservationModel) intent.getSerializableExtra("reservation");
+            if(trajetModel!=null && chauffeur!=null && reservationM!=null){
+                String lieuDeparts=trajetModel.getLieuDepart();
+                String[] lieuDepart = lieuDeparts.split("\\|");
+                binding.depart.setText(lieuDepart[0]);
+                String lieuArrives=trajetModel.getLieuDepart();
+                String[] lieuArrive = lieuArrives.split("\\|");
+                binding.arrive.setText(lieuArrive[0]);
                 binding.date.setText("Depart : "+ DateChange.changerLaDate(trajetModel.getHoraire()));
                 binding.prix.setText("Prix : "+trajetModel.getPrix());
                 binding.placelibre.setText("Places Libres : "+ Algo.compterNumbre(trajetModel.getSiegeReserver(),0));
@@ -89,6 +103,7 @@ public class MonReservationActivity extends AppCompatActivity {
             Toast.makeText(this, "intent null", Toast.LENGTH_SHORT).show();
         }
         actionToolbar();
+        binding.btnrecu.setOnClickListener(v -> afficheDialog());
     }
     private void getVoiture(int idVoiture){
         String idVoitureString =String.valueOf(idVoiture);
@@ -204,5 +219,69 @@ public class MonReservationActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+    //------------------------------------------------------------------ //------------------------------------------------------------------
+    //------------------------------------------------------------------ //------------------------------------------------------------------
+    private void afficheDialog() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_paiement, null);
+        builder.setView(dialogView);
+        afficheDonne(dialogView);
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+        Button dialogButton = dialogView.findViewById(R.id.btn_back);
+        Button btn_payment_sms=dialogView.findViewById(R.id.btn_payment_sms);
+        btn_payment_sms.setOnClickListener(v->{
+            readSms(reservationM.getPaiement().getRef());
+        });
+        dialogButton.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
+    }
+    private void afficheDonne(View dialogView){
+        TextView info=dialogView.findViewById(R.id.info_message);
+        TextView nom=dialogView.findViewById(R.id.nom);
+        TextView num_phone=dialogView.findViewById(R.id.num_phone);
+        TextView ref=dialogView.findViewById(R.id.ref);
+        TextView refapp=dialogView.findViewById(R.id.refapp);
+        TextView total_prix=dialogView.findViewById(R.id.total_prix);
+        TextView daty=dialogView.findViewById(R.id.daty);
+        info.setText("Vous avez envoyé de l'argent de cette personne:");
+        nom.setText("Nom et prénom: "+ chauffeur.getFirst_name()+" "+chauffeur.getLast_name());
+        num_phone.setText("Numéro : "+chauffeur.getNumero());
+        ref.setText("Référence mobile monnaie:"+reservationM.getPaiement().getRef());
+        refapp.setText("Référence de l'application: "+reservationM.getPaiement().getRefapp());
+        total_prix.setText("Prix total : "+reservationM.getPaiement().getMontant()+"Ar");
+        daty.setText("Date de paiement :"+ DateChange.changerLaDate(reservationM.getPaiement().getDatePaiement()));
+    }
+    public void readSms(String ref) {
+        Uri uri = Uri.parse("content://sms/inbox");
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        boolean verification=true;
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                String body = cursor.getString(cursor.getColumnIndexOrThrow("body"));
+                if (body.contains(ref)) {
+                    Toast.makeText(this, "le code de reference exist dans votre message", Toast.LENGTH_SHORT).show();
+                    ouvrirSmsAppavecMessage(ref);
+                    verification=false;
+                    break;
+                }
+            }
+            if(verification)
+                Toast.makeText(this, "le code de reference n'exist pas dans votre message", Toast.LENGTH_SHORT).show();
+            cursor.close();
+        }
+    }
+
+    private void ouvrirSmsAppavecMessage(String ref) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("Label", ref);
+        clipboard.setPrimaryClip(clipData);
+        Toast.makeText(this, "Le code de reference est copié dans votre presse-papiers", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setType("vnd.android-dir/mms-sms");
+        startActivity(intent);
     }
 }

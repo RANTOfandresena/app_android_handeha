@@ -150,7 +150,6 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_carte, container, false);
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
         sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
@@ -289,7 +288,6 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
             @Override
             public void onResponse(Call<RouteResponse> call, Response<RouteResponse> response) {
                 if(response.isSuccessful()){
-                    ajoutMarker(new LatLong(-18.916667, 47.533333));
                     List<LatLong> latLongs=response.body().conversionLatLong();
                     tracerChemain(latLongs);
                 }else{

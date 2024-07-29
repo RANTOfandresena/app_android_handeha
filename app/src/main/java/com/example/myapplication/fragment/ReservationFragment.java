@@ -102,7 +102,6 @@ public class ReservationFragment extends Fragment {
     private void gestionAuth(){
         if(user.getUser()==null){
             binding.seConnect.setVisibility(View.VISIBLE);
-            //binding.resultat.setVisibility(View.GONE);
             binding.aucunReservation.setVisibility(View.GONE);
         }else{
             binding.seConnect.setVisibility(View.GONE);
@@ -124,7 +123,6 @@ public class ReservationFragment extends Fragment {
                     }else {
                         Toast.makeText(getContext(), "une erreur se produit", Toast.LENGTH_SHORT).show();
                     }
-
                 }
                 @Override
                 public void onFailure(Call<List<ReservationModel>> call, Throwable t) {
@@ -150,6 +148,7 @@ public class ReservationFragment extends Fragment {
                             Intent intent=new Intent(getActivity(), MonReservationActivity.class);
                             intent.putExtra("chaufeurModel",chauffeur);
                             intent.putExtra("data",reservationModelList.get(position).getTrajet());
+                            intent.putExtra("reservation",reservationModelList.get(position));
                             //voyageur=rootView.findViewById(R.id.voyageur);
                             //intent.putExtra("nbplace",voyageur.getText().toString());
                             startActivity(intent);
@@ -170,7 +169,6 @@ public class ReservationFragment extends Fragment {
 
             @Override
             public void onCartClick(int position) {
-
             }
         });
         recyclerView.setAdapter(adapter);
