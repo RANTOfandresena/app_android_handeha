@@ -92,6 +92,18 @@ public class CarteDialogFragment extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
+    public static CarteDialogFragment newInstance(LatLong latLong1,LatLong latLong2, boolean disableLongPress, DialogListener listener) {
+        CarteDialogFragment fragment = new CarteDialogFragment();
+        fragment.listener = listener;
+        Bundle args = new Bundle();
+
+        args.putParcelable(ARG_DEPART,new ParcelableLatLong(latLong1));
+        args.putParcelable(ARG_ARRIVE,new ParcelableLatLong(latLong2));
+
+        args.putBoolean(ARG_DISABLE_LONG_PRESS, disableLongPress);
+        fragment.setArguments(args);
+        return fragment;
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,6 +167,13 @@ public class CarteDialogFragment extends DialogFragment {
             mapViewDialog.setCenter(chemin.get(0));
             tracerChemain(chemin);
         }
+        if(depart!=null){
+            ajoutMarker(depart,true);
+            mapViewDialog.setCenter(depart);
+        }
+        if(arrive!=null){
+            ajoutMarker(arrive,false);
+        }
         return rootView;
     }
 
@@ -195,7 +214,6 @@ public class CarteDialogFragment extends DialogFragment {
                     }
                 }
             }
-
             @Override
             public void onFailure(Call<CoordonneApiNomVille> call, Throwable t) {
                 Toast.makeText(getContext(), "echec de connexion", Toast.LENGTH_SHORT).show();
@@ -266,6 +284,16 @@ public class CarteDialogFragment extends DialogFragment {
         traceCarte=new TraceCarte(mapViewDialog.getLayerManager().getLayers());
         traceCarte.addLatLongs(points);
         traceCarte.tracerPolylines();
+    }
+    public void ajoutMarker(LatLong point,boolean est_depart) {
+        Bitmap mfBitmap;
+        if(est_depart){
+            mfBitmap= AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.depart));
+        }else {
+            mfBitmap= AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.arriver));
+        }
+        Marker marker=new Marker(point, mfBitmap, 0, 0);
+        mapViewDialog.getLayerManager().getLayers().add(marker);
     }
 }
 

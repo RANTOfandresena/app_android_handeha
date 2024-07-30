@@ -20,7 +20,7 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:largeHeap="true"
@@ -66,8 +66,8 @@
 
         <service
             android:name=".service.SmsService"
-            android:exported="true"
-            android:foregroundServiceType="dataSync" />
+            android:enabled="true"
+            android:exported="true"/>
 
         <receiver
             android:name=".outile.MySmsReceiver"

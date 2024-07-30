@@ -145,7 +145,7 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
                         LatLong depart = ParcelableLatLong.StringToLatLong(lieuDepart[1],lieuDepart[2]);
                         LatLong arrive = ParcelableLatLong.StringToLatLong(lieuArrive[1], lieuArrive[2]);
                         boolean disableLongPress = true;
-                        Toast.makeText(itemView.getContext(), "", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(itemView.getContext(), "chargement...", Toast.LENGTH_SHORT).show();
                         get_route(position,depart,arrive,disableLongPress,itemView.getContext());
                     }
                 }
@@ -164,6 +164,7 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
         this.listener = listener;
     }
     private void get_route(int position,LatLong a, LatLong b,boolean disableLongPress, Context c){
+        CarteDialogFragment dialogFragment;
         apiService= RetrofitClient.getClient(URL_SERVER,null).create(ApiService.class);
         Call<RouteResponse> call = apiService.getRoute(a.getLatitude(), a.getLongitude(), b.getLatitude(), b.getLongitude());
         call.enqueue(new Callback<RouteResponse>() {
@@ -179,12 +180,24 @@ public class TrajetAdapter extends RecyclerView.Adapter<TrajetAdapter.TrajetView
                     dialogFragment.show(fragmentManager, "CarteDialogFragment");
                     listener.onCartClick(position);
                 }else{
-                    Toast.makeText(c, "Echec ", Toast.LENGTH_SHORT).show();
+                    CarteDialogFragment dialogFragment = CarteDialogFragment.newInstance(a,b, disableLongPress, new CarteDialogFragment.DialogListener() {
+                        @Override public void retourLatLong(LatLong latLong, String nom, boolean depart) {
+                            // Handle the returned data here
+                        }});
+                    Toast.makeText(c, "Echec de connexion", Toast.LENGTH_SHORT).show();
+                    dialogFragment.show(fragmentManager, "CarteDialogFragment");
+                    listener.onCartClick(position);
                 }
             }
             @Override
             public void onFailure(Call<RouteResponse> call, Throwable t) {
-                Toast.makeText(c, "echec", Toast.LENGTH_SHORT).show();
+                CarteDialogFragment dialogFragment = CarteDialogFragment.newInstance(a,b, disableLongPress, new CarteDialogFragment.DialogListener() {
+                    @Override public void retourLatLong(LatLong latLong, String nom, boolean depart) {
+                        // Handle the returned data here
+                    }});
+                Toast.makeText(c, "Echec de connexion", Toast.LENGTH_SHORT).show();
+                dialogFragment.show(fragmentManager, "CarteDialogFragment");
+                listener.onCartClick(position);
             }
         });
     }

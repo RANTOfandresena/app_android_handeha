@@ -330,7 +330,7 @@ public class TrajetActivity extends AppCompatActivity {
                     binding.totalprix.setText("Montont Total : "+placeReserver.size()*Integer.parseInt(strprix)+"ar");
                     binding.placelibre.setText("Places Libres : "+ String.valueOf(Algo.compterNumbre(trajetModel.getSiegeReserver(),0)-placeReserver.size()));
                     //int[] placeConversion=EncodeurTableauFixe.convertListToIntArray(placeReserver);
-                    paiementModel.setRefapp(EncodeurTableauFixe.encodeArray1(placeReserver)+" 0h"+String.valueOf(trajetModel.getIdTrajet())+" 0h"+userManage.getUser().getId());
+                    paiementModel.setRefapp(EncodeurTableauFixe.encodeArray1(placeReserver)+"0h"+String.valueOf(trajetModel.getIdTrajet())+"0h"+userManage.getUser().getId());
                     paiementModel.setMontant(Long.parseLong(montantTotal));
                 }
             });

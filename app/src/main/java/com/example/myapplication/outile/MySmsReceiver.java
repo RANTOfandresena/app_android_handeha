@@ -50,7 +50,7 @@ public class MySmsReceiver extends BroadcastReceiver {
         return super.peekService(context, service);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    //@TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onReceive(Context context, Intent intent) {
         userManage=new UserManage(context);
@@ -62,6 +62,7 @@ public class MySmsReceiver extends BroadcastReceiver {
         } else {
             context.startService(serviceIntent);
         }
+
         // Get the SMS message.
         Bundle bundle = intent.getExtras();
         SmsMessage[] msgs;
@@ -70,14 +71,10 @@ public class MySmsReceiver extends BroadcastReceiver {
         // Retrieve the SMS message received.
         Object[] pdus = (Object[]) bundle.get(pdu_type);
         if (pdus != null) {
-            // Check the Android version.
             boolean isVersionM = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);
-            // Fill the msgs array.
             msgs = new SmsMessage[pdus.length];
             for (int i = 0; i < msgs.length; i++) {
-                // Check Android version and use appropriate createFromPdu.
                 if (isVersionM) {
-                    // If Android version M or newer:
                     msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i], format);
                 } else {
                     // If Android version L or older:
@@ -90,14 +87,11 @@ public class MySmsReceiver extends BroadcastReceiver {
                 Toast.makeText(context, "msm:"+msgs[i].getOriginatingAddress(), Toast.LENGTH_LONG).show();
                 if(userLogin!=null){
                     if (userLogin.isEst_conducteur()){
-                        //Toast.makeText(context, "admin", Toast.LENGTH_SHORT).show();
                         PaiementModel paiement=PaiementModel.parseFromStringAdmin(msgs[i].getMessageBody());
                         if(paiement!=null && msgs[i].getOriginatingAddress().equals("+261346756924")){
                             Toast.makeText(context, paiement.getRefapp(), Toast.LENGTH_LONG).show();//gAE
-                            if(paiement.getRefapp().contains(" 0h")){
-                                String[] refEtId=paiement.getRefapp().split(" 0h");
-
-                                //gAE
+                            if(paiement.getRefapp().contains("0h")){
+                                String[] refEtId=paiement.getRefapp().split("0h");
                                 if(refEtId.length==3)
                                     verification(context,refEtId,paiement);
                             }
@@ -115,12 +109,10 @@ public class MySmsReceiver extends BroadcastReceiver {
                             context.startActivity(activityIntent);
                         }
                     }
-
                 }
             }
         }
     }
-
     private void notifyUserAboutMessage(Context context,PaiementModel paiement,int idTrajet) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "sms_channel";//alert.wav

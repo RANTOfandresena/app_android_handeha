@@ -126,9 +126,7 @@ public class TrajetAdminFragment extends Fragment implements CarteDialogFragment
             }
 
             @Override
-            public void onCartClick(int position) {
-                Toast.makeText(getContext(), "ggggg"+String.valueOf(position), Toast.LENGTH_SHORT).show();
-            }
+            public void onCartClick(int position) {}
         });
     }
     public void getTrajetListApi(){

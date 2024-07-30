@@ -203,7 +203,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
     protected void onLongPress(final LatLong position) {
         ajoutMarker(position);
         //mapView.setCenter(position);
-        get_route();
+        //get_route();
     }
     @Override
     public void onResume(){
@@ -258,10 +258,10 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         mapView.getLayerManager().getLayers().add(localisationMarker);
     }
     private void addMarker(LatLong position) {
-        Bitmap mfBitmap = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.d4));
-        mfBitmap.scaleTo(60, 60);
+        Bitmap mfBitmap = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.localisation1));
+        mfBitmap.scaleTo(80, 80);
         mapView.setZoomLevel((byte) 17);
-        localisationMarker = new Marker(position, mfBitmap, 0, 0);
+        localisationMarker = new Marker(position, mfBitmap, 1, 0);
         mapView.setCenter(position);
         mapView.getLayerManager().getLayers().add(localisationMarker);
     }
@@ -277,9 +277,9 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
         if (marker != null) {
             layerManager.getLayers().remove(marker);
         }
-        Bitmap mfBitmap = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.localisation));
-        marker=new Marker(point, mfBitmap, 0, 0);
-        //createMarker(point);
+        Bitmap mfBitmap = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.marker));
+        mfBitmap.scaleTo(80, 80);
+        marker=new Marker(point, mfBitmap, 1, 1);
         layerManager.getLayers().add(marker);
     }
     private void get_route(){
@@ -382,7 +382,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (localisationMarker != null) {
+        /*if (localisationMarker != null) {
             int degre=Math.round(event.values[0]);
             //int index= (int) (degre/22.6);
             //String resourceName = "d" + index;
@@ -393,7 +393,7 @@ public class CarteFragment extends Fragment implements LocationListener, SensorE
             layers.remove(localisationMarker);
             layers.add(localisationMarker);
             mapView.repaint();
-        }
+        }*/
     }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
