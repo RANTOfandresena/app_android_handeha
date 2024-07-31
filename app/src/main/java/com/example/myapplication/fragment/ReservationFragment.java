@@ -61,6 +61,7 @@ public class ReservationFragment extends Fragment {
     private List<TrajetModel> listtrajet;
     private RecyclerView recyclerView;
     private AppDatabase bddSqlite;
+    private List<ReservationModel> reservationModelList;
 
     public ReservationFragment() {
         // Required empty public constructor
@@ -89,6 +90,7 @@ public class ReservationFragment extends Fragment {
         bddSqlite= ConnectBddSqlite.connectBdd(getContext());
         recyclerView=binding.resultat;
         user=new UserManage(getContext());
+        reservationModelList=new ArrayList<>();
        // binding.resultat.setVisibility(View.GONE);
         binding.aucunReservation.setVisibility(View.GONE);
         binding.seConnect.setVisibility(View.GONE);
@@ -99,7 +101,11 @@ public class ReservationFragment extends Fragment {
         gestionAuth();
         return  binding.getRoot();
     }
-    private void gestionAuth(){
+    public void rafraichirDonnees(){
+        viderDonnees();
+        gestionAuth();
+    }
+    public void gestionAuth(){
         if(user.getUser()==null){
             binding.seConnect.setVisibility(View.VISIBLE);
             binding.aucunReservation.setVisibility(View.GONE);
@@ -118,7 +124,8 @@ public class ReservationFragment extends Fragment {
                             binding.resultat.setVisibility(View.VISIBLE);
                             binding.aucunReservation.setVisibility(View.GONE);
                             postDataSQLite(response.body());
-                            obtientData(response.body());
+                            reservationModelList=response.body();
+                            obtientData();
                         }
                     }else {
                         Toast.makeText(getContext(), "une erreur se produit", Toast.LENGTH_SHORT).show();
@@ -133,8 +140,8 @@ public class ReservationFragment extends Fragment {
 
         }
     }
-    private void obtientData(List<ReservationModel> reservationModelList) {
-        adapter=new TrajetAdapter(false,reservationModelList);
+    private void obtientData() {
+        adapter=new TrajetAdapter(false,reservationModelList,getParentFragmentManager());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter.setOnItemClickListener(new TrajetAdapter.OnItemClickListener() {
             @Override
@@ -192,9 +199,14 @@ public class ReservationFragment extends Fragment {
             public void run() {
                 List<ReservationModel> reservationSQLite=bddSqlite.reservationDao().getAllReservations();
                 if(!reservationSQLite.isEmpty()){
-                    obtientData(reservationSQLite);
+                    reservationModelList=reservationSQLite;
+                    obtientData();
                 }
             }
         });
+    }
+    public void viderDonnees() {
+        reservationModelList.clear();
+
     }
 }

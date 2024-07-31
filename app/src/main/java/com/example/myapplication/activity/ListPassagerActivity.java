@@ -9,8 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +48,11 @@ public class ListPassagerActivity extends AppCompatActivity {
     private ApiService apiService;
     private AppDatabase databaseSql;
     private Toolbar toolbar;
+
+    private void addModelToAdapter(ReservationModel reservation) {
+        adapter.addData(reservation);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +65,7 @@ public class ListPassagerActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.resultat);
         reservationModelList=new ArrayList<>();
         getlistReservation();
+
 
     }
 
@@ -91,9 +101,9 @@ public class ListPassagerActivity extends AppCompatActivity {
                 adapter = new ReservationUtilisateurAdapter(ListPassagerActivity.this, reservationModelList);
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(ListPassagerActivity.this));
+                adapter.notifyDataSetChanged();
                 postReservationSQLite(idTrajet);
             }
-
             @Override
             public void onFailure(Call<List<ReservationModel>> call, Throwable t) {
                 Toast.makeText(ListPassagerActivity.this, "achec de connexion", Toast.LENGTH_SHORT).show();
@@ -124,11 +134,15 @@ public class ListPassagerActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         // Mettre à jour le TextView
-                        if(reservationModelList.isEmpty())
+                        if(reservationModelList.isEmpty()){
                             binding.aucunPassager.setVisibility(View.VISIBLE);
+
+                        }
+
                         adapter = new ReservationUtilisateurAdapter(ListPassagerActivity.this, reservationModelList);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(ListPassagerActivity.this));
+                        adapter.notifyDataSetChanged();
                     }
                 });
             }

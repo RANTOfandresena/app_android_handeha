@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.AproposActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:background="@color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@drawable/dialogbkg"
+                android:layout_margin="16dp">
+
+                <!-- Nom de l'application -->
+            <TextView
+                android:id="@+id/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Handeha"
+                android:textColor="@color/lavender"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"
+                android:paddingBottom="8dp" />
+
+            <!-- Brève description -->
+            <TextView
+                android:id="@+id/app_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Réservation Transport est une application mobile conçue pour faciliter la réservation de trajets en transport public à Madagascar."
+                android:textSize="16sp"
+                android:paddingBottom="16dp" />
+
+            <!-- Fonctionnalités clés -->
+            <TextView
+                android:id="@+id/key_features_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fonctionnalités clés :"
+                android:textColor="@color/lavender"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/key_features_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-Carte de madagascar hors connexion\n- Recherche lieu\n- Recherche et Réservation de Trajets\n- Notifications sur le trajet\n- Paiement en Ligne"
+                android:textSize="16sp"
+                android:paddingBottom="16dp" />
+
+            <!-- Mission et Vision -->
+            <TextView
+                android:id="@+id/mission_vision_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mission et Vision :"
+                android:textColor="@color/lavender"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/mission_vision_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notre mission est de simplifier et d'améliorer l'expérience de transport public à Madagascar en offrant une solution numérique moderne et pratique pour la réservation de trajets."
+                android:textSize="16sp"
+                android:paddingBottom="16dp" />
+
+            <!-- Équipe de Développement -->
+            <TextView
+                android:id="@+id/team_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Développer par :"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingBottom="8dp"
+                android:textColor="@color/lavender"/>
+
+            <TextView
+                android:id="@+id/team_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Herimandranto Fandresena"
+                android:textSize="16sp"
+                android:paddingBottom="16dp" />
+
+            <!-- Contact et Support -->
+            <TextView
+                android:id="@+id/contact_support_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contact et Support :"
+                android:textColor="@color/lavender"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/contact_support_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-Email: herimandrantofandresen@gmail.com\n-Téléphone: +261 34 67 569 24 \n-Linkdin:https://linkedin.com/in/herimandranto-rakotomalala-956064243 \n-Github : https://github.com/RANTOfandresena"
+                android:textSize="15sp"
+                android:autoLink="all"
+                android:paddingBottom="16dp" />
+
+            <!-- Politique de Confidentialité -->
+            <TextView
+                android:id="@+id/privacy_policy_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/lavender"
+                android:text="Politique de Confidentialité :"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/privacy_policy_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="http://192.168.88.48:8000/"
+                android:textSize="16sp"
+                android:autoLink="all"
+                android:paddingBottom="16dp" />
+
+            <!-- Crédits -->
+            <TextView
+                android:id="@+id/credits_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crédits :"
+                android:textColor="@color/lavender"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/credits_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-Java\n-Python"
+                android:textSize="16sp"
+                android:paddingBottom="16dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

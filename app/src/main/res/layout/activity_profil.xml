@@ -87,6 +87,7 @@
                         style="@android:style/Widget.Button"
                         android:textAlignment="viewStart" />
                     <LinearLayout
+                        android:id="@+id/chauffer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
@@ -101,6 +102,14 @@
                             android:textStyle="bold"
                             android:drawableStart="@drawable/baseline_airport_shuttle_24"
                             />
+                        <TextView
+                            android:id="@+id/vide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Aucune voiture"
+                            android:textColor="@color/lavender"
+                            android:textStyle="italic"
+                            android:textSize="29sp"/>
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/vehiculeliste"
                             android:layout_width="match_parent"

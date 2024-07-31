@@ -167,4 +167,8 @@ public class ReservationUtilisateurAdapter extends RecyclerView.Adapter<Reservat
 
         notificationManager.notify(1, builder.build());
     }*/
+    public void addData(ReservationModel model) {
+        reservationModel.add(model);
+        notifyItemInserted(reservationModel.size() - 1);
+    }
 }

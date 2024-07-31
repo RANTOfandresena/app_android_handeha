@@ -96,6 +96,7 @@ public class VehiculeAdapter extends RecyclerView.Adapter<VehiculeAdapter.Vehicu
     public void ajoutVehiculeAdapter(VehiculeModel item) {
         mList.add(item);
         notifyItemInserted(mList.size() - 1);
+
     }
     public void updateVehiculeList(List<VehiculeModel> newVehiculeList) {
         mList.clear();

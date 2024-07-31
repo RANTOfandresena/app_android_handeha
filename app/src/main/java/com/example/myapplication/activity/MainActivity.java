@@ -170,6 +170,8 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
                     afficherConfirmation();
                 }else if(idItem==R.id.nav_home){
                     startActivity(new Intent(MainActivity.this, ProfilActivity.class));
+                }else if(idItem==R.id.nav_apropos){
+                    startActivity(new Intent(MainActivity.this, AproposActivity.class));
                 }
                 return false;
             }
@@ -434,9 +436,11 @@ public class MainActivity extends AppCompatActivity implements RechercheFragment
             case "RESERVATION_FRAGMENT":
                 getSupportActionBar().show();
                 fragmentTransaction.show(reservationFragment);
+                if (reservationFragment instanceof ReservationFragment) {
+                    ((ReservationFragment) reservationFragment).rafraichirDonnees();
+                }
                 break;
         }
-
         fragmentTransaction.commit();
     }
     private void demandePermition(){

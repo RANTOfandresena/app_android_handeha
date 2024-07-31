@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,12 +63,16 @@ public class ProfilActivity extends AppCompatActivity {
         userManage=new UserManage(this);
         binding.nomUser.setText(userManage.getUser().getFirst_name()+" "+userManage.getUser().getLast_name());
         binding.numUser.setText(userManage.getUser().getNumero());
+        binding.vide.setVisibility(View.GONE);
         binding.ajoutVoiture.setOnClickListener(v->{
             VehiculeModel vehiculeModel=new VehiculeModel("","4","6",userManage.getUser().getId());
             modifierVehicule(vehiculeModel,true,-1);
         });
         if(userManage.getUser().isEst_conducteur()){
             getVoitureApi();
+        }else{
+            binding.chauffer.setVisibility(View.GONE);
+            binding.ajoutVoiture.setVisibility(View.GONE);
         }
     }
     private void afficherVoiture() {
@@ -225,6 +230,11 @@ public class ProfilActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<VehiculeModel>> call, Response<List<VehiculeModel>> response) {
                 vehiculeList=response.body();
+                if(vehiculeList.isEmpty()){
+                    binding.vide.setVisibility(View.VISIBLE);
+                }else {
+                    binding.vide.setVisibility(View.GONE);
+                }
                 afficherVoiture();
             }
             @Override
@@ -243,6 +253,7 @@ public class ProfilActivity extends AppCompatActivity {
                     //vehiculeList.add(response.body());
                     adapter.ajoutVehiculeAdapter(response.body());
                     Toast.makeText(ProfilActivity.this, "Voiture ajouter", Toast.LENGTH_SHORT).show();
+
                     alertDialog.dismiss();
                 } else {
                     // Afficher l'erreur dans un Toast
@@ -270,6 +281,7 @@ public class ProfilActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     vehiculeList.set(position, response.body());
                     adapter.notifyDataSetChanged();
+
                     Toast.makeText(ProfilActivity.this, "Modification enregistrer", Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();
                 }else {
@@ -325,6 +337,12 @@ public class ProfilActivity extends AppCompatActivity {
                 //vehiculeList.remove(position);
                 if(response.isSuccessful()){
                     adapter.removeItem(position);
+                    if(adapter.getItemCount()==0){
+                        binding.vide.setVisibility(View.VISIBLE);
+                    }else {
+                        binding.vide.setVisibility(View.GONE);
+                    }
+
                     Toast.makeText(ProfilActivity.this, "Voiture supprimer", Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();
                 }else {

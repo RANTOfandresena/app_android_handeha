@@ -154,6 +154,7 @@ public class TrajetActivity extends AppCompatActivity {
             public void onClick(View v) {
                 alertDialogOK.dismiss();
                 finish();
+
                 Toast.makeText(TrajetActivity.this, "reservation effectuer", Toast.LENGTH_SHORT).show();
             }
         });

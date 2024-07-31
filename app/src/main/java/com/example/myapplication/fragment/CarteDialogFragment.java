@@ -160,11 +160,12 @@ public class CarteDialogFragment extends DialogFragment {
         };
         tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.DEFAULT);
         mapViewDialog.getLayerManager().getLayers().add(tileRendererLayer);
-
         mapViewDialog.setCenter(new LatLong(-18.766947, 48.869107));
         mapViewDialog.setZoomLevel((byte) 9);
         if (chemin != null) {
             mapViewDialog.setCenter(chemin.get(0));
+            ajoutMarker(chemin.get(0),true);
+            ajoutMarker(chemin.get(chemin.size()-1),false);
             tracerChemain(chemin);
         }
         if(depart!=null){

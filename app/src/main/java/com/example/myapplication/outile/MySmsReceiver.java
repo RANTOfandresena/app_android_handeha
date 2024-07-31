@@ -40,6 +40,7 @@ import java.util.concurrent.Executors;
 public class MySmsReceiver extends BroadcastReceiver {
     private static final String TAG = MySmsReceiver.class.getSimpleName();
     public static final String pdu_type = "pdus";
+    private ReservationModel reservationModel;
     private AppDatabase conn;
     private UtilisateurModel userLogin;
     private UserManage userManage;
@@ -113,7 +114,7 @@ public class MySmsReceiver extends BroadcastReceiver {
             }
         }
     }
-    private void notifyUserAboutMessage(Context context,PaiementModel paiement,int idTrajet) {
+    private void notifyUserAboutMessage(Context context,PaiementModel paiement,String idTrajet) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "sms_channel";//alert.wav
         Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
@@ -142,7 +143,6 @@ public class MySmsReceiver extends BroadcastReceiver {
     private void verification(Context context,String[] redId,PaiementModel paiement){
         AppDatabase bddSqlite=ConnectBddSqlite.connectBdd(context);
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> Toast.makeText(context, "ok ok", Toast.LENGTH_LONG).show());
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(new Runnable() {
             @Override
@@ -153,14 +153,19 @@ public class MySmsReceiver extends BroadcastReceiver {
                     if(trajetModel.getSiegeReserver().size()>listSiege.length){
                         for(int i=0;i!=listSiege.length;i++){
                             if(trajetModel.getSiegeReserver().get(listSiege[i])!=0){
-                                handler.post(() -> Toast.makeText(context, "echec,place dejat pris", Toast.LENGTH_SHORT).show());
+                                handler.post(() -> Toast.makeText(context, "echec,place deja pris", Toast.LENGTH_SHORT).show());
                                 return;
                             }
                         }
                         String[] anarana=paiement.getNomRemetant().split(" ");
+                        for(int o=0;o!=listSiege.length;o++){
+                            if(trajetModel.getSiegeReserver().get(listSiege[o])==0)
+                                trajetModel.getSiegeReserver().set(listSiege[o],99);
+                        }
+                        bddSqlite.trajetDao().updateTrajet(trajetModel);
 
                         UtilisateurModel fakeUtilisateur=new UtilisateurModel(anarana[0],anarana[1],String.valueOf(paiement.getMontant()));
-                        ReservationModel reservationModel=new ReservationModel(
+                        reservationModel=new ReservationModel(
                                 Integer.parseInt(redId[2]),//ok ok
                                 fakeUtilisateur,//ok ok
                                 trajetModel,//ok ok
@@ -169,11 +174,12 @@ public class MySmsReceiver extends BroadcastReceiver {
                                 paiement
                         );
                         long id=bddSqlite.reservationDao().insertReservation(reservationModel);
+                        reservationModel.setIdReservation((int) id);
                         paiement.setIdReservation((int) id);
                         bddSqlite.paiementDao().insertPaiement(paiement);
                         new Handler(Looper.getMainLooper()).postDelayed(() -> {
                             Toast.makeText(context, "insertion avec succes", Toast.LENGTH_SHORT).show();
-                            notifyUserAboutMessage(context, paiement,trajetModel.getIdTrajet());
+                            notifyUserAboutMessage(context, paiement,redId[1]);
                         }, 3000);
                     }
                 }
